@@ -276,8 +276,7 @@ export default function UpgradePageContent() {
         <QRPaymentModal
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
-          plan={selectedPlan}
-          billingCycle={billingCycle}
+          selectedTier={selectedPlan}
           amount={finalPrice}
         />
       )}
