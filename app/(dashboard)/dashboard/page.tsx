@@ -10,9 +10,9 @@ import {
   ClockIcon,
   StarIcon
 } from '@heroicons/react/24/outline'
-import { getSubscriptionTierName, getSubscriptionTierPrice } from '@/lib/utils'
+import { getSubscriptionTierName, getSubscriptionTierPrice, getWeeklyEventLimit } from '@/lib/utils'
 import Button from '@/components/ui/Button'
-import Link from 'next/link'
+import ReferralCard from '@/components/referral/ReferralCard'
 
 export default function DashboardPage() {
   const { profile } = useAuth()
@@ -67,7 +67,15 @@ export default function DashboardPage() {
                 Welcome back, {profile.full_name.split(' ')[0]}! 👋
               </h1>
               <p className="text-neutral-200 text-lg">
-                Ready to discover amazing events at {profile.college}?
+                You get {getWeeklyEventLimit(profile.subscription_tier)} curated events this week
+              </p>
+              <p className="text-neutral-300 text-sm mt-1">
+                {profile.subscription_tier === 'free' 
+                  ? 'Upgrade to Explorer for 10 events/week' 
+                  : profile.subscription_tier === 'explorer_99'
+                    ? 'Upgrade to Professional for 15 events/week + early access'
+                    : 'You have access to all premium features!'
+                }
               </p>
             </div>
             <div className="hidden md:block">
@@ -137,7 +145,7 @@ export default function DashboardPage() {
                   Upgrade Your Experience
                 </h3>
                 <p className="text-primary-600">
-                  Get access to premium events and exclusive features
+                  Get access to 10 curated events/week and premium features
                 </p>
               </div>
               <Link href="/subscription/upgrade">
@@ -146,6 +154,9 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Referral Card */}
+        <ReferralCard />
 
         {/* Recent Activity */}
         <div className="card">

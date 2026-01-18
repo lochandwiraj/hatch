@@ -14,10 +14,12 @@ interface UserProfile {
   graduation_year: number
   bio: string | null
   skills: string[] | null
-  subscription_tier: 'free' | 'basic_99' | 'premium_149'
+  subscription_tier: 'free' | 'explorer_99' | 'professional_199'
   events_attended: number
   subscription_expires_at: string | null
   subscription_updated_at: string
+  referral_code: string | null
+  referred_by: string | null
   created_at: string
   updated_at: string
 }

@@ -20,7 +20,7 @@ interface Event {
   location: string
   max_attendees: number | null
   current_attendees: number
-  required_tier: 'free' | 'basic_99' | 'premium_149'
+  required_tier: 'free' | 'explorer_99' | 'professional_199'
   status: 'draft' | 'published' | 'cancelled'
 }
 
@@ -40,8 +40,8 @@ export default function EventCard({ event, userTier = 'free', showActions = true
   const getTierBadgeVariant = (tier: string) => {
     switch (tier) {
       case 'free': return 'success'
-      case 'basic_99': return 'primary'
-      case 'premium_149': return 'secondary'
+      case 'explorer_99': return 'primary'
+      case 'professional_199': return 'secondary'
       default: return 'default'
     }
   }

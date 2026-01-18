@@ -18,10 +18,12 @@ export type Database = {
           graduation_year: number
           bio: string | null
           skills: string[] | null
-          subscription_tier: 'free' | 'basic_99' | 'premium_149'
+          subscription_tier: 'free' | 'explorer_99' | 'professional_199'
           events_attended: number
           subscription_expires_at: string | null
           subscription_updated_at: string
+          referral_code: string | null
+          referred_by: string | null
           created_at: string
           updated_at: string
         }
@@ -34,10 +36,12 @@ export type Database = {
           graduation_year: number
           bio?: string | null
           skills?: string[] | null
-          subscription_tier?: 'free' | 'basic_99' | 'premium_149'
+          subscription_tier?: 'free' | 'explorer_99' | 'professional_199'
           events_attended?: number
           subscription_expires_at?: string | null
           subscription_updated_at?: string
+          referral_code?: string | null
+          referred_by?: string | null
         }
         Update: {
           email?: string
@@ -47,10 +51,12 @@ export type Database = {
           graduation_year?: number
           bio?: string | null
           skills?: string[] | null
-          subscription_tier?: 'free' | 'basic_99' | 'premium_149'
+          subscription_tier?: 'free' | 'explorer_99' | 'professional_199'
           events_attended?: number
           subscription_expires_at?: string | null
           subscription_updated_at?: string
+          referral_code?: string | null
+          referred_by?: string | null
         }
       }
       events: {
@@ -62,7 +68,7 @@ export type Database = {
           location: string
           max_attendees: number | null
           current_attendees: number
-          required_tier: 'free' | 'basic_99' | 'premium_149'
+          required_tier: 'free' | 'explorer_99' | 'professional_199'
           status: 'draft' | 'published' | 'cancelled'
           created_by: string
           created_at: string
@@ -75,7 +81,7 @@ export type Database = {
           location: string
           max_attendees?: number | null
           current_attendees?: number
-          required_tier?: 'free' | 'basic_99' | 'premium_149'
+          required_tier?: 'free' | 'explorer_99' | 'professional_199'
           status?: 'draft' | 'published' | 'cancelled'
           created_by: string
         }
@@ -86,7 +92,7 @@ export type Database = {
           location?: string
           max_attendees?: number | null
           current_attendees?: number
-          required_tier?: 'free' | 'basic_99' | 'premium_149'
+          required_tier?: 'free' | 'explorer_99' | 'professional_199'
           status?: 'draft' | 'published' | 'cancelled'
         }
       }
@@ -112,6 +118,64 @@ export type Database = {
         Update: {
           confirmation_status?: 'pending' | 'attended' | 'not_attended'
           confirmed_at?: string | null
+        }
+      }
+      referrals: {
+        Row: {
+          id: string
+          referrer_id: string
+          referee_id: string | null
+          referee_email: string
+          status: 'pending' | 'signed_up' | 'paid'
+          discount_applied: number | null
+          reward_given: boolean
+          created_at: string
+        }
+        Insert: {
+          referrer_id: string
+          referee_email: string
+          status?: 'pending' | 'signed_up' | 'paid'
+          discount_applied?: number | null
+          reward_given?: boolean
+        }
+        Update: {
+          referee_id?: string | null
+          status?: 'pending' | 'signed_up' | 'paid'
+          discount_applied?: number | null
+          reward_given?: boolean
+        }
+      }
+      organizer_listings: {
+        Row: {
+          id: string
+          event_id: string
+          organizer_name: string
+          organizer_email: string
+          amount_paid: number
+          payment_status: 'pending' | 'paid'
+          analytics_views: number
+          analytics_clicks: number
+          analytics_bookmarks: number
+          featured_until: string
+          created_at: string
+        }
+        Insert: {
+          event_id: string
+          organizer_name: string
+          organizer_email: string
+          amount_paid: number
+          payment_status?: 'pending' | 'paid'
+          analytics_views?: number
+          analytics_clicks?: number
+          analytics_bookmarks?: number
+          featured_until: string
+        }
+        Update: {
+          payment_status?: 'pending' | 'paid'
+          analytics_views?: number
+          analytics_clicks?: number
+          analytics_bookmarks?: number
+          featured_until?: string
         }
       }
     }

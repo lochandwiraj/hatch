@@ -41,11 +41,11 @@ export default function Home() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="floating-element">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-shadow">
-              Welcome to <span className="text-accent-300">Hatch</span>
+              Stop Searching. <span className="text-accent-300">Start Discovering.</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-neutral-200 max-w-3xl mx-auto">
-              The modern event management platform that brings communities together. 
-              Track attendance, manage subscriptions, and create unforgettable experiences.
+              5 hand-picked student events every week. Save 10+ hours. Build your portfolio.
+              Quality over quantity - your weekly event digest.
             </p>
           </div>
           
@@ -72,18 +72,18 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
             <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
               <CalendarDaysIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Event Management</h3>
-              <p className="text-neutral-300">Create, manage, and track events with ease</p>
+              <h3 className="text-xl font-semibold mb-2">Curated, Not Cluttered</h3>
+              <p className="text-neutral-300">We research 50+ sources weekly. You get only the 5-15 best opportunities.</p>
             </div>
             <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
               <UserGroupIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Attendance Tracking</h3>
-              <p className="text-neutral-300">Monitor attendance and engagement</p>
+              <h3 className="text-xl font-semibold mb-2">Save 10+ Hours Every Week</h3>
+              <p className="text-neutral-300">Stop scrolling through Unstop, Devfolio, LinkedIn. We do the hunting for you.</p>
             </div>
             <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
               <ChartBarIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Analytics & Insights</h3>
-              <p className="text-neutral-300">Get detailed reports and analytics</p>
+              <h3 className="text-xl font-semibold mb-2">Build Your Portfolio</h3>
+              <p className="text-neutral-300">Every event you attend goes on your profile. Share it with recruiters.</p>
             </div>
           </div>
         </div>
