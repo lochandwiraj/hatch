@@ -54,6 +54,13 @@ export default function Header() {
               <Link href="/subscription" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 Subscription
               </Link>
+              {(profile?.email === 'admin@eventscout.in' || 
+                profile?.email === 'dwiraj@eventscout.in' || 
+                profile?.email === 'lochan@eventscout.in') && (
+                <Link href="/admin/payments" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                  Admin
+                </Link>
+              )}
             </nav>
           )}
 
@@ -164,6 +171,17 @@ export default function Header() {
               >
                 Subscription
               </Link>
+              {(profile?.email === 'admin@eventscout.in' || 
+                profile?.email === 'dwiraj@eventscout.in' || 
+                profile?.email === 'lochan@eventscout.in') && (
+                <Link
+                  href="/admin/payments"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-100"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
           </div>
         )}

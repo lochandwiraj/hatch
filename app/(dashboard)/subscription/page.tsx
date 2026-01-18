@@ -142,39 +142,18 @@ export default function SubscriptionPage() {
         </Card>
 
         {/* Upgrade Options */}
-        {profile.subscription_tier !== 'premium_149' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {getUpgradeOptions(profile.subscription_tier).map((plan, index) => (
-              <Card key={index} className="relative">
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge variant="primary">Most Popular</Badge>
-                  </div>
-                )}
-                
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
-                  <div className="text-4xl font-bold text-primary-600 mb-4">
-                    {plan.price}<span className="text-lg text-neutral-500">/month</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center">
-                      <CheckCircleIcon className="h-5 w-5 text-success-500 mr-2" />
-                      <span className="text-neutral-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/subscription/upgrade">
-                  <Button className="w-full">
-                    Upgrade to {plan.name}
-                  </Button>
-                </Link>
-              </Card>
-            ))}
+        {profile.subscription_tier !== 'professional_199' && (
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-4">Ready to Upgrade?</h3>
+            <p className="text-neutral-600 mb-6">
+              Get more curated events and premium features
+            </p>
+            <Link href="/subscription/upgrade">
+              <Button size="lg">
+                <StarIcon className="h-5 w-5 mr-2" />
+                View Upgrade Options
+              </Button>
+            </Link>
           </div>
         )}
 
