@@ -6,9 +6,9 @@ import { AuthProvider } from '@/components/auth/AuthProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Hatch - Event Management Platform',
-  description: 'Modern event management and attendance tracking system for colleges and communities',
-  keywords: 'events, management, attendance, college, community, subscription',
+  title: 'HATCH - Stop Searching. Start Discovering.',
+  description: 'Curated student events delivered weekly. Save 10+ hours of searching. Quality over quantity.',
+  keywords: 'student events, hackathons, competitions, workshops, curated events, college events',
 }
 
 export default function RootLayout({

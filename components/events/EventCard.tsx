@@ -5,7 +5,8 @@ import {
   CalendarDaysIcon, 
   MapPinIcon, 
   UserGroupIcon,
-  ClockIcon
+  ClockIcon,
+  ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline'
 import Card from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
@@ -16,32 +17,39 @@ interface Event {
   id: string
   title: string
   description: string
+  event_link: string
+  poster_image_url: string | null
+  category: string
+  tags: string[] | null
   event_date: string
-  location: string
-  max_attendees: number | null
-  current_attendees: number
-  required_tier: 'free' | 'explorer_99' | 'professional_199'
-  status: 'draft' | 'published' | 'cancelled'
+  registration_deadline: string | null
+  required_tier: 'free' | 'basic_99' | 'premium_149'
+  status: 'draft' | 'published'
+  is_early_access: boolean
+  organizer: string
+  prize_pool: string | null
+  mode: string
+  eligibility: string | null
 }
 
 interface EventCardProps {
   event: Event
   userTier?: string
   showActions?: boolean
+  onRegister?: (eventId: string) => void
 }
 
-export default function EventCard({ event, userTier = 'free', showActions = true }: EventCardProps) {
+export default function EventCard({ event, userTier = 'free', showActions = true, onRegister }: EventCardProps) {
   const eventDate = new Date(event.event_date)
   const isUpcoming = eventDate > new Date()
   const isPast = eventDate < new Date()
   const canAccess = isEventAccessible(event.required_tier, userTier)
-  const isFull = event.max_attendees && event.current_attendees >= event.max_attendees
 
   const getTierBadgeVariant = (tier: string) => {
     switch (tier) {
       case 'free': return 'success'
-      case 'explorer_99': return 'primary'
-      case 'professional_199': return 'secondary'
+      case 'basic_99': return 'primary'
+      case 'premium_149': return 'secondary'
       default: return 'default'
     }
   }
@@ -67,9 +75,6 @@ export default function EventCard({ event, userTier = 'free', showActions = true
               {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
             </Badge>
           )}
-          {isFull && (
-            <Badge variant="error">Full</Badge>
-          )}
           {isPast && (
             <Badge variant="default">Past Event</Badge>
           )}
@@ -90,6 +95,13 @@ export default function EventCard({ event, userTier = 'free', showActions = true
           <span>{formatDateShort(event.event_date)}</span>
         </div>
         
+        {event.registration_deadline && (
+          <div className="flex items-center text-sm text-neutral-600">
+            <ClockIcon className="h-4 w-4 mr-2" />
+            <span>Registration ends: {formatDateShort(event.registration_deadline)}</span>
+          </div>
+        )}
+        
         <div className="flex items-center text-sm text-neutral-600">
           <ClockIcon className="h-4 w-4 mr-2" />
           <span>{formatTime(event.event_date)}</span>
@@ -97,16 +109,20 @@ export default function EventCard({ event, userTier = 'free', showActions = true
         
         <div className="flex items-center text-sm text-neutral-600">
           <MapPinIcon className="h-4 w-4 mr-2" />
-          <span className="line-clamp-1">{event.location}</span>
+          <span className="line-clamp-1">{event.mode}</span>
         </div>
         
         <div className="flex items-center text-sm text-neutral-600">
           <UserGroupIcon className="h-4 w-4 mr-2" />
-          <span>
-            {event.current_attendees}
-            {event.max_attendees && ` / ${event.max_attendees}`} attendees
-          </span>
+          <span>{event.organizer}</span>
         </div>
+
+        {event.prize_pool && (
+          <div className="flex items-center text-sm text-neutral-600">
+            <span className="mr-2">🏆</span>
+            <span>{event.prize_pool}</span>
+          </div>
+        )}
       </div>
 
       {showActions && (
@@ -121,12 +137,40 @@ export default function EventCard({ event, userTier = 'free', showActions = true
             </Button>
           </Link>
           
-          {canAccess && isUpcoming && !isFull && event.status === 'published' && (
-            <Link href={`/events/${event.id}`} className="flex-1">
-              <Button size="sm" className="w-full">
-                Register
-              </Button>
-            </Link>
+          {canAccess && isUpcoming && event.status === 'published' && (
+            <>
+              {event.event_link ? (
+                <div className="flex space-x-2 flex-1">
+                  <Button 
+                    size="sm" 
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={() => window.open(event.event_link, '_blank')}
+                  >
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-1" />
+                    Visit Event
+                  </Button>
+                  {onRegister && (
+                    <Button 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => onRegister(event.id)}
+                    >
+                      Register & Track
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <Button 
+                  size="sm" 
+                  variant="secondary"
+                  className="w-full flex-1"
+                  disabled
+                >
+                  Registration Link Not Available
+                </Button>
+              )}
+            </>
           )}
           
           {!canAccess && (

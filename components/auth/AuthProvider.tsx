@@ -1,25 +1,25 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { getUserProfile } from '@/lib/auth'
 
 interface UserProfile {
   id: string
-  email: string
   username: string
   full_name: string
-  college: string
-  graduation_year: number
+  profile_picture_url: string | null
   bio: string | null
+  college: string | null
+  graduation_year: number | null
   skills: string[] | null
-  subscription_tier: 'free' | 'explorer_99' | 'professional_199'
-  events_attended: number
+  social_links: any | null
+  subscription_tier: 'free' | 'basic_99' | 'premium_149'
   subscription_expires_at: string | null
-  subscription_updated_at: string
-  referral_code: string | null
-  referred_by: string | null
+  profile_views_count: number
+  is_profile_public: boolean
+  custom_url: string | null
   created_at: string
   updated_at: string
 }
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (user) {
       try {
         const userProfile = await getUserProfile(user.id)
@@ -57,13 +57,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setProfile(null)
     }
-  }
+  }, [user])
 
-  const signOut = async () => {
-    await supabase.auth.signOut()
+  // Auto-refresh profile every 30 seconds to catch admin tier changes
+  useEffect(() => {
+    if (user && profile) {
+      const interval = setInterval(() => {
+        refreshProfile()
+      }, 30000) // 30 seconds
+
+      return () => clearInterval(interval)
+    }
+  }, [user, profile, refreshProfile])
+
+  const signOut = useCallback(async () => {
+    // Immediately clear state for faster UI response
     setUser(null)
     setProfile(null)
-  }
+    setLoading(false)
+    
+    // Then perform the actual signout
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }, [])
 
   useEffect(() => {
     // Get initial session
@@ -74,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -84,8 +103,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    refreshProfile()
-  }, [user])
+    // Only fetch profile if user exists and we don't already have a profile for this user
+    if (user && (!profile || profile.id !== user.id)) {
+      refreshProfile()
+    } else if (!user && profile) {
+      // Clear profile immediately when user is null (signout) only if we have a profile
+      setProfile(null)
+    }
+  }, [user, refreshProfile]) // Include refreshProfile since it's now memoized
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile }}>

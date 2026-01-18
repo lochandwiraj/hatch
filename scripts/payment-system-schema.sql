@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS payment_requests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
   plan_name TEXT NOT NULL,
-  plan_tier TEXT NOT NULL CHECK (plan_tier IN ('explorer_99', 'professional_199')),
+  plan_tier TEXT NOT NULL CHECK (plan_tier IN ('explorer_99', 'professional_149')),
   amount DECIMAL(10,2) NOT NULL,
   is_annual BOOLEAN DEFAULT FALSE,
   transaction_id TEXT NOT NULL,
@@ -42,7 +42,7 @@ CREATE POLICY "Admin can manage all payment requests" ON payment_requests
     EXISTS (
       SELECT 1 FROM user_profiles 
       WHERE id = auth.uid() 
-      AND email IN ('admin@eventscout.in', 'dwiraj@eventscout.in', 'lochan@eventscout.in')
+      AND email IN ('dwiraj06@gmail.com', 'pokkalilochan@gmail.com', 'dwiraj@HATCH.in', 'lochan@HATCH.in')
     )
   );
 
@@ -70,7 +70,7 @@ CREATE POLICY "Admin can view all payment screenshots" ON storage.objects
     AND EXISTS (
       SELECT 1 FROM user_profiles 
       WHERE id = auth.uid() 
-      AND email IN ('admin@eventscout.in', 'dwiraj@eventscout.in', 'lochan@eventscout.in')
+      AND email IN ('dwiraj06@gmail.com', 'pokkalilochan@gmail.com', 'dwiraj@HATCH.in', 'lochan@HATCH.in')
     )
   );
 

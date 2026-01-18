@@ -21,8 +21,10 @@ export default function Header() {
   const router = useRouter()
 
   const handleSignOut = async () => {
-    await signOut()
+    // Navigate immediately for faster UX
     router.push('/')
+    // Then perform signout (this will be fast due to AuthProvider optimization)
+    await signOut()
   }
 
   return (
@@ -35,7 +37,7 @@ export default function Header() {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white font-bold text-lg">H</span>
               </div>
-              <span className="text-xl font-bold gradient-text">Hatch</span>
+              <span className="text-xl font-bold gradient-text">HATCH</span>
             </Link>
           </div>
 
@@ -45,22 +47,31 @@ export default function Header() {
               <Link href="/dashboard" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 Dashboard
               </Link>
+              {(user?.email === 'dwiraj06@gmail.com' || 
+                user?.email === 'pokkalilochan@gmail.com' ||
+                user?.email === 'dwiraj@HATCH.in' || 
+                user?.email === 'lochan@HATCH.in') && (
+                <>
+                  <Link href="/admin/events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                    📅 Events
+                  </Link>
+                  <Link href="/admin/manage-events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                    🔧 Manage
+                  </Link>
+                  <Link href="/admin/manage-users" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                    👥 Users
+                  </Link>
+                  <Link href="/admin/payments" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                    💳 Payments
+                  </Link>
+                </>
+              )}
               <Link href="/events" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 Events
-              </Link>
-              <Link href="/attendance" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Attendance
               </Link>
               <Link href="/subscription" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 Subscription
               </Link>
-              {(profile?.email === 'admin@eventscout.in' || 
-                profile?.email === 'dwiraj@eventscout.in' || 
-                profile?.email === 'lochan@eventscout.in') && (
-                <Link href="/admin/payments" className="text-neutral-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                  Admin
-                </Link>
-              )}
             </nav>
           )}
 
@@ -150,6 +161,41 @@ export default function Header() {
               >
                 Dashboard
               </Link>
+              {(user?.email === 'dwiraj06@gmail.com' || 
+                user?.email === 'pokkalilochan@gmail.com' ||
+                user?.email === 'dwiraj@HATCH.in' || 
+                user?.email === 'lochan@HATCH.in') && (
+                <>
+                  <Link
+                    href="/admin/events"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 border border-primary-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    📅 Admin Events
+                  </Link>
+                  <Link
+                    href="/admin/manage-events"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 border border-primary-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    🔧 Manage Events
+                  </Link>
+                  <Link
+                    href="/admin/manage-users"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 border border-primary-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    👥 Manage Users
+                  </Link>
+                  <Link
+                    href="/admin/payments"
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 border border-primary-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    💳 Admin Payments
+                  </Link>
+                </>
+              )}
               <Link
                 href="/events"
                 className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-100"
@@ -158,30 +204,12 @@ export default function Header() {
                 Events
               </Link>
               <Link
-                href="/attendance"
-                className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Attendance
-              </Link>
-              <Link
                 href="/subscription"
                 className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Subscription
               </Link>
-              {(profile?.email === 'admin@eventscout.in' || 
-                profile?.email === 'dwiraj@eventscout.in' || 
-                profile?.email === 'lochan@eventscout.in') && (
-                <Link
-                  href="/admin/payments"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Admin
-                </Link>
-              )}
             </div>
           </div>
         )}

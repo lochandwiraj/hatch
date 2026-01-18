@@ -18,7 +18,7 @@ export default function ReferralCard() {
 
   if (!profile) return null
 
-  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/signup?ref=${profile.referral_code || profile.id}`
+  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/signup?ref=${profile.id}`
 
   const copyToClipboard = async () => {
     try {
@@ -32,7 +32,7 @@ export default function ReferralCard() {
   }
 
   const shareViaWhatsApp = () => {
-    const message = `Hey! I'm using EventScout to discover curated student events every week. Join using my link and get 20% off your first month: ${referralLink}`
+    const message = `Hey! I'm using HATCH to discover curated student events every week. Join using my link and get 20% off your first month: ${referralLink}`
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }

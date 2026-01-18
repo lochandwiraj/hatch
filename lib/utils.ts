@@ -34,9 +34,9 @@ export function getSubscriptionTierName(tier: string) {
   switch (tier) {
     case 'free':
       return 'Free'
-    case 'explorer_99':
+    case 'basic_99':
       return 'Explorer'
-    case 'professional_199':
+    case 'premium_149':
       return 'Professional'
     default:
       return 'Unknown'
@@ -47,10 +47,10 @@ export function getSubscriptionTierPrice(tier: string, isAnnual = false) {
   switch (tier) {
     case 'free':
       return '₹0'
-    case 'explorer_99':
+    case 'basic_99':
       return isAnnual ? '₹999/year' : '₹99/month'
-    case 'professional_199':
-      return isAnnual ? '₹1,999/year' : '₹199/month'
+    case 'premium_149':
+      return isAnnual ? '₹1,499/year' : '₹149/month'
     default:
       return 'N/A'
   }
@@ -60,9 +60,9 @@ export function getWeeklyEventLimit(tier: string) {
   switch (tier) {
     case 'free':
       return 5
-    case 'explorer_99':
+    case 'basic_99':
       return 10
-    case 'professional_199':
+    case 'premium_149':
       return 15
     default:
       return 5
@@ -73,8 +73,8 @@ export function getManualEventLimit(tier: string) {
   switch (tier) {
     case 'free':
       return 2
-    case 'explorer_99':
-    case 'professional_199':
+    case 'basic_99':
+    case 'premium_149':
       return -1 // unlimited
     default:
       return 2
@@ -83,10 +83,10 @@ export function getManualEventLimit(tier: string) {
 
 export function getAnnualDiscount(tier: string) {
   switch (tier) {
-    case 'explorer_99':
+    case 'basic_99':
       return { monthly: 99 * 12, annual: 999, savings: 189 }
-    case 'professional_199':
-      return { monthly: 199 * 12, annual: 1999, savings: 389 }
+    case 'premium_149':
+      return { monthly: 149 * 12, annual: 1499, savings: 289 }
     default:
       return null
   }
@@ -95,8 +95,8 @@ export function getAnnualDiscount(tier: string) {
 export function isEventAccessible(eventTier: string, userTier: string) {
   const tierHierarchy = {
     free: 0,
-    explorer_99: 1,
-    professional_199: 2
+    basic_99: 1,
+    premium_149: 2
   }
   
   return tierHierarchy[userTier as keyof typeof tierHierarchy] >= tierHierarchy[eventTier as keyof typeof tierHierarchy]

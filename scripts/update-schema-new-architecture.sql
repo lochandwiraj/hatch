@@ -7,7 +7,7 @@ DROP CONSTRAINT IF EXISTS user_profiles_subscription_tier_check;
 
 ALTER TABLE user_profiles 
 ADD CONSTRAINT user_profiles_subscription_tier_check 
-CHECK (subscription_tier IN ('free', 'explorer_99', 'professional_199'));
+CHECK (subscription_tier IN ('free', 'explorer_99', 'professional_149'));
 
 -- Add referral system columns
 ALTER TABLE user_profiles 
@@ -86,7 +86,7 @@ DROP CONSTRAINT IF EXISTS events_required_tier_check;
 
 ALTER TABLE events 
 ADD CONSTRAINT events_required_tier_check 
-CHECK (required_tier IN ('free', 'explorer_99', 'professional_199'));
+CHECK (required_tier IN ('free', 'explorer_99', 'professional_149'));
 
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
@@ -119,7 +119,7 @@ CREATE POLICY "Admin can manage organizer listings" ON organizer_listings
     EXISTS (
       SELECT 1 FROM user_profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@eventscout.in'
+      AND email = 'admin@HATCH.in'
     )
   );
 
@@ -148,7 +148,7 @@ CREATE POLICY "Admin can manage email sends" ON email_sends
     EXISTS (
       SELECT 1 FROM user_profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@eventscout.in'
+      AND email = 'admin@HATCH.in'
     )
   );
 
@@ -198,7 +198,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   -- When user upgrades to paid, update referral and give reward
   IF OLD.subscription_tier = 'free' 
-     AND NEW.subscription_tier IN ('explorer_99', 'professional_199') THEN
+     AND NEW.subscription_tier IN ('explorer_99', 'professional_149') THEN
     
     -- Update referral status to paid
     UPDATE referrals 
