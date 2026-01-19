@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button'
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
+import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
 
 interface Event {
   id: string
@@ -136,12 +137,9 @@ export default function EventsPage() {
             username: profile.username,
             full_name: profile.full_name,
             subscription_tier: profile.subscription_tier,
-            events_attended_this_month: 0,
+            events_attended: 0,
             total_events_attended: 0,
-            monthly_limit: profile.subscription_tier === 'free' ? 5 : 
-                          profile.subscription_tier === 'basic_99' ? 10 : 999,
-            events_remaining: profile.subscription_tier === 'free' ? 5 : 
-                             profile.subscription_tier === 'basic_99' ? 10 : 999
+            event_access: getEventLimit(profile.subscription_tier)
           })
           return
         }
@@ -156,12 +154,9 @@ export default function EventsPage() {
         username: profile.username,
         full_name: profile.full_name,
         subscription_tier: profile.subscription_tier,
-        events_attended_this_month: 0,
+        events_attended: 0,
         total_events_attended: 0,
-        monthly_limit: profile.subscription_tier === 'free' ? 5 : 
-                      profile.subscription_tier === 'basic_99' ? 10 : 999,
-        events_remaining: profile.subscription_tier === 'free' ? 5 : 
-                         profile.subscription_tier === 'basic_99' ? 10 : 999
+        event_access: getEventLimit(profile.subscription_tier)
       })
     }
   }
@@ -401,15 +396,6 @@ export default function EventsPage() {
     }
   }
 
-  const getTierName = (tier: string) => {
-    switch (tier) {
-      case 'free': return 'Free'
-      case 'basic_99': return 'Explorer'
-      case 'premium_149': return 'Professional'
-      default: return tier
-    }
-  }
-
   const clearSearch = () => {
     setSearchQuery('')
     loadEvents()
@@ -505,45 +491,27 @@ export default function EventsPage() {
           {userStats && (
             <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">Your Event Activity</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary-600">
-                    {userStats.events_attended_this_month}
-                  </div>
-                  <div className="text-sm text-neutral-600">Events This Month</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-neutral-900">
-                    {userStats.events_remaining}
-                  </div>
-                  <div className="text-sm text-neutral-600">Events Remaining</div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-success-600">
-                    {userStats.total_events_attended}
+                    {userStats.total_events_attended || 0}
                   </div>
-                  <div className="text-sm text-neutral-600">Total Events Attended</div>
+                  <div className="text-sm text-neutral-600">Events Attended</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary-600">
+                    {userStats.event_access === -1 ? '∞' : userStats.event_access}
+                  </div>
+                  <div className="text-sm text-neutral-600">Event Access</div>
                 </div>
               </div>
               <div className="mt-4 bg-neutral-50 rounded-lg p-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-neutral-600">Monthly Limit ({getTierName(userStats.subscription_tier)}):</span>
+                  <span className="text-neutral-600">Tier ({getSubscriptionTierName(userStats.subscription_tier)}):</span>
                   <span className="font-medium text-neutral-900">
-                    {userStats.monthly_limit === 999 ? 'Unlimited' : userStats.monthly_limit} events
+                    {getEventLimitDescription(userStats.subscription_tier)}
                   </span>
                 </div>
-                {userStats.monthly_limit !== 999 && (
-                  <div className="mt-2">
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div 
-                        className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                        style={{ 
-                          width: `${Math.min((userStats.events_attended_this_month / userStats.monthly_limit) * 100, 100)}%` 
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}

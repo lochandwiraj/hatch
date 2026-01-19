@@ -226,7 +226,7 @@ const pricingPlans = [
     features: [
       '7 curated events',
       'Everything in Free',
-      'New events added monthly',
+      'New events added regularly',
       'Priority event registration',
       'Advanced filtering',
       'Event reminders',
@@ -250,7 +250,7 @@ const pricingPlans = [
     features: [
       'All hackathons & events',
       'Everything in Explorer',
-      'Fresh hackathons monthly',
+      'Fresh hackathons regularly',
       'Early access to events',
       'VIP event access',
       'Networking opportunities',
@@ -280,7 +280,7 @@ const faqs = [
   },
   {
     question: 'Is there a setup fee?',
-    answer: 'No setup fees! You only pay the monthly subscription fee. There are no hidden costs or additional charges.'
+    answer: 'No setup fees! You only pay the one-time fee. There are no hidden costs or additional charges.'
   },
   {
     question: 'Can I get a discount for annual billing?',

@@ -252,7 +252,7 @@ const pricingPlans = [
     popular: true,
     features: [
       '7 curated events',
-      'New events added monthly',
+      'New events added regularly',
       'Priority event registration',
       'Enhanced profile features',
       'Email notifications'
@@ -264,7 +264,7 @@ const pricingPlans = [
     popular: false,
     features: [
       'All hackathons & events',
-      'Fresh hackathons monthly',
+      'Fresh hackathons regularly',
       'VIP event access',
       'Advanced analytics',
       'Custom event requests',

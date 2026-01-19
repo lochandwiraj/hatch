@@ -67,7 +67,7 @@ export default function TierLimitModal({
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-neutral-900">
-              Monthly Event Limit Reached
+              Event Access Limit Reached
             </h2>
             <button
               onClick={onClose}
@@ -83,12 +83,12 @@ export default function TierLimitModal({
             </div>
             
             <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-              You've reached your monthly limit!
+              You've reached your event access limit!
             </h3>
             
             <p className="text-neutral-600 mb-4">
               You've attended <span className="font-semibold">{eventsAttended} out of {tierLimit}</span> events 
-              allowed on your <span className="font-semibold">{getTierName(currentTier)}</span> plan this month.
+              allowed on your <span className="font-semibold">{getTierName(currentTier)}</span> plan.
             </p>
           </div>
 

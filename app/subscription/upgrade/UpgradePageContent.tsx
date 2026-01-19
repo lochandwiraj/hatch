@@ -43,7 +43,7 @@ export default function UpgradePageContent() {
       savings: 189,
       features: [
         '7 curated events',
-        'New events added monthly',
+        'New events added regularly',
         'Priority event registration',
         'Advanced filtering',
         'Event reminders',
@@ -60,7 +60,7 @@ export default function UpgradePageContent() {
       savings: 289,
       features: [
         'All hackathons & events',
-        'Fresh hackathons monthly',
+        'Fresh hackathons regularly',
         'Early access to events',
         'VIP event access',
         'Networking opportunities',
