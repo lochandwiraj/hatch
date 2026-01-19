@@ -155,29 +155,42 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
       // Upload screenshot
       const screenshotUrl = await uploadScreenshot(formData.screenshot)
 
+      // Prepare payment data
+      const paymentData = {
+        user_id: user?.id,
+        username: profile.username,
+        full_name: profile.full_name,
+        email: user?.email,
+        transaction_id: formData.transactionId.trim(),
+        payment_screenshot_url: screenshotUrl,
+        requested_tier: selectedTier,
+        amount_paid: amount,
+        payment_method: formData.paymentMethod,
+        status: 'pending'
+      }
+
+      console.log('Submitting payment data:', paymentData)
+
       // Submit payment for verification with user details
       const { error } = await supabase
         .from('payment_submissions')
-        .insert({
-          user_id: user?.id,
-          username: profile.username,
-          full_name: profile.full_name,
-          email: user?.email,
-          transaction_id: formData.transactionId.trim(),
-          payment_screenshot_url: screenshotUrl,
-          requested_tier: selectedTier,
-          amount_paid: amount,
-          payment_method: formData.paymentMethod,
-          status: 'pending'
-        })
+        .insert(paymentData)
 
       if (error) {
+        console.error('Payment submission error:', error)
+        console.error('Error code:', error.code)
+        console.error('Error message:', error.message)
+        console.error('Error details:', error.details)
+        
         if (error.message.includes('Transaction ID already exists')) {
           toast.error('This transaction ID has already been submitted. Please check your transaction ID.')
         } else if (error.message.includes('Invalid transaction ID format')) {
           toast.error('Invalid transaction ID format. Please check and try again.')
+        } else if (error.message.includes('violates check constraint')) {
+          toast.error('Invalid tier selection. Please refresh the page and try again.')
         } else {
-          throw error
+          console.error('Full error object:', JSON.stringify(error, null, 2))
+          toast.error(`Payment submission failed: ${error.message}`)
         }
         return
       }
