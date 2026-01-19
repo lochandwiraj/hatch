@@ -8,7 +8,7 @@ import {
   StarIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline'
-import { getSubscriptionTierName, getSubscriptionTierPrice, getWeeklyEventLimit } from '@/lib/utils'
+import { getSubscriptionTierName, getSubscriptionTierPrice, getEventLimit, getEventLimitDescription } from '@/lib/utils'
 
 export default function SubscriptionPage() {
   const { profile, user } = useAuth()
@@ -29,7 +29,7 @@ export default function SubscriptionPage() {
       annualPrice: '₹0',
       description: 'Perfect for getting started',
       features: [
-        '5 curated events per week',
+        '5 curated events',
         'Basic event browsing',
         'Community access',
         'Email notifications'
@@ -45,7 +45,8 @@ export default function SubscriptionPage() {
       annualPrice: '₹999',
       description: 'For active event participants',
       features: [
-        '10 curated events per week',
+        '7 curated events',
+        'New events added monthly',
         'Priority event registration',
         'Advanced filtering',
         'Event reminders',
@@ -63,7 +64,8 @@ export default function SubscriptionPage() {
       annualPrice: '₹1,499',
       description: 'For serious professionals',
       features: [
-        '15 curated events per week',
+        'All hackathons & events',
+        'Fresh hackathons monthly',
         'Early access to events',
         'VIP event access',
         'Networking opportunities',
@@ -140,7 +142,7 @@ export default function SubscriptionPage() {
                   )}
                 </div>
                 <p className="text-neutral-600">
-                  You get {getWeeklyEventLimit(profile.subscription_tier)} curated events per week
+                  You have access to {getEventLimitDescription(profile.subscription_tier)}
                 </p>
                 {profile.subscription_expires_at && (
                   <p className="text-sm text-neutral-500 mt-1">
@@ -205,11 +207,10 @@ export default function SubscriptionPage() {
                     <div className="space-y-2">
                       <div className="text-4xl font-bold text-neutral-900">
                         {plan.price}
-                        <span className="text-lg text-neutral-500">/month</span>
                       </div>
                       {plan.id !== 'free' && (
                         <div className="text-sm text-neutral-600">
-                          or {plan.annualPrice}/year (17% off)
+                          or {plan.annualPrice} (17% off)
                         </div>
                       )}
                     </div>

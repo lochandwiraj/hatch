@@ -48,24 +48,37 @@ export function getSubscriptionTierPrice(tier: string, isAnnual = false) {
     case 'free':
       return '₹0'
     case 'basic_99':
-      return isAnnual ? '₹999/year' : '₹99/month'
+      return isAnnual ? '₹999/year' : '₹99'
     case 'premium_149':
-      return isAnnual ? '₹1,499/year' : '₹149/month'
+      return isAnnual ? '₹1,499/year' : '₹149'
     default:
       return 'N/A'
   }
 }
 
-export function getWeeklyEventLimit(tier: string) {
+export function getEventLimit(tier: string) {
   switch (tier) {
     case 'free':
       return 5
     case 'basic_99':
-      return 10
+      return 7
     case 'premium_149':
-      return 15
+      return -1 // unlimited access to all hackathons
     default:
       return 5
+  }
+}
+
+export function getEventLimitDescription(tier: string) {
+  switch (tier) {
+    case 'free':
+      return '5 curated events'
+    case 'basic_99':
+      return '7 curated events'
+    case 'premium_149':
+      return 'All hackathons & events'
+    default:
+      return '5 curated events'
   }
 }
 

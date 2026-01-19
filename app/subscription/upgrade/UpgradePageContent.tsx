@@ -42,7 +42,8 @@ export default function UpgradePageContent() {
       annualPrice: 999,
       savings: 189,
       features: [
-        '10 curated events per week',
+        '7 curated events',
+        'New events added monthly',
         'Priority event registration',
         'Advanced filtering',
         'Event reminders',
@@ -54,11 +55,12 @@ export default function UpgradePageContent() {
     },
     premium_149: {
       name: 'Professional',
-      monthlyPrice: 199,
+      monthlyPrice: 149,
       annualPrice: 1499,
-      savings: 389,
+      savings: 289,
       features: [
-        '15 curated events per week',
+        'All hackathons & events',
+        'Fresh hackathons monthly',
         'Early access to events',
         'VIP event access',
         'Networking opportunities',
@@ -145,7 +147,7 @@ export default function UpgradePageContent() {
                   </div>
                   <p className="text-sm text-neutral-600 mb-2">{plan.description}</p>
                   <div className="text-lg font-bold text-primary-600">
-                    ₹{plan.monthlyPrice}/month
+                    ₹{plan.monthlyPrice}
                   </div>
                 </button>
               ))}
@@ -166,11 +168,11 @@ export default function UpgradePageContent() {
               >
                 <div className="flex justify-between items-center">
                   <div>
-                    <div className="font-semibold text-neutral-900">Monthly</div>
-                    <div className="text-sm text-neutral-600">Pay monthly, cancel anytime</div>
+                    <div className="font-semibold text-neutral-900">One-time</div>
+                    <div className="text-sm text-neutral-600">Pay once, access forever</div>
                   </div>
                   <div className="text-lg font-bold text-neutral-900">
-                    ₹{currentPlan.monthlyPrice}/month
+                    ₹{currentPlan.monthlyPrice}
                   </div>
                 </div>
               </button>
@@ -195,10 +197,10 @@ export default function UpgradePageContent() {
                   </div>
                   <div>
                     <div className="text-lg font-bold text-neutral-900">
-                      ₹{currentPlan.annualPrice}/year
+                      ₹{currentPlan.annualPrice}
                     </div>
                     <div className="text-sm text-neutral-500 line-through">
-                      ₹{currentPlan.monthlyPrice * 12}/year
+                      ₹{currentPlan.monthlyPrice * 12}
                     </div>
                   </div>
                 </div>
@@ -247,9 +249,6 @@ export default function UpgradePageContent() {
                 <span className="text-lg font-semibold text-primary-800">Total:</span>
                 <span className="text-2xl font-bold text-primary-800">
                   ₹{finalPrice}
-                  <span className="text-sm font-normal">
-                    /{billingCycle === 'annual' ? 'year' : 'month'}
-                  </span>
                 </span>
               </div>
             </div>
@@ -265,7 +264,7 @@ export default function UpgradePageContent() {
               Upgrade to {currentPlan.name}
             </Button>
             <p className="text-sm text-neutral-500 mt-2">
-              Secure payment • Cancel anytime • 30-day money-back guarantee
+              Secure payment • Lifetime access • 30-day money-back guarantee
             </p>
           </div>
         </div>

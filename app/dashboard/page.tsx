@@ -8,7 +8,7 @@ import {
   ChartBarIcon,
   StarIcon
 } from '@heroicons/react/24/outline'
-import { getSubscriptionTierName, getWeeklyEventLimit } from '@/lib/utils'
+import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import ReferralCard from '@/components/referral/ReferralCard'
 
@@ -149,7 +149,7 @@ export default function DashboardPage() {
                   Welcome back, {profile?.full_name?.split(' ')[0] || 'User'}! 👋
                 </h1>
                 <p className="text-neutral-200 text-lg">
-                  You get {getWeeklyEventLimit(profile?.subscription_tier || 'free')} curated events this week
+                  You have access to {getEventLimitDescription(profile?.subscription_tier || 'free')}
                 </p>
               </div>
               <div className="hidden md:block">
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                     Upgrade Your Experience
                   </h3>
                   <p className="text-primary-600">
-                    Get access to 10 curated events/week and premium features
+                    Get access to more events and premium features
                   </p>
                 </div>
                 <Link href="/subscription/upgrade">

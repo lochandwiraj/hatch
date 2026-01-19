@@ -12,7 +12,7 @@ import {
   PencilIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
-import { getSubscriptionTierName, getWeeklyEventLimit } from '@/lib/utils'
+import { getSubscriptionTierName, getEventLimit } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
 
@@ -161,8 +161,8 @@ export default function ProfilePage() {
                     <div className="text-sm text-neutral-600">Events Attended</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-neutral-900">{getWeeklyEventLimit(profile.subscription_tier)}</div>
-                    <div className="text-sm text-neutral-600">Weekly Events</div>
+                    <div className="text-2xl font-bold text-neutral-900">{getEventLimit(profile.subscription_tier) === -1 ? '∞' : getEventLimit(profile.subscription_tier)}</div>
+                    <div className="text-sm text-neutral-600">Event Access</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-neutral-900">
@@ -380,7 +380,7 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <p className="text-primary-600 text-sm">
-                  Access to {getWeeklyEventLimit(profile.subscription_tier)} curated events per week
+                  Access to {getEventLimit(profile.subscription_tier) === -1 ? 'all hackathons & events' : `${getEventLimit(profile.subscription_tier)} curated events`}
                 </p>
               </div>
               

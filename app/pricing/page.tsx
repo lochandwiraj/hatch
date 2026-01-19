@@ -203,18 +203,17 @@ const pricingPlans = [
     iconColor: 'text-success-600',
     cta: 'Get Started Free',
     features: [
-      '5 curated events per week',
+      '5 curated events',
       'Create public profile',
-      'Add 2 past events manually',
       'Basic profile sharing',
-      'Save 10+ hours/week of searching',
-      'Community access (read-only)'
+      'Community access',
+      'Email notifications'
     ]
   },
   {
     name: 'Explorer',
     price: '₹99',
-    billing: 'per month',
+    billing: 'one-time',
     description: 'Great for active participants',
     tier: 'explorer_99',
     popular: true,
@@ -225,21 +224,20 @@ const pricingPlans = [
     annualPrice: '₹999/year',
     annualSavings: 'Save ₹189 (17% off)',
     features: [
-      '10 curated events per week',
+      '7 curated events',
       'Everything in Free',
-      'Auto-track bookmarked events',
-      'Add unlimited past events',
-      'Custom profile URL',
-      'Profile analytics (who viewed)',
-      'Calendar sync (Google/Apple)',
-      'Community forum access (full)',
-      'Priority support (24h response)'
+      'New events added monthly',
+      'Priority event registration',
+      'Advanced filtering',
+      'Event reminders',
+      'Profile showcase',
+      'Referral rewards'
     ]
   },
   {
     name: 'Professional',
     price: '₹149',
-    billing: 'per month',
+    billing: 'one-time',
     description: 'For serious event enthusiasts',
     tier: 'professional_149',
     popular: false,
@@ -248,18 +246,17 @@ const pricingPlans = [
     iconColor: 'text-accent-600',
     cta: 'Go Professional',
     annualPrice: '₹1,499/year',
-    annualSavings: 'Save ₹389 (17% off)',
+    annualSavings: 'Save ₹289 (17% off)',
     features: [
-      '15 curated events per week',
+      'All hackathons & events',
       'Everything in Explorer',
-      '24-hour early access to events',
-      'Auto-attendance verification',
-      'Premium badge on profile',
-      'Featured profiles (discovery)',
-      'Export profile as PDF resume',
-      'Success tracking dashboard',
-      'Verified attendance badges',
-      'Priority support (12h response)'
+      'Fresh hackathons monthly',
+      'Early access to events',
+      'VIP event access',
+      'Networking opportunities',
+      'Career guidance',
+      'Premium support',
+      'Custom event requests'
     ]
   }
 ]

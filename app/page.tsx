@@ -44,8 +44,8 @@ export default function Home() {
               Stop Searching. <span className="text-accent-300">Start Discovering.</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-neutral-200 max-w-3xl mx-auto">
-              5 hand-picked student events every week. Save 10+ hours. Build your portfolio.
-              Quality over quantity - your weekly event digest.
+              Hand-picked student events. Save 10+ hours. Build your portfolio.
+              Quality over quantity - your curated event digest.
             </p>
           </div>
           
@@ -73,11 +73,11 @@ export default function Home() {
             <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
               <CalendarDaysIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Curated, Not Cluttered</h3>
-              <p className="text-neutral-300">We research 50+ sources weekly. You get only the 5-15 best opportunities.</p>
+              <p className="text-neutral-300">We research 50+ sources to bring you only the best opportunities.</p>
             </div>
             <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
               <UserGroupIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Save 10+ Hours Every Week</h3>
+              <h3 className="text-xl font-semibold mb-2">Save Time</h3>
               <p className="text-neutral-300">Stop scrolling through Unstop, Devfolio, LinkedIn. We do the hunting for you.</p>
             </div>
             <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
@@ -142,7 +142,7 @@ export default function Home() {
                 )}
                 <h3 className="text-2xl font-bold text-primary-800 mb-2">{plan.name}</h3>
                 <div className="text-4xl font-bold text-primary-600 mb-4">
-                  {plan.price}<span className="text-lg text-neutral-500">/month</span>
+                  {plan.price}
                 </div>
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, featureIndex) => (
@@ -237,41 +237,38 @@ const features = [
 const pricingPlans = [
   {
     name: 'Free',
-    price: '$0',
+    price: '₹0',
     popular: false,
     features: [
-      'Access to free events',
+      '5 curated events',
       'Basic profile management',
       'Event browsing',
-      'Attendance tracking',
       'Community access'
     ]
   },
   {
-    name: 'Basic',
-    price: '$99',
+    name: 'Explorer',
+    price: '₹99',
     popular: true,
     features: [
-      'Everything in Free',
-      'Access to basic tier events',
+      '7 curated events',
+      'New events added monthly',
       'Priority event registration',
       'Enhanced profile features',
-      'Email notifications',
-      'Basic analytics'
+      'Email notifications'
     ]
   },
   {
-    name: 'Premium',
-    price: '$149',
+    name: 'Professional',
+    price: '₹149',
     popular: false,
     features: [
-      'Everything in Basic',
-      'Access to all premium events',
+      'All hackathons & events',
+      'Fresh hackathons monthly',
       'VIP event access',
       'Advanced analytics',
-      'Custom event creation',
-      'Priority support',
-      'Exclusive networking'
+      'Custom event requests',
+      'Priority support'
     ]
   }
 ]
