@@ -106,16 +106,24 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
     const fileExt = file.name.split('.').pop()
     const fileName = `payment-screenshots/${user?.id}/${Date.now()}.${fileExt}`
     
+    console.log('Uploading screenshot:', fileName)
+    
     const { data, error } = await supabase.storage
       .from('payment-screenshots')
       .upload(fileName, file)
 
-    if (error) throw error
+    if (error) {
+      console.error('Upload error:', error)
+      throw error
+    }
+
+    console.log('Upload successful:', data)
 
     const { data: { publicUrl } } = supabase.storage
       .from('payment-screenshots')
       .getPublicUrl(fileName)
 
+    console.log('Public URL generated:', publicUrl)
     return publicUrl
   }
 

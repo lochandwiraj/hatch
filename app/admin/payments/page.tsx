@@ -345,18 +345,36 @@ export default function AdminPaymentsPage() {
                 Review and approve user payment submissions
               </p>
             </div>
-            <Button onClick={loadPayments} disabled={loading}>
-              {loading ? 'Refreshing...' : 'Refresh Payments'}
-            </Button>
-            {oldPaymentsCount > 0 && (
+            <div className="flex gap-2">
+              <Button onClick={loadPayments} disabled={loading}>
+                {loading ? 'Refreshing...' : 'Refresh Payments'}
+              </Button>
+              {oldPaymentsCount > 0 && (
+                <Button 
+                  variant="secondary" 
+                  onClick={handleCleanupPayments}
+                  disabled={cleanupProcessing}
+                >
+                  {cleanupProcessing ? 'Cleaning...' : `🗑️ Cleanup Old (${oldPaymentsCount})`}
+                </Button>
+              )}
               <Button 
                 variant="secondary" 
-                onClick={handleCleanupPayments}
-                disabled={cleanupProcessing}
+                onClick={async () => {
+                  try {
+                    const { data, error } = await supabase.storage.from('payment-screenshots').list()
+                    if (error) throw error
+                    toast.success(`Storage accessible! Found ${data?.length || 0} files`)
+                    console.log('Storage test result:', data)
+                  } catch (error: any) {
+                    toast.error('Storage test failed: ' + error.message)
+                    console.error('Storage test error:', error)
+                  }
+                }}
               >
-                {cleanupProcessing ? 'Cleaning...' : `🗑️ Cleanup Old (${oldPaymentsCount})`}
+                🔍 Test Storage
               </Button>
-            )}
+            </div>
           </div>
 
           {/* Stats */}
@@ -626,15 +644,52 @@ export default function AdminPaymentsPage() {
                       src={selectedPayment.payment_screenshot_url} 
                       alt="Payment Screenshot" 
                       className="max-w-full h-64 object-contain mx-auto"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const errorDiv = target.nextElementSibling as HTMLElement;
+                        if (errorDiv) errorDiv.style.display = 'block';
+                      }}
                     />
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => window.open(selectedPayment.payment_screenshot_url, '_blank')}
-                      className="mt-2"
+                    <div 
+                      className="hidden bg-neutral-100 border-2 border-dashed border-neutral-300 rounded-lg p-8"
+                      style={{ display: 'none' }}
                     >
-                      View Full Size
-                    </Button>
+                      <PhotoIcon className="h-16 w-16 text-neutral-400 mx-auto mb-4" />
+                      <p className="text-neutral-600 mb-2">Screenshot could not be loaded</p>
+                      <p className="text-sm text-neutral-500 mb-4">
+                        This might be due to storage permissions or the file being moved/deleted
+                      </p>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => window.open(selectedPayment.payment_screenshot_url, '_blank')}
+                      >
+                        Try Direct Link
+                      </Button>
+                    </div>
+                    <div className="mt-2 space-x-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => window.open(selectedPayment.payment_screenshot_url, '_blank')}
+                      >
+                        View Full Size
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedPayment.payment_screenshot_url);
+                          toast.success('Screenshot URL copied to clipboard');
+                        }}
+                      >
+                        Copy URL
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-neutral-500">
+                    <strong>URL:</strong> {selectedPayment.payment_screenshot_url}
                   </div>
                 </div>
               )}
