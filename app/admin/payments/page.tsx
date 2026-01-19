@@ -20,6 +20,7 @@ import {
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
 import { formatDate } from '@/lib/utils'
+import { runPaymentCleanup, checkOldPayments } from '@/lib/cleanup'
 
 interface PaymentSubmission {
   id: string
@@ -50,6 +51,8 @@ export default function AdminPaymentsPage() {
   const [reviewModal, setReviewModal] = useState(false)
   const [reviewNotes, setReviewNotes] = useState('')
   const [processing, setProcessing] = useState(false)
+  const [cleanupProcessing, setCleanupProcessing] = useState(false)
+  const [oldPaymentsCount, setOldPaymentsCount] = useState(0)
 
   // Check if user is admin
   const isAdmin = user?.email === 'dwiraj06@gmail.com' || 
@@ -60,8 +63,38 @@ export default function AdminPaymentsPage() {
   useEffect(() => {
     if (isAdmin) {
       loadPayments()
+      checkOldPaymentsCount()
     }
   }, [isAdmin, filter])
+
+  const checkOldPaymentsCount = async () => {
+    const result = await checkOldPayments()
+    if (result.success) {
+      setOldPaymentsCount(result.oldPaymentsCount || 0)
+    }
+  }
+
+  const handleCleanupPayments = async () => {
+    if (!confirm('Are you sure you want to delete all payment submissions older than 3 days? This action cannot be undone.')) {
+      return
+    }
+
+    setCleanupProcessing(true)
+    try {
+      const result = await runPaymentCleanup()
+      if (result.success) {
+        toast.success(`Cleanup completed! ${result.records_deleted} old payment records deleted.`)
+        loadPayments() // Refresh the list
+        checkOldPaymentsCount() // Update count
+      } else {
+        toast.error(`Cleanup failed: ${result.error}`)
+      }
+    } catch (error: any) {
+      toast.error('Cleanup failed: ' + error.message)
+    } finally {
+      setCleanupProcessing(false)
+    }
+  }
 
   const loadPayments = async () => {
     try {
@@ -148,6 +181,67 @@ export default function AdminPaymentsPage() {
     } catch (error: any) {
       console.error('Error reviewing payment:', error)
       toast.error(`Failed to ${action} payment`)
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const handleDeletePayment = async (payment: PaymentSubmission) => {
+    const isApproved = payment.status === 'approved'
+    const confirmMessage = isApproved 
+      ? 'This payment is APPROVED. Deleting it will change status to REJECTED and may affect user tier. Are you sure?'
+      : 'Are you sure you want to delete this payment submission? This action cannot be undone.'
+
+    if (!confirm(confirmMessage)) return
+
+    setProcessing(true)
+
+    try {
+      if (isApproved) {
+        // If approved, change to rejected instead of deleting
+        const { error: updateError } = await supabase
+          .from('payment_submissions')
+          .update({
+            status: 'rejected',
+            admin_notes: (payment.admin_notes || '') + '\n[DELETED BY ADMIN - Changed from approved to rejected]',
+            reviewed_by: user?.id,
+            reviewed_at: new Date().toISOString()
+          })
+          .eq('id', payment.id)
+
+        if (updateError) throw updateError
+
+        // Downgrade user tier back to free
+        const { error: tierError } = await supabase.rpc('admin_upgrade_user_tier', {
+          target_user_id: payment.user_id,
+          new_tier: 'free',
+          admin_user_id: user?.id,
+          duration_days: 0
+        })
+
+        if (tierError) {
+          console.error('Error downgrading user tier:', tierError)
+          toast.error('Payment rejected but failed to downgrade user tier. Please downgrade manually.')
+        } else {
+          toast.success('Approved payment changed to rejected and user downgraded to Free tier.')
+        }
+      } else {
+        // If not approved, actually delete the record
+        const { error: deleteError } = await supabase
+          .from('payment_submissions')
+          .delete()
+          .eq('id', payment.id)
+
+        if (deleteError) throw deleteError
+        toast.success('Payment submission deleted successfully.')
+      }
+
+      loadPayments()
+      checkOldPaymentsCount()
+
+    } catch (error: any) {
+      console.error('Error deleting payment:', error)
+      toast.error('Failed to delete payment')
     } finally {
       setProcessing(false)
     }
@@ -254,6 +348,15 @@ export default function AdminPaymentsPage() {
             <Button onClick={loadPayments} disabled={loading}>
               {loading ? 'Refreshing...' : 'Refresh Payments'}
             </Button>
+            {oldPaymentsCount > 0 && (
+              <Button 
+                variant="secondary" 
+                onClick={handleCleanupPayments}
+                disabled={cleanupProcessing}
+              >
+                {cleanupProcessing ? 'Cleaning...' : `🗑️ Cleanup Old (${oldPaymentsCount})`}
+              </Button>
+            )}
           </div>
 
           {/* Stats */}
@@ -450,6 +553,15 @@ export default function AdminPaymentsPage() {
                           View Details
                         </Button>
                       )}
+                      
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeletePayment(payment)}
+                        disabled={processing}
+                      >
+                        🗑️ Delete
+                      </Button>
                     </div>
                   </div>
                 </Card>

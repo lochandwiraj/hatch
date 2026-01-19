@@ -8,16 +8,21 @@ import Button from '@/components/ui/Button'
 import { 
   UserIcon,
   AcademicCapIcon,
-  CalendarDaysIcon,
   StarIcon,
   PencilIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
 import { getSubscriptionTierName, getWeeklyEventLimit } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
+import { toast } from 'react-hot-toast'
 
 export default function ProfilePage() {
-  const { profile, user, signOut } = useAuth()
+  const { profile, user, signOut, refreshProfile } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
+  const [editingBio, setEditingBio] = useState(false)
+  const [bioText, setBioText] = useState('')
+  const [skillsText, setSkillsText] = useState('')
+  const [saving, setSaving] = useState(false)
   const router = useRouter()
 
   if (!profile) {
@@ -35,6 +40,49 @@ export default function ProfilePage() {
 
   const handleChangePassword = () => {
     router.push('/auth/forgot-password')
+  }
+
+  const handleEditBio = () => {
+    setBioText(profile?.bio || '')
+    setSkillsText(profile?.skills?.join(', ') || '')
+    setEditingBio(true)
+  }
+
+  const handleSaveBio = async () => {
+    if (!profile) return
+
+    setSaving(true)
+    try {
+      const skillsArray = skillsText
+        .split(',')
+        .map(skill => skill.trim())
+        .filter(skill => skill.length > 0)
+
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          bio: bioText.trim() || null,
+          skills: skillsArray.length > 0 ? skillsArray : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', profile.id)
+
+      if (error) throw error
+
+      toast.success('Bio & Skills updated successfully!')
+      setEditingBio(false)
+      refreshProfile()
+    } catch (error: any) {
+      toast.error('Failed to update bio & skills: ' + error.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingBio(false)
+    setBioText('')
+    setSkillsText('')
   }
 
   return (
@@ -209,45 +257,112 @@ export default function ProfilePage() {
 
           {/* Bio and Skills */}
           <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">Bio & Skills</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-neutral-900">Bio & Skills</h2>
+              {!editingBio && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleEditBio}
+                >
+                  <PencilIcon className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
+              )}
+            </div>
             
-            {profile.bio || profile.skills ? (
+            {editingBio ? (
               <div className="space-y-4">
-                {profile.bio && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Bio
-                    </label>
-                    <p className="text-neutral-900">{profile.bio}</p>
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Bio
+                  </label>
+                  <textarea
+                    value={bioText}
+                    onChange={(e) => setBioText(e.target.value)}
+                    placeholder="Tell us about yourself... (e.g., your interests, goals, what you're passionate about)"
+                    rows={4}
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
                 
-                {profile.skills && profile.skills.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Skills
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.skills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="bg-primary-100 text-primary-800 text-sm font-medium px-3 py-1 rounded-full"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Skills (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={skillsText}
+                    onChange={(e) => setSkillsText(e.target.value)}
+                    placeholder="e.g., React, Python, UI/UX Design, Machine Learning, Public Speaking"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Add any skills, technologies, or areas of expertise you have
+                  </p>
+                </div>
+
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={handleSaveBio}
+                    loading={saving}
+                    disabled={saving}
+                  >
+                    <CheckCircleIcon className="h-4 w-4 mr-1" />
+                    Save Changes
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handleCancelEdit}
+                    disabled={saving}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <UserIcon className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-                <p className="text-neutral-500 mb-4">
-                  Complete your profile to help others connect with you
-                </p>
-                <Button variant="secondary">Add Bio & Skills</Button>
-              </div>
+              <>
+                {profile.bio || profile.skills ? (
+                  <div className="space-y-4">
+                    {profile.bio && (
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                          Bio
+                        </label>
+                        <p className="text-neutral-900 whitespace-pre-wrap">{profile.bio}</p>
+                      </div>
+                    )}
+                    
+                    {profile.skills && profile.skills.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                          Skills
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {profile.skills.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="bg-primary-100 text-primary-800 text-sm font-medium px-3 py-1 rounded-full"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <UserIcon className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                    <p className="text-neutral-500 mb-4">
+                      Add your bio and skills to help others connect with you
+                    </p>
+                    <Button variant="secondary" onClick={handleEditBio}>
+                      Add Bio & Skills
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
