@@ -84,7 +84,7 @@ export default function DashboardPage() {
   const stats = [
     {
       name: 'Subscription Tier',
-      value: getSubscriptionTierName(profile.subscription_tier),
+      value: getSubscriptionTierName(profile?.subscription_tier || 'free'),
       icon: StarIcon,
       color: 'text-primary-600',
       bgColor: 'bg-primary-100'
@@ -146,16 +146,16 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold mb-2">
-                  Welcome back, {profile.full_name.split(' ')[0]}! 👋
+                  Welcome back, {profile?.full_name?.split(' ')[0] || 'User'}! 👋
                 </h1>
                 <p className="text-neutral-200 text-lg">
-                  You get {getWeeklyEventLimit(profile.subscription_tier)} curated events this week
+                  You get {getWeeklyEventLimit(profile?.subscription_tier || 'free')} curated events this week
                 </p>
               </div>
               <div className="hidden md:block">
                 <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
                   <span className="text-4xl font-bold">
-                    {profile.full_name.charAt(0).toUpperCase()}
+                    {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                   </span>
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Subscription Status */}
-          {profile.subscription_tier === 'free' && (
+          {profile?.subscription_tier === 'free' && (
             <div className="bg-gradient-secondary rounded-xl p-6 border border-primary-200">
               <div className="flex items-center justify-between">
                 <div>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-neutral-700">Bio & Skills</span>
-                {profile.bio && profile.skills ? (
+                {profile?.bio && profile?.skills ? (
                   <span className="text-success-600 font-medium">✓ Complete</span>
                 ) : (
                   <Link href="/profile" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
