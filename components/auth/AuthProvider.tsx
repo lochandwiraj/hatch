@@ -50,9 +50,143 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const userProfile = await getUserProfile(user.id)
         setProfile(userProfile)
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching profile:', error)
-        setProfile(null)
+        
+        // If profile doesn't exist, try to create one
+        if (error?.code === 'PGRST116') { // No rows returned
+          console.log('Profile not found, attempting to create one...')
+          try {
+            // Try to create profile using the safer RPC function
+            const { data: rpcResult, error: rpcError } = await supabase.rpc('create_user_profile_safe', {
+              user_id: user.id,
+              user_email: user.email || '',
+              user_username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
+              user_full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+              user_college: user.user_metadata?.college || '',
+              user_graduation_year: user.user_metadata?.graduation_year || new Date().getFullYear()
+            })
+
+            if (rpcError) {
+              console.error('RPC profile creation failed:', rpcError)
+              // Fallback: create profile directly with conflict handling
+              const { error: insertError } = await supabase
+                .from('user_profiles')
+                .upsert({
+                  id: user.id,
+                  email: user.email,
+                  username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
+                  full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+                  college: user.user_metadata?.college || '',
+                  graduation_year: user.user_metadata?.graduation_year || new Date().getFullYear(),
+                  subscription_tier: 'free',
+                  profile_views_count: 0,
+                  is_profile_public: true,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                }, {
+                  onConflict: 'id'
+                })
+
+              if (insertError) {
+                console.error('Direct profile creation failed:', insertError)
+                // Set a minimal profile to prevent blank page
+                setProfile({
+                  id: user.id,
+                  username: user.email?.split('@')[0] || 'user',
+                  full_name: user.email?.split('@')[0] || 'User',
+                  profile_picture_url: null,
+                  bio: null,
+                  college: '',
+                  graduation_year: new Date().getFullYear(),
+                  skills: null,
+                  social_links: null,
+                  subscription_tier: 'free',
+                  subscription_expires_at: null,
+                  profile_views_count: 0,
+                  is_profile_public: true,
+                  custom_url: null,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                })
+                return
+              } else {
+                console.log('Profile created successfully via direct insert')
+              }
+            } else {
+              console.log('Profile created successfully via RPC:', rpcResult)
+            }
+            
+            // Retry fetching the profile
+            try {
+              const userProfile = await getUserProfile(user.id)
+              setProfile(userProfile)
+            } catch (retryError) {
+              console.error('Failed to fetch profile after creation:', retryError)
+              // Set minimal profile as fallback
+              setProfile({
+                id: user.id,
+                username: user.email?.split('@')[0] || 'user',
+                full_name: user.email?.split('@')[0] || 'User',
+                profile_picture_url: null,
+                bio: null,
+                college: '',
+                graduation_year: new Date().getFullYear(),
+                skills: null,
+                social_links: null,
+                subscription_tier: 'free',
+                subscription_expires_at: null,
+                profile_views_count: 0,
+                is_profile_public: true,
+                custom_url: null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+            }
+          } catch (createError) {
+            console.error('Failed to create profile:', createError)
+            // Set minimal profile as final fallback
+            setProfile({
+              id: user.id,
+              username: user.email?.split('@')[0] || 'user',
+              full_name: user.email?.split('@')[0] || 'User',
+              profile_picture_url: null,
+              bio: null,
+              college: '',
+              graduation_year: new Date().getFullYear(),
+              skills: null,
+              social_links: null,
+              subscription_tier: 'free',
+              subscription_expires_at: null,
+              profile_views_count: 0,
+              is_profile_public: true,
+              custom_url: null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+          }
+        } else {
+          // Other error, set minimal profile to prevent blank page
+          console.error('Profile fetch error (not missing profile):', error)
+          setProfile({
+            id: user.id,
+            username: user.email?.split('@')[0] || 'user',
+            full_name: user.email?.split('@')[0] || 'User',
+            profile_picture_url: null,
+            bio: null,
+            college: '',
+            graduation_year: new Date().getFullYear(),
+            skills: null,
+            social_links: null,
+            subscription_tier: 'free',
+            subscription_expires_at: null,
+            profile_views_count: 0,
+            is_profile_public: true,
+            custom_url: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+        }
       }
     } else {
       setProfile(null)

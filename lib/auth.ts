@@ -59,7 +59,7 @@ export async function signUp(email: string, password: string, userData: {
   // If user is immediately confirmed, create profile now
   if (data.user) {
     try {
-      const { error: rpcError } = await supabase.rpc('create_user_profile', {
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('create_user_profile_safe', {
         user_id: data.user.id,
         user_email: email,
         user_username: userData.username,
@@ -71,6 +71,8 @@ export async function signUp(email: string, password: string, userData: {
       if (rpcError) {
         console.error('Profile creation error:', rpcError)
         // Don't throw error here, as auth user was created successfully
+      } else {
+        console.log('Profile creation result:', rpcResult)
       }
     } catch (profileError) {
       console.error('Profile creation failed:', profileError)

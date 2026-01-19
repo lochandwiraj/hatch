@@ -13,7 +13,7 @@ import Button from '@/components/ui/Button'
 import ReferralCard from '@/components/referral/ReferralCard'
 
 export default function DashboardPage() {
-  const { profile, user, refreshProfile } = useAuth()
+  const { profile, user, refreshProfile, loading } = useAuth()
 
   // Auto-refresh profile every 15 seconds to catch admin tier changes
   useEffect(() => {
@@ -38,7 +38,8 @@ export default function DashboardPage() {
     return () => window.removeEventListener('focus', handleFocus)
   }, [profile, refreshProfile])
 
-  if (!profile) {
+  // Show loading state while auth is loading or profile is being created
+  if (loading || (user && !profile)) {
     return (
       <div className="min-h-screen bg-neutral-50 p-6">
         <div className="max-w-7xl mx-auto">
@@ -50,6 +51,31 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
+          <div className="text-center mt-8">
+            <p className="text-neutral-600">Setting up your profile...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // If still no profile after loading, show error state
+  if (!loading && user && !profile) {
+    return (
+      <div className="min-h-screen bg-neutral-50 p-6">
+        <div className="max-w-7xl mx-auto text-center mt-20">
+          <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+            Setting up your account...
+          </h2>
+          <p className="text-neutral-600 mb-6">
+            We're creating your profile. This should only take a moment.
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
+          >
+            Refresh Page
+          </button>
         </div>
       </div>
     )
