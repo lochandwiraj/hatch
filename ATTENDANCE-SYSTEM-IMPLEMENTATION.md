@@ -65,7 +65,7 @@
 |------|-------------------|----------|
 | **Free** | 5 events | Basic event access |
 | **Explorer (₹99)** | 10 events | Free + Explorer events |
-| **Professional (₹199)** | Unlimited | All events + early access |
+| **Professional (₹149)** | Unlimited | All events + early access |
 
 ## 🔄 Monthly Reset System
 

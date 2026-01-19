@@ -46,7 +46,7 @@ export default function TierLimitModal({
   const getUpgradePrice = (tier?: string) => {
     switch (tier) {
       case 'basic_99': return '₹99'
-      case 'premium_149': return '₹199'
+      case 'premium_149': return '₹149'
       default: return '₹99'
     }
   }

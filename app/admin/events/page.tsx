@@ -622,7 +622,7 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
                 >
                   <option value="free">Free</option>
                   <option value="basic_99">Explorer (₹99)</option>
-                  <option value="premium_149">Professional (₹199)</option>
+                  <option value="premium_149">Professional (₹149)</option>
                 </select>
               </div>
 

@@ -238,7 +238,7 @@ const pricingPlans = [
   },
   {
     name: 'Professional',
-    price: '₹199',
+    price: '₹149',
     billing: 'per month',
     description: 'For serious event enthusiasts',
     tier: 'professional_149',
