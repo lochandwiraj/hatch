@@ -5,7 +5,6 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import Link from 'next/link'
 import EventCard from '@/components/events/EventCard'
 import AttendanceConfirmationModal from '@/components/events/AttendanceConfirmationModal'
-import TierLimitModal from '@/components/events/TierLimitModal'
 import Button from '@/components/ui/Button'
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
@@ -97,8 +96,6 @@ export default function EventsPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [attendancePrompts, setAttendancePrompts] = useState<any[]>([])
   const [showAttendanceModal, setShowAttendanceModal] = useState(false)
-  const [showTierLimitModal, setShowTierLimitModal] = useState(false)
-  const [tierLimitInfo, setTierLimitInfo] = useState<any>(null)
   const [userStats, setUserStats] = useState<any>(null)
 
   useEffect(() => {
@@ -223,49 +220,6 @@ export default function EventsPage() {
     } catch (error: any) {
       console.error('Error confirming attendance:', error)
       toast.error('Failed to confirm attendance')
-    }
-  }
-
-  const handleRegisterForEvent = async (eventId: string) => {
-    if (!profile) {
-      toast.error('Please log in to register for events')
-      return
-    }
-
-    try {
-      const { data, error } = await supabase.rpc('register_for_event', {
-        user_uuid: profile.id,
-        event_uuid: eventId
-      })
-
-      if (error) {
-        // If the function doesn't exist yet, show a message
-        if (error.code === '42883') { // function does not exist
-          toast.error('Event registration system is being set up. Please try again later.')
-          return
-        }
-        throw error
-      }
-
-      if (data.success) {
-        toast.success(data.message)
-        if (data.events_remaining !== undefined) {
-          toast.success(`You have ${data.events_remaining} events remaining this month`)
-        }
-      } else {
-        // Show tier limit modal
-        setTierLimitInfo({
-          currentTier: data.current_tier,
-          eventsAttended: data.events_attended,
-          tierLimit: data.tier_limit,
-          upgradeNeeded: data.upgrade_needed
-        })
-        setShowTierLimitModal(true)
-      }
-      
-    } catch (error: any) {
-      console.error('Error registering for event:', error)
-      toast.error('Failed to register for event')
     }
   }
 
@@ -673,7 +627,6 @@ export default function EventsPage() {
                   key={event.id}
                   event={event}
                   userTier={profile.subscription_tier}
-                  onRegister={handleRegisterForEvent}
                 />
               ))}
             </div>
@@ -710,16 +663,6 @@ export default function EventsPage() {
             checkAttendancePrompts()
           }}
           onAttendanceResponse={handleAttendanceResponse}
-        />
-
-        {/* Tier Limit Modal */}
-        <TierLimitModal
-          isOpen={showTierLimitModal}
-          onClose={() => setShowTierLimitModal(false)}
-          currentTier={tierLimitInfo?.currentTier || profile.subscription_tier}
-          eventsAttended={tierLimitInfo?.eventsAttended || userStats?.events_attended_this_month || 0}
-          tierLimit={tierLimitInfo?.tierLimit || userStats?.monthly_limit || 5}
-          upgradeNeeded={tierLimitInfo?.upgradeNeeded}
         />
       </div>
     </div>

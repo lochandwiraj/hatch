@@ -36,10 +36,9 @@ interface EventCardProps {
   event: Event
   userTier?: string
   showActions?: boolean
-  onRegister?: (eventId: string) => void
 }
 
-export default function EventCard({ event, userTier = 'free', showActions = true, onRegister }: EventCardProps) {
+export default function EventCard({ event, userTier = 'free', showActions = true }: EventCardProps) {
   const eventDate = new Date(event.event_date)
   const isUpcoming = eventDate > new Date()
   const isPast = eventDate < new Date()
@@ -140,26 +139,14 @@ export default function EventCard({ event, userTier = 'free', showActions = true
           {canAccess && isUpcoming && event.status === 'published' && (
             <>
               {event.event_link ? (
-                <div className="flex space-x-2 flex-1">
-                  <Button 
-                    size="sm" 
-                    variant="secondary"
-                    className="flex-1"
-                    onClick={() => window.open(event.event_link, '_blank')}
-                  >
-                    <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-1" />
-                    Visit Event
-                  </Button>
-                  {onRegister && (
-                    <Button 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={() => onRegister(event.id)}
-                    >
-                      Register & Track
-                    </Button>
-                  )}
-                </div>
+                <Button 
+                  size="sm" 
+                  className="w-full flex-1"
+                  onClick={() => window.open(event.event_link, '_blank')}
+                >
+                  <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-1" />
+                  Register Now
+                </Button>
               ) : (
                 <Button 
                   size="sm" 

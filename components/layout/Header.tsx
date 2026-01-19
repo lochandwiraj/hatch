@@ -22,7 +22,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     // Navigate immediately for faster UX
-    router.push('/')
+    router.push('/auth/login')
     // Then perform signout (this will be fast due to AuthProvider optimization)
     await signOut()
   }

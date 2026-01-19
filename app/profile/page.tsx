@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { 
   UserIcon,
@@ -17,6 +18,7 @@ import { getSubscriptionTierName, getWeeklyEventLimit } from '@/lib/utils'
 export default function ProfilePage() {
   const { profile, user, signOut } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter()
 
   if (!profile) {
     return (
@@ -28,6 +30,11 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await signOut()
+    router.push('/auth/login')
+  }
+
+  const handleChangePassword = () => {
+    router.push('/auth/forgot-password')
   }
 
   return (
@@ -280,7 +287,11 @@ export default function ProfilePage() {
                   <h3 className="font-medium text-neutral-900">Change Password</h3>
                   <p className="text-sm text-neutral-600">Update your account password</p>
                 </div>
-                <Button variant="secondary" size="sm">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={handleChangePassword}
+                >
                   Change Password
                 </Button>
               </div>
