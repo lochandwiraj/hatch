@@ -22,6 +22,7 @@ interface Event {
   category: string
   tags: string[] | null
   event_date: string
+  event_time: string | null
   registration_deadline: string | null
   required_tier: 'free' | 'basic_99' | 'premium_149'
   status: 'draft' | 'published'
@@ -39,9 +40,13 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, userTier = 'free', showActions = true }: EventCardProps) {
-  const eventDate = new Date(event.event_date)
-  const isUpcoming = eventDate > new Date()
-  const isPast = eventDate < new Date()
+  // Create proper datetime from date and time
+  const eventDateTime = event.event_time 
+    ? new Date(`${event.event_date.split('T')[0]}T${event.event_time}`)
+    : new Date(event.event_date)
+  
+  const isUpcoming = eventDateTime > new Date()
+  const isPast = eventDateTime < new Date()
   const canAccess = isEventAccessible(event.required_tier, userTier)
 
   const getTierBadgeVariant = (tier: string) => {
@@ -92,6 +97,11 @@ export default function EventCard({ event, userTier = 'free', showActions = true
         <div className="flex items-center text-sm text-neutral-600">
           <CalendarDaysIcon className="h-4 w-4 mr-2" />
           <span>{formatDateShort(event.event_date)}</span>
+          {event.event_time && (
+            <span className="ml-2 text-primary-600 font-medium">
+              at {event.event_time}
+            </span>
+          )}
         </div>
         
         {event.registration_deadline && (
@@ -100,11 +110,6 @@ export default function EventCard({ event, userTier = 'free', showActions = true
             <span>Registration ends: {formatDateShort(event.registration_deadline)}</span>
           </div>
         )}
-        
-        <div className="flex items-center text-sm text-neutral-600">
-          <ClockIcon className="h-4 w-4 mr-2" />
-          <span>{formatTime(event.event_date)}</span>
-        </div>
         
         <div className="flex items-center text-sm text-neutral-600">
           <MapPinIcon className="h-4 w-4 mr-2" />

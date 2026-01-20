@@ -29,6 +29,7 @@ interface Event {
   category: string
   tags: string[] | null
   event_date: string
+  event_time: string | null
   registration_deadline: string | null
   required_tier: 'free' | 'basic_99' | 'premium_149'
   status: 'draft' | 'published'
@@ -299,6 +300,11 @@ export default function AdminEventsPage() {
                         </div>
                         <div>
                           <span className="font-medium">Date:</span> {formatDate(event.event_date)}
+                          {event.event_time && (
+                            <span className="ml-2 text-primary-600 font-medium">
+                              at {event.event_time}
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -415,6 +421,7 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
     category: '',
     tags: '',
     event_date: '',
+    event_time: '',
     registration_deadline: '',
     required_tier: 'free' as 'free' | 'basic_99' | 'premium_149',
     status: 'draft' as 'draft' | 'published',
@@ -436,6 +443,7 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
         category: event.category,
         tags: event.tags?.join(', ') || '',
         event_date: event.event_date.split('T')[0],
+        event_time: event.event_time || '10:00',
         registration_deadline: event.registration_deadline?.split('T')[0] || '',
         required_tier: event.required_tier,
         status: event.status,
@@ -455,6 +463,7 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
         category: '',
         tags: '',
         event_date: '',
+        event_time: '10:00',
         registration_deadline: '',
         required_tier: 'free',
         status: 'draft',
@@ -472,10 +481,16 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
     setSaving(true)
 
     try {
+      // Combine date and time for proper datetime storage
+      const eventDateTime = formData.event_time 
+        ? new Date(`${formData.event_date}T${formData.event_time}:00`).toISOString()
+        : new Date(formData.event_date).toISOString()
+
       const eventData = {
         ...formData,
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : null,
-        event_date: new Date(formData.event_date).toISOString(),
+        event_date: eventDateTime,
+        event_time: formData.event_time || null,
         registration_deadline: formData.registration_deadline 
           ? new Date(formData.registration_deadline).toISOString() 
           : null,
@@ -585,17 +600,32 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Event Date *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.event_date}
-                  onChange={(e) => setFormData({...formData, event_date: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    Event Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.event_date}
+                    onChange={(e) => setFormData({...formData, event_date: e.target.value})}
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    Event Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={formData.event_time}
+                    onChange={(e) => setFormData({...formData, event_time: e.target.value})}
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
               </div>
 
               <div>

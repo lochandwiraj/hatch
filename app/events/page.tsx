@@ -20,6 +20,7 @@ interface Event {
   category: string
   tags: string[] | null
   event_date: string
+  event_time: string | null
   registration_deadline: string | null
   required_tier: 'free' | 'basic_99' | 'premium_149'
   status: 'draft' | 'published'
@@ -41,6 +42,7 @@ const mockEvents: Event[] = [
     category: 'Conference',
     tags: ['React', 'JavaScript', 'Frontend'],
     event_date: '2024-03-15T10:00:00Z',
+    event_time: '10:00',
     registration_deadline: '2024-03-10T23:59:59Z',
     required_tier: 'free',
     status: 'published',
@@ -59,6 +61,7 @@ const mockEvents: Event[] = [
     category: 'Workshop',
     tags: ['AI', 'ML', 'Python'],
     event_date: '2024-03-20T14:00:00Z',
+    event_time: '14:00',
     registration_deadline: '2024-03-18T23:59:59Z',
     required_tier: 'basic_99',
     status: 'published',
@@ -77,6 +80,7 @@ const mockEvents: Event[] = [
     category: 'Competition',
     tags: ['Startup', 'Pitch', 'Investment'],
     event_date: '2024-03-25T18:00:00Z',
+    event_time: '18:00',
     registration_deadline: '2024-03-20T23:59:59Z',
     required_tier: 'premium_149',
     status: 'published',
