@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
   CalendarDaysIcon, 
@@ -11,6 +12,7 @@ import {
 import Card from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
+import RegistrationConfirmationModal from './RegistrationConfirmationModal'
 import { formatDateShort, formatTime, getSubscriptionTierName, isEventAccessible } from '@/lib/utils'
 
 interface Event {
@@ -40,6 +42,8 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, userTier = 'free', showActions = true }: EventCardProps) {
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false)
+  
   // Create proper datetime from date and time
   const eventDateTime = event.event_time 
     ? new Date(`${event.event_date.split('T')[0]}T${event.event_time}`)
@@ -48,6 +52,28 @@ export default function EventCard({ event, userTier = 'free', showActions = true
   const isUpcoming = eventDateTime > new Date()
   const isPast = eventDateTime < new Date()
   const canAccess = isEventAccessible(event.required_tier, userTier)
+
+  // Check if user just came back from registration
+  useEffect(() => {
+    const checkRegistrationReturn = () => {
+      const registrationReturn = sessionStorage.getItem(`registration_return_${event.id}`)
+      if (registrationReturn === 'true') {
+        sessionStorage.removeItem(`registration_return_${event.id}`)
+        setShowRegistrationModal(true)
+      }
+    }
+
+    // Check after a short delay to ensure the page has loaded
+    const timer = setTimeout(checkRegistrationReturn, 1000)
+    return () => clearTimeout(timer)
+  }, [event.id])
+
+  const handleRegisterClick = () => {
+    // Set flag that user is going to register
+    sessionStorage.setItem(`registration_return_${event.id}`, 'true')
+    // Open the event link
+    window.open(event.event_link, '_blank')
+  }
 
   const getTierBadgeVariant = (tier: string) => {
     switch (tier) {
@@ -147,7 +173,7 @@ export default function EventCard({ event, userTier = 'free', showActions = true
                 <Button 
                   size="sm" 
                   className="w-full flex-1"
-                  onClick={() => window.open(event.event_link, '_blank')}
+                  onClick={handleRegisterClick}
                 >
                   <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-1" />
                   Register Now
@@ -174,6 +200,13 @@ export default function EventCard({ event, userTier = 'free', showActions = true
           )}
         </div>
       )}
+      
+      {/* Registration Confirmation Modal */}
+      <RegistrationConfirmationModal
+        isOpen={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+        event={event}
+      />
     </Card>
   )
 }

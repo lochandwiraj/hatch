@@ -459,6 +459,9 @@ export default function EventsPage() {
               <Link href="/events" className="text-primary-600 font-medium">
                 Events
               </Link>
+              <Link href="/calendar" className="text-neutral-600 hover:text-primary-600">
+                Calendar
+              </Link>
               <Link href="/subscription" className="text-neutral-600 hover:text-primary-600">
                 Subscription
               </Link>

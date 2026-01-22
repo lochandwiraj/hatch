@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -10,11 +10,19 @@ import {
   AcademicCapIcon,
   StarIcon,
   PencilIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  CalendarDaysIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline'
 import { getSubscriptionTierName, getEventLimit } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
+
+interface AttendanceStats {
+  total_registered: number
+  total_attended: number
+  attendance_rate: number
+}
 
 export default function ProfilePage() {
   const { profile, user, signOut, refreshProfile } = useAuth()
@@ -23,7 +31,39 @@ export default function ProfilePage() {
   const [bioText, setBioText] = useState('')
   const [skillsText, setSkillsText] = useState('')
   const [saving, setSaving] = useState(false)
+  const [attendanceStats, setAttendanceStats] = useState<AttendanceStats | null>(null)
+  const [loadingStats, setLoadingStats] = useState(true)
   const router = useRouter()
+
+  // Load attendance statistics
+  useEffect(() => {
+    if (profile && user) {
+      loadAttendanceStats()
+    }
+  }, [profile, user])
+
+  const loadAttendanceStats = async () => {
+    if (!user) return
+    
+    try {
+      setLoadingStats(true)
+      const { data, error } = await supabase
+        .rpc('get_user_attendance_stats', { user_uuid: user.id })
+
+      if (error) throw error
+      
+      if (data && data.length > 0) {
+        setAttendanceStats(data[0])
+      } else {
+        setAttendanceStats({ total_registered: 0, total_attended: 0, attendance_rate: 0 })
+      }
+    } catch (error: any) {
+      console.error('Error loading attendance stats:', error)
+      setAttendanceStats({ total_registered: 0, total_attended: 0, attendance_rate: 0 })
+    } finally {
+      setLoadingStats(false)
+    }
+  }
 
   if (!profile) {
     return (
@@ -155,10 +195,18 @@ export default function ProfilePage() {
               </div>
               
               <div className="flex justify-between items-center">
-                <div className="grid grid-cols-3 gap-8">
+                <div className="grid grid-cols-4 gap-6">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-neutral-900">0</div>
+                    <div className="text-2xl font-bold text-neutral-900">
+                      {loadingStats ? '...' : attendanceStats?.total_attended || 0}
+                    </div>
                     <div className="text-sm text-neutral-600">Events Attended</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-neutral-900">
+                      {loadingStats ? '...' : attendanceStats?.total_registered || 0}
+                    </div>
+                    <div className="text-sm text-neutral-600">Events Registered</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-neutral-900">{getEventLimit(profile.subscription_tier) === -1 ? '∞' : getEventLimit(profile.subscription_tier)}</div>
@@ -166,9 +214,9 @@ export default function ProfilePage() {
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-neutral-900">
-                      {new Date().getFullYear() - new Date(profile.created_at).getFullYear() || '< 1'}
+                      {loadingStats ? '...' : `${attendanceStats?.attendance_rate || 0}%`}
                     </div>
-                    <div className="text-sm text-neutral-600">Years Active</div>
+                    <div className="text-sm text-neutral-600">Attendance Rate</div>
                   </div>
                 </div>
                 
@@ -253,6 +301,67 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Attendance History */}
+          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+            <div className="flex items-center mb-4">
+              <TrophyIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h2 className="text-xl font-semibold text-neutral-900">Attendance History</h2>
+            </div>
+            
+            {loadingStats ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="animate-pulse h-16 bg-neutral-200 rounded-lg"></div>
+                ))}
+              </div>
+            ) : attendanceStats && attendanceStats.total_attended > 0 ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-success-50 border border-success-200 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-success-700">
+                      {attendanceStats.total_attended}
+                    </div>
+                    <div className="text-sm text-success-600">Events Completed</div>
+                  </div>
+                  <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-primary-700">
+                      {attendanceStats.total_registered}
+                    </div>
+                    <div className="text-sm text-primary-600">Total Registered</div>
+                  </div>
+                  <div className="bg-accent-50 border border-accent-200 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-accent-700">
+                      {attendanceStats.attendance_rate}%
+                    </div>
+                    <div className="text-sm text-accent-600">Success Rate</div>
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <Link href="/calendar">
+                    <Button variant="secondary">
+                      <CalendarDaysIcon className="h-4 w-4 mr-2" />
+                      View Calendar
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <TrophyIcon className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                <p className="text-neutral-500 mb-4">
+                  No events attended yet. Start by registering for events!
+                </p>
+                <Link href="/events">
+                  <Button>
+                    <CalendarDaysIcon className="h-4 w-4 mr-2" />
+                    Browse Events
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Bio and Skills */}

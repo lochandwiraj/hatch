@@ -128,6 +128,9 @@ export default function DashboardPage() {
               <Link href="/events" className="text-neutral-600 hover:text-primary-600">
                 Events
               </Link>
+              <Link href="/calendar" className="text-neutral-600 hover:text-primary-600">
+                Calendar
+              </Link>
               <Link href="/subscription" className="text-neutral-600 hover:text-primary-600">
                 Subscription
               </Link>
