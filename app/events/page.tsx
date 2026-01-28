@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import Link from 'next/link'
 import EventCard from '@/components/events/EventCard'
-import AttendanceConfirmationModal from '@/components/events/AttendanceConfirmationModal'
 import Button from '@/components/ui/Button'
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
+import CircleLoader from '@/components/ui/CircleLoader'
 
 interface Event {
   id: string
@@ -99,24 +99,21 @@ export default function EventsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterTier, setFilterTier] = useState<'all' | 'free' | 'basic_99' | 'premium_149'>('all')
   const [showFilters, setShowFilters] = useState(false)
-  const [attendancePrompts, setAttendancePrompts] = useState<any[]>([])
-  const [showAttendanceModal, setShowAttendanceModal] = useState(false)
   const [userStats, setUserStats] = useState<any>(null)
 
   useEffect(() => {
     loadEvents()
     if (profile) {
-      checkAttendancePrompts()
       loadUserStats()
     }
   }, [profile, filterTier])
 
-  // Check for attendance prompts every time user visits
+  // Initialization effect
   useEffect(() => {
     if (profile) {
       const timer = setTimeout(() => {
-        checkAttendancePrompts()
-      }, 2000) // Check after 2 seconds
+        // Any initialization code can go here
+      }, 2000)
 
       return () => clearTimeout(timer)
     }
@@ -162,63 +159,6 @@ export default function EventsPage() {
         total_events_attended: 0,
         event_access: getEventLimit(profile.subscription_tier)
       })
-    }
-  }
-
-  const checkAttendancePrompts = async () => {
-    if (!profile) return
-
-    try {
-      const { data, error } = await supabase.rpc('get_pending_attendance_prompts', {
-        user_uuid: profile.id
-      })
-
-      if (error) {
-        // If the function doesn't exist yet, just skip attendance prompts
-        if (error.code === '42883') { // function does not exist
-          console.log('Attendance system not yet set up - skipping prompts')
-          return
-        }
-        throw error
-      }
-
-      if (data && data.length > 0) {
-        setAttendancePrompts(data)
-        setShowAttendanceModal(true)
-      }
-    } catch (error) {
-      console.error('Error checking attendance prompts:', error)
-    }
-  }
-
-  const handleAttendanceResponse = async (eventId: string, attended: boolean) => {
-    if (!profile) return
-
-    try {
-      const { data, error } = await supabase.rpc('confirm_attendance', {
-        user_uuid: profile.id,
-        event_uuid: eventId,
-        did_attend: attended
-      })
-
-      if (error) throw error
-
-      toast.success(data.message)
-      
-      // Remove this prompt from the list
-      setAttendancePrompts(prev => prev.filter(p => p.event_id !== eventId))
-      
-      // If no more prompts, close modal
-      if (attendancePrompts.length <= 1) {
-        setShowAttendanceModal(false)
-      }
-      
-      // Refresh user stats
-      loadUserStats()
-      
-    } catch (error: any) {
-      console.error('Error confirming attendance:', error)
-      toast.error('Failed to confirm attendance')
     }
   }
 
@@ -407,17 +347,8 @@ export default function EventsPage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-neutral-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-neutral-200 rounded w-1/4"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-80 bg-neutral-200 rounded-xl"></div>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <CircleLoader />
       </div>
     )
   }
@@ -628,17 +559,6 @@ export default function EventsPage() {
           )}
         </div>
 
-        {/* Attendance Confirmation Modal */}
-        <AttendanceConfirmationModal
-          isOpen={showAttendanceModal}
-          onClose={() => setShowAttendanceModal(false)}
-          prompts={attendancePrompts}
-          onConfirm={() => {
-            // Refresh prompts after confirmation
-            checkAttendancePrompts()
-          }}
-          onAttendanceResponse={handleAttendanceResponse}
-        />
       </div>
     </div>
   )

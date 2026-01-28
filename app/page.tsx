@@ -4,6 +4,8 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Button from '@/components/ui/Button'
+import RollerLoader from '@/components/ui/RollerLoader'
+import PixelBlast from '@/components/ui/PixelBlast'
 import { 
   CalendarDaysIcon, 
   UserGroupIcon, 
@@ -24,9 +26,25 @@ export default function Home() {
   }, [user, loading, router])
 
   if (loading) {
-    return <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
-    </div>
+    return (
+      <div className="min-h-screen flex items-center justify-center relative" style={{ backgroundColor: '#212121' }}>
+        <PixelBlast 
+          variant="square"
+          pixelSize={4}
+          color="#B19EEF"
+          patternScale={2}
+          patternDensity={1}
+          enableRipples={true}
+          rippleIntensityScale={1}
+          rippleThickness={0.1}
+          rippleSpeed={0.3}
+          transparent={true}
+          edgeFade={0.5}
+          className="absolute inset-0"
+        />
+        <RollerLoader />
+      </div>
+    )
   }
 
   if (user) {
@@ -34,165 +52,187 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative" style={{ backgroundColor: '#000000' }}>
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
+      <section className="hero-section relative" style={{ background: 'transparent', zIndex: 10 }}>
+        <PixelBlast 
+          variant="square"
+          pixelSize={4}
+          color="#B19EEF"
+          patternScale={2}
+          patternDensity={1}
+          enableRipples={true}
+          rippleIntensityScale={1}
+          rippleThickness={0.1}
+          rippleSpeed={0.3}
+          transparent={true}
+          edgeFade={0.5}
+          className="absolute inset-0"
+          style={{ zIndex: 1 }}
+        />
+        <div className="absolute inset-0 bg-black opacity-20" style={{ zIndex: 2 }}></div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="floating-element">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-shadow">
-              Stop Searching. <span className="text-accent-300">Start Discovering.</span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+              Stop Searching. <span style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #C084FC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Start Discovering.</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-neutral-200 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-3xl mx-auto">
               Hand-picked student events. Save 10+ hours. Build your portfolio.
               Quality over quantity - your curated event digest.
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button 
-              size="lg" 
+          <div className="flex justify-center mb-16">
+            <button 
               onClick={() => router.push('/auth/signup')}
-              className="text-lg px-8 py-4"
+              className="animated-button text-lg px-8 py-4 flex items-center justify-center"
             >
-              Get Started Free
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="lg"
-              onClick={() => router.push('/auth/login')}
-              className="text-lg px-8 py-4 bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
-            >
-              Sign In
-            </Button>
+              <span className="flex items-center">
+                Get Started Free
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </span>
+            </button>
           </div>
 
           {/* Feature Icons */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-            <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
-              <CalendarDaysIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Curated, Not Cluttered</h3>
-              <p className="text-neutral-300">We research 50+ sources to bring you only the best opportunities.</p>
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+              <CalendarDaysIcon className="h-12 w-12 mx-auto mb-4" style={{ color: '#A855F7' }} />
+              <h3 className="text-xl font-semibold mb-2 text-white">Curated, Not Cluttered</h3>
+              <p className="text-gray-300">We research 50+ sources to bring you only the best opportunities.</p>
             </div>
-            <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
-              <UserGroupIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Save Time</h3>
-              <p className="text-neutral-300">Stop scrolling through Unstop, Devfolio, LinkedIn. We do the hunting for you.</p>
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+              <UserGroupIcon className="h-12 w-12 mx-auto mb-4" style={{ color: '#A855F7' }} />
+              <h3 className="text-xl font-semibold mb-2 text-white">Save Time</h3>
+              <p className="text-gray-300">Stop scrolling through Unstop, Devfolio, LinkedIn. We do the hunting for you.</p>
             </div>
-            <div className="backdrop-blur-glass rounded-xl p-6 border border-white/20">
-              <ChartBarIcon className="h-12 w-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Build Your Portfolio</h3>
-              <p className="text-neutral-300">Every event you attend goes on your profile. Share it with recruiters.</p>
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+              <ChartBarIcon className="h-12 w-12 mx-auto mb-4" style={{ color: '#A855F7' }} />
+              <h3 className="text-xl font-semibold mb-2 text-white">Build Your Portfolio</h3>
+              <p className="text-gray-300">Every event you attend goes on your profile. Share it with recruiters.</p>
             </div>
           </div>
         </div>
-
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-accent-400/20 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-primary-400/20 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-40 left-20 w-12 h-12 bg-accent-300/20 rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
       </section>
 
+      {/* Section Divider */}
+      <div className="w-full h-px bg-gray-700 opacity-30"></div>
+
       {/* Features Section */}
-      <section className="py-20 bg-neutral-50">
+      <section className="py-20" style={{ backgroundColor: '#000000' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold gradient-text mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Everything you need to manage events
             </h2>
-            <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               From small meetups to large conferences, Hatch provides all the tools you need
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="card hover:shadow-glow">
+              <div key={index} className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg border border-gray-700/50 p-6 hover:shadow-xl hover:border-purple-500/50 transition-all duration-300">
                 <div className="flex items-center mb-4">
-                  <feature.icon className="h-8 w-8 text-primary-600 mr-3" />
-                  <h3 className="text-xl font-semibold">{feature.title}</h3>
+                  <feature.icon className="h-8 w-8 mr-3" style={{ color: '#A855F7' }} />
+                  <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
                 </div>
-                <p className="text-neutral-600">{feature.description}</p>
+                <p className="text-gray-300">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="w-full h-px bg-gray-700 opacity-30"></div>
+
       {/* Pricing Section */}
-      <section className="py-20 bg-gradient-secondary">
+      <section className="py-20" style={{ backgroundColor: '#000000' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-primary-800 mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Choose Your Plan
             </h2>
-            <p className="text-xl text-primary-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Start free and upgrade as you grow
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {pricingPlans.map((plan, index) => (
-              <div key={index} className={`card ${plan.popular ? 'ring-2 ring-primary-500 shadow-glow' : ''}`}>
+              <div key={index} className={`bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg border p-6 hover:shadow-xl transition-all duration-300 flex flex-col h-full ${plan.popular ? 'border-purple-500 shadow-purple-500/20' : 'border-gray-700/50 hover:border-purple-500/50'}`}>
                 {plan.popular && (
-                  <div className="bg-primary-500 text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4">
+                  <div className="text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4 self-start" style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #C084FC 100%)' }}>
                     Most Popular
                   </div>
                 )}
-                <h3 className="text-2xl font-bold text-primary-800 mb-2">{plan.name}</h3>
-                <div className="text-4xl font-bold text-primary-600 mb-4">
+                <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                <div className="text-4xl font-bold mb-4" style={{ color: '#A855F7' }}>
                   {plan.price}
                 </div>
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-grow">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center">
-                      <CheckCircleIcon className="h-5 w-5 text-success-500 mr-2" />
-                      <span className="text-neutral-700">{feature}</span>
+                      <CheckCircleIcon className="h-5 w-5 text-green-400 mr-2" />
+                      <span className="text-gray-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <Button 
-                  variant={plan.popular ? 'primary' : 'secondary'} 
-                  className="w-full"
-                  onClick={() => router.push('/auth/signup')}
-                >
-                  Get Started
-                </Button>
+                <div className="flex justify-center mt-auto">
+                  <button 
+                    className="animated-button flex items-center justify-center"
+                    onClick={() => router.push('/auth/signup')}
+                  >
+                    Get Started
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="w-full h-px bg-gray-700 opacity-30"></div>
+
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-primary text-white">
+      <section className="py-20" style={{ backgroundColor: '#000000' }}>
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-xl mb-8 text-neutral-200">
+          <h2 className="text-4xl font-bold mb-4 text-white">Ready to get started?</h2>
+          <p className="text-xl mb-8 text-gray-300">
             Join thousands of event organizers who trust Hatch for their events
           </p>
-          <Button 
-            variant="secondary" 
-            size="lg"
-            onClick={() => router.push('/auth/signup')}
-            className="bg-white text-primary-600 hover:bg-neutral-100"
-          >
-            Start Your Free Trial
-          </Button>
+          <div className="flex justify-center">
+            <button 
+              onClick={() => router.push('/auth/signup')}
+              className="text-lg px-8 py-4 bg-black text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105"
+              style={{
+                border: '3px solid',
+                borderImage: 'linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%) 1'
+              }}
+            >
+              <span className="flex items-center justify-center">
+                Start Your Free Trial
+              </span>
+            </button>
+          </div>
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="w-full h-px bg-gray-700 opacity-30"></div>
+
       {/* Footer */}
-      <footer className="bg-primary-900 text-white py-12">
+      <footer className="py-12" style={{ backgroundColor: '#000000' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Hatch</h3>
-            <p className="text-neutral-300 mb-4">
+            <h3 className="text-2xl font-bold mb-4 text-white">Hatch</h3>
+            <p className="text-gray-300 mb-4">
               Modern event management for the digital age
             </p>
-            <p className="text-neutral-400 text-sm">
-              © 2024 Hatch. All rights reserved.
+            <p className="text-gray-500 text-sm">
+              © 2026 Hatch. All rights reserved.
             </p>
           </div>
         </div>

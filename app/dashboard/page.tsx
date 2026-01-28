@@ -11,6 +11,7 @@ import {
 import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import ReferralCard from '@/components/referral/ReferralCard'
+import CircleLoader from '@/components/ui/CircleLoader'
 
 export default function DashboardPage() {
   const { profile, user, refreshProfile, loading } = useAuth()
@@ -41,20 +42,8 @@ export default function DashboardPage() {
   // Show loading state while auth is loading or profile is being created
   if (loading || (user && !profile)) {
     return (
-      <div className="min-h-screen bg-neutral-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-neutral-200 rounded w-1/4 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-32 bg-neutral-200 rounded-xl"></div>
-              ))}
-            </div>
-          </div>
-          <div className="text-center mt-8">
-            <p className="text-neutral-600">Setting up your profile...</p>
-          </div>
-        </div>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <CircleLoader />
       </div>
     )
   }

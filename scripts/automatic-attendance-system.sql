@@ -154,6 +154,7 @@ SELECT
     e.organizer,
     e.category,
     e.mode,
+    e.required_tier,
     ur.registered_at
 FROM event_attendance ea
 JOIN events e ON ea.event_id = e.id

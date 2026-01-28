@@ -12,11 +12,13 @@ import {
   PencilIcon,
   CheckCircleIcon,
   CalendarDaysIcon,
-  TrophyIcon
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
 import { getSubscriptionTierName, getEventLimit } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
+import { generateAttendanceReport } from '@/lib/pdfGenerator'
+import CircleLoader from '@/components/ui/CircleLoader'
 
 interface AttendanceStats {
   total_registered: number
@@ -33,6 +35,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [attendanceStats, setAttendanceStats] = useState<AttendanceStats | null>(null)
   const [loadingStats, setLoadingStats] = useState(true)
+  const [downloadingPDF, setDownloadingPDF] = useState(false)
   const router = useRouter()
 
   // Load attendance statistics
@@ -68,7 +71,7 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+        <CircleLoader />
       </div>
     )
   }
@@ -123,6 +126,52 @@ export default function ProfilePage() {
     setEditingBio(false)
     setBioText('')
     setSkillsText('')
+  }
+
+  const handleDownloadData = async () => {
+    if (!user || !profile) {
+      toast.error('Please log in to download your data')
+      return
+    }
+
+    setDownloadingPDF(true)
+    try {
+      toast.loading('Generating your attendance report...', { id: 'pdf-generation' })
+
+      // Get all attended events for the user with tier information
+      const { data: attendedEvents, error } = await supabase
+        .from('user_attendance_with_events')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('event_date', { ascending: true })
+
+      if (error) throw error
+
+      // Get current attendance stats
+      const currentStats = attendanceStats || { total_registered: 0, total_attended: 0, attendance_rate: 0 }
+
+      // Generate PDF
+      generateAttendanceReport(
+        {
+          full_name: profile.full_name,
+          username: profile.username,
+          email: user.email || 'Not available',
+          college: profile.college || 'Not specified',
+          graduation_year: profile.graduation_year?.toString() || 'Not specified',
+          subscription_tier: profile.subscription_tier,
+          created_at: profile.created_at
+        },
+        attendedEvents || [],
+        currentStats
+      )
+
+      toast.success('📄 Your attendance report has been downloaded!', { id: 'pdf-generation' })
+    } catch (error: any) {
+      console.error('Error generating PDF:', error)
+      toast.error('Failed to generate attendance report', { id: 'pdf-generation' })
+    } finally {
+      setDownloadingPDF(false)
+    }
   }
 
   return (
@@ -303,11 +352,11 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Attendance History */}
+          {/* Recent Activity */}
           <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
             <div className="flex items-center mb-4">
-              <TrophyIcon className="h-6 w-6 text-primary-600 mr-2" />
-              <h2 className="text-xl font-semibold text-neutral-900">Attendance History</h2>
+              <CalendarDaysIcon className="h-6 w-6 text-primary-600 mr-2" />
+              <h2 className="text-xl font-semibold text-neutral-900">Recent Activity</h2>
             </div>
             
             {loadingStats ? (
@@ -350,7 +399,7 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <TrophyIcon className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                <CalendarDaysIcon className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
                 <p className="text-neutral-500 mb-4">
                   No events attended yet. Start by registering for events!
                 </p>
@@ -523,9 +572,16 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between py-3 border-b border-neutral-200">
                 <div>
                   <h3 className="font-medium text-neutral-900">Download Data</h3>
-                  <p className="text-sm text-neutral-600">Export your account data</p>
+                  <p className="text-sm text-neutral-600">Export your attendance report as PDF</p>
                 </div>
-                <Button variant="secondary" size="sm">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={handleDownloadData}
+                  loading={downloadingPDF}
+                  disabled={downloadingPDF}
+                >
+                  <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
                   Download
                 </Button>
               </div>
