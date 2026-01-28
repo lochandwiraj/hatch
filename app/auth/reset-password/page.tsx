@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Button from '@/components/ui/Button'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
-import { LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')
@@ -107,146 +107,184 @@ export default function ResetPasswordPage() {
     if (/\d/.test(password)) strength++
     if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++
 
-    if (strength <= 2) return { label: 'Weak', color: 'bg-red-500', width: '33%' }
-    if (strength <= 3) return { label: 'Medium', color: 'bg-yellow-500', width: '66%' }
-    return { label: 'Strong', color: 'bg-green-500', width: '100%' }
+    if (strength <= 2) return { label: 'Weak', color: '#ef4444', width: '33%' }
+    if (strength <= 3) return { label: 'Medium', color: '#eab308', width: '66%' }
+    return { label: 'Strong', color: '#22c55e', width: '100%' }
   }
 
   const passwordStrength = getPasswordStrength(password)
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <LockClosedIcon className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-4xl font-bold text-white mb-2">Create New Password</h2>
-          <p className="text-neutral-200">
-            Enter your new password below
-          </p>
-        </div>
-        
-        <div className="backdrop-blur-glass rounded-xl p-8 border border-white/20">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-                New Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-white/30 rounded-lg bg-white/10 text-white placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent"
-                  placeholder="Enter new password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-300 hover:text-white"
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              
-              {password && (
-                <div className="mt-2">
-                  <div className="flex justify-between text-xs text-neutral-300 mb-1">
-                    <span>Password Strength</span>
-                    <span>{passwordStrength.label}</span>
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.color}`}
-                      style={{ width: passwordStrength.width }}
-                    ></div>
-                  </div>
+    <ProtectedRoute requireAuth={false}>
+      <div data-auth-page className="h-screen w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
+        <div className="wrapper">
+          <div className="flip-card__inner" style={{ height: 'auto', minHeight: '500px' }}>
+            {/* Reset Password Form */}
+            <div className="flip-card__front" style={{ height: 'auto', minHeight: '500px', padding: '30px' }}>
+              <div className="title">Reset Password</div>
+              <form className="flip-card__form" onSubmit={handleSubmit} style={{ gap: '15px' }}>
+                <div style={{ position: 'relative', width: '250px' }}>
+                  <input
+                    className="flip-card__input"
+                    name="password"
+                    placeholder="New Password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    style={{ paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#666'
+                    }}
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon style={{ width: '16px', height: '16px' }} />
+                    ) : (
+                      <EyeIcon style={{ width: '16px', height: '16px' }} />
+                    )}
+                  </button>
                 </div>
-              )}
-            </div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
-                Confirm New Password
-              </label>
-              <div className="relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-white/30 rounded-lg bg-white/10 text-white placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent"
-                  placeholder="Confirm new password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-300 hover:text-white"
+                {password && (
+                  <div style={{ width: '250px', marginTop: '5px' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      fontSize: '11px', 
+                      color: '#666', 
+                      marginBottom: '4px' 
+                    }}>
+                      <span>Password Strength</span>
+                      <span>{passwordStrength.label}</span>
+                    </div>
+                    <div style={{ 
+                      width: '100%', 
+                      height: '4px', 
+                      backgroundColor: '#e5e5e5', 
+                      borderRadius: '2px',
+                      overflow: 'hidden'
+                    }}>
+                      <div 
+                        style={{ 
+                          height: '100%', 
+                          backgroundColor: passwordStrength.color,
+                          width: passwordStrength.width,
+                          transition: 'all 0.3s ease',
+                          borderRadius: '2px'
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ position: 'relative', width: '250px' }}>
+                  <input
+                    className="flip-card__input"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    style={{ paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#666'
+                    }}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeSlashIcon style={{ width: '16px', height: '16px' }} />
+                    ) : (
+                      <EyeIcon style={{ width: '16px', height: '16px' }} />
+                    )}
+                  </button>
+                </div>
+
+                {confirmPassword && password !== confirmPassword && (
+                  <p style={{ fontSize: '11px', color: '#ef4444', margin: '0', width: '250px' }}>
+                    Passwords do not match
+                  </p>
+                )}
+
+                <div style={{ 
+                  width: '250px', 
+                  padding: '15px', 
+                  backgroundColor: '#f8f8f8', 
+                  borderRadius: '5px',
+                  border: '1px solid #ddd',
+                  marginTop: '10px'
+                }}>
+                  <h4 style={{ fontSize: '12px', fontWeight: '600', color: '#323232', margin: '0 0 8px 0' }}>
+                    Password Requirements:
+                  </h4>
+                  <ul style={{ fontSize: '10px', color: '#666', margin: '0', padding: '0', listStyle: 'none' }}>
+                    <li style={{ color: password.length >= 8 ? '#22c55e' : '#666', marginBottom: '2px' }}>
+                      • At least 8 characters long
+                    </li>
+                    <li style={{ color: /[A-Z]/.test(password) ? '#22c55e' : '#666', marginBottom: '2px' }}>
+                      • One uppercase letter
+                    </li>
+                    <li style={{ color: /[a-z]/.test(password) ? '#22c55e' : '#666', marginBottom: '2px' }}>
+                      • One lowercase letter
+                    </li>
+                    <li style={{ color: /\d/.test(password) ? '#22c55e' : '#666', marginBottom: '2px' }}>
+                      • One number
+                    </li>
+                    <li style={{ color: /[!@#$%^&*(),.?":{}|<>]/.test(password) ? '#22c55e' : '#666' }}>
+                      • One special character
+                    </li>
+                  </ul>
+                </div>
+
+                <button 
+                  className="flip-card__btn" 
+                  type="submit" 
+                  disabled={loading || !password || !confirmPassword || password !== confirmPassword}
+                  style={{ 
+                    opacity: (loading || !password || !confirmPassword || password !== confirmPassword) ? 0.6 : 1,
+                    cursor: (loading || !password || !confirmPassword || password !== confirmPassword) ? 'not-allowed' : 'pointer'
+                  }}
                 >
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
+                  {loading ? 'Updating...' : 'Update Password'}
                 </button>
-              </div>
-              
-              {confirmPassword && password !== confirmPassword && (
-                <p className="mt-1 text-xs text-red-400">Passwords do not match</p>
-              )}
+
+                <Link 
+                  href="/auth" 
+                  style={{ 
+                    fontSize: '12px', 
+                    color: '#666', 
+                    textDecoration: 'none',
+                    marginTop: '10px'
+                  }}
+                >
+                  Back to Sign In
+                </Link>
+              </form>
             </div>
-
-            <div className="bg-white/10 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-white mb-2">Password Requirements:</h4>
-              <ul className="text-xs text-neutral-300 space-y-1">
-                <li className={password.length >= 8 ? 'text-green-400' : ''}>
-                  • At least 8 characters long
-                </li>
-                <li className={/[A-Z]/.test(password) ? 'text-green-400' : ''}>
-                  • One uppercase letter
-                </li>
-                <li className={/[a-z]/.test(password) ? 'text-green-400' : ''}>
-                  • One lowercase letter
-                </li>
-                <li className={/\d/.test(password) ? 'text-green-400' : ''}>
-                  • One number
-                </li>
-                <li className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-green-400' : ''}>
-                  • One special character
-                </li>
-              </ul>
-            </div>
-
-            <Button
-              type="submit"
-              loading={loading}
-              disabled={!password || !confirmPassword || password !== confirmPassword}
-              className="w-full bg-white text-primary-600 hover:bg-neutral-100"
-            >
-              Update Password
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <Link 
-              href="/auth" 
-              className="text-accent-300 hover:text-accent-200 text-sm"
-            >
-              Back to Sign In
-            </Link>
           </div>
         </div>
       </div>
-    </div>
+    </ProtectedRoute>
   )
 }

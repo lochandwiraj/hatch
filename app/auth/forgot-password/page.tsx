@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Button from '@/components/ui/Button'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeftIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
@@ -47,54 +46,48 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <EnvelopeIcon className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-4xl font-bold text-white mb-2">Forgot Password?</h2>
-          <p className="text-neutral-200">
-            Enter your email address and we'll send you an OTP to reset your password
-          </p>
-        </div>
-        
-        <div className="backdrop-blur-glass rounded-xl p-8 border border-white/20">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-                Email Address
-              </label>
+    <div data-auth-page className="h-screen w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
+      <div className="wrapper">
+        <div className="flip-card__inner" style={{ transform: 'none' }}>
+          {/* Forgot Password Form */}
+          <div className="flip-card__front" style={{ transform: 'none' }}>
+            <div className="title">Forgot Password?</div>
+            <div className="text-center mb-6">
+              <EnvelopeIcon className="h-12 w-12 mx-auto mb-4 text-var(--main-color)" />
+              <p className="text-sm text-var(--font-color-sub)">
+                Enter your email address and we'll send you an OTP to reset your password
+              </p>
+            </div>
+            
+            <form className="flip-card__form" onSubmit={handleSubmit}>
               <input
-                id="email"
+                className="flip-card__input"
                 name="email"
+                placeholder="Enter your registered email"
                 type="email"
-                autoComplete="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/10 text-white placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent"
-                placeholder="Enter your registered email"
+                required
               />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flip-card__btn"
+              >
+                {loading ? 'Sending...' : 'Send OTP'}
+              </button>
+            </form>
+
+            <div className="text-center mt-4">
+              <Link 
+                href="/auth" 
+                className="inline-flex items-center text-var(--input-focus) hover:underline text-sm"
+              >
+                <ArrowLeftIcon className="h-4 w-4 mr-2" />
+                Back to Sign In
+              </Link>
             </div>
-
-            <Button
-              type="submit"
-              loading={loading}
-              className="w-full bg-white text-primary-600 hover:bg-neutral-100"
-            >
-              Send OTP
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <Link 
-              href="/auth" 
-              className="inline-flex items-center text-accent-300 hover:text-accent-200 text-sm"
-            >
-              <ArrowLeftIcon className="h-4 w-4 mr-2" />
-              Back to Sign In
-            </Link>
           </div>
         </div>
       </div>

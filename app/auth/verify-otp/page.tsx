@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Button from '@/components/ui/Button'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeftIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
@@ -132,78 +131,83 @@ export default function VerifyOTPPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShieldCheckIcon className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-4xl font-bold text-white mb-2">Verify OTP</h2>
-          <p className="text-neutral-200">
-            Enter the 6-digit code sent to
-          </p>
-          <p className="text-accent-300 font-medium">{email}</p>
-        </div>
-        
-        <div className="backdrop-blur-glass rounded-xl p-8 border border-white/20">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-sm font-medium text-white mb-4 text-center">
-                Enter OTP
-              </label>
-              <div className="flex justify-center space-x-3">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => {
-                      inputRefs.current[index] = el
-                    }}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-12 text-center text-xl font-bold border border-white/30 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent"
-                  />
-                ))}
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              loading={loading}
-              className="w-full bg-white text-primary-600 hover:bg-neutral-100"
-            >
-              Verify OTP
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center space-y-3">
-            <div>
-              {countdown > 0 ? (
-                <p className="text-neutral-300 text-sm">
-                  Resend OTP in {countdown} seconds
-                </p>
-              ) : (
-                <button
-                  onClick={handleResendOTP}
-                  disabled={resendLoading}
-                  className="text-accent-300 hover:text-accent-200 text-sm font-medium disabled:opacity-50"
-                >
-                  {resendLoading ? 'Sending...' : 'Resend OTP'}
-                </button>
-              )}
+    <div data-auth-page className="h-screen w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
+      <div className="wrapper">
+        <div className="flip-card__inner" style={{ transform: 'none' }}>
+          {/* Verify OTP Form */}
+          <div className="flip-card__front" style={{ transform: 'none', height: 'auto', padding: '30px 20px' }}>
+            <div className="title">Verify OTP</div>
+            <div className="text-center mb-6">
+              <ShieldCheckIcon className="h-12 w-12 mx-auto mb-4 text-var(--main-color)" />
+              <p className="text-sm text-var(--font-color-sub) mb-2">
+                Enter the 6-digit code sent to
+              </p>
+              <p className="text-sm font-medium text-var(--input-focus)">{email}</p>
             </div>
             
-            <Link 
-              href="/auth/forgot-password" 
-              className="inline-flex items-center text-accent-300 hover:text-accent-200 text-sm"
-            >
-              <ArrowLeftIcon className="h-4 w-4 mr-2" />
-              Change Email
-            </Link>
+            <form className="flip-card__form" onSubmit={handleSubmit}>
+              <div className="mb-6">
+                <div className="flex justify-center space-x-2">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      ref={(el) => {
+                        inputRefs.current[index] = el
+                      }}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      className="w-10 h-10 text-center text-lg font-bold border-2 border-var(--main-color) rounded bg-var(--bg-color) text-var(--font-color) focus:border-var(--input-focus) focus:outline-none"
+                      style={{ 
+                        width: '40px', 
+                        height: '40px',
+                        margin: '0 2px',
+                        fontSize: '18px',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flip-card__btn"
+              >
+                {loading ? 'Verifying...' : 'Verify OTP'}
+              </button>
+            </form>
+
+            <div className="text-center mt-4 space-y-2">
+              <div>
+                {countdown > 0 ? (
+                  <p className="text-xs text-var(--font-color-sub)">
+                    Resend OTP in {countdown} seconds
+                  </p>
+                ) : (
+                  <button
+                    onClick={handleResendOTP}
+                    disabled={resendLoading}
+                    className="text-xs text-var(--input-focus) hover:underline disabled:opacity-50"
+                  >
+                    {resendLoading ? 'Sending...' : 'Resend OTP'}
+                  </button>
+                )}
+              </div>
+              
+              <Link 
+                href="/auth/forgot-password" 
+                className="inline-flex items-center text-var(--input-focus) hover:underline text-xs"
+              >
+                <ArrowLeftIcon className="h-3 w-3 mr-1" />
+                Change Email
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -347,25 +347,25 @@ export default function EventsPage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#000000' }}>
         <CircleLoader />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen funky-events-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
+      <header className="shadow-sm border-b border-gray-700" style={{ backgroundColor: '#1a1a1a' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
+              <Link href="/" className="text-2xl font-bold text-white">
                 HATCH
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/dashboard" className="text-gray-300 hover:text-cyan-400">
                 Dashboard
               </Link>
               {(user?.email === 'dwiraj06@gmail.com' || 
@@ -373,30 +373,30 @@ export default function EventsPage() {
                 user?.email === 'dwiraj@hatch.in' || 
                 user?.email === 'lochan@hatch.in') && (
                 <>
-                  <Link href="/admin/events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    📅 Events
+                  <Link href="/admin/events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Events
                   </Link>
-                  <Link href="/admin/manage-events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    🔧 Manage
+                  <Link href="/admin/manage-events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Manage
                   </Link>
-                  <Link href="/admin/manage-users" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    👥 Users
+                  <Link href="/admin/manage-users" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Users
                   </Link>
-                  <Link href="/admin/payments" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    💳 Payments
+                  <Link href="/admin/payments" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Payments
                   </Link>
                 </>
               )}
-              <Link href="/events" className="text-primary-600 font-medium">
+              <Link href="/events" className="text-cyan-400 font-medium">
                 Events
               </Link>
-              <Link href="/calendar" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/calendar" className="text-gray-300 hover:text-cyan-400">
                 Calendar
               </Link>
-              <Link href="/subscription" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/subscription" className="text-gray-300 hover:text-cyan-400">
                 Subscription
               </Link>
-              <Link href="/profile" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/profile" className="text-gray-300 hover:text-cyan-400">
                 Profile
               </Link>
             </nav>
@@ -409,44 +409,46 @@ export default function EventsPage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-neutral-900">Events</h1>
-              <p className="text-neutral-600 mt-1">
+              <h1 className="text-3xl font-bold text-white">Events</h1>
+              <p className="text-gray-400 mt-1">
                 Discover and register for events in your community
               </p>
             </div>
             <div className="flex gap-2 mt-4 sm:mt-0">
-              <Button
-                variant="secondary"
+              <button
+                className="white-btn"
                 onClick={loadEvents}
                 disabled={loading}
               >
                 {loading ? 'Refreshing...' : 'Refresh Events'}
-              </Button>
+              </button>
             </div>
           </div>
 
           {/* User Stats */}
           {userStats && (
-            <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">Your Event Activity</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-success-600">
+            <div className="activity-card">
+              <div className="activity-card-header">
+                Your Event Activity
+              </div>
+              <div className="activity-stats-grid">
+                <div className="activity-stat-item">
+                  <div className="activity-stat-number">
                     {userStats.total_events_attended || 0}
                   </div>
-                  <div className="text-sm text-neutral-600">Events Attended</div>
+                  <div className="activity-stat-label">Events Attended</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary-600">
+                <div className="activity-stat-item">
+                  <div className="activity-stat-number">
                     {userStats.event_access === -1 ? '∞' : userStats.event_access}
                   </div>
-                  <div className="text-sm text-neutral-600">Event Access</div>
+                  <div className="activity-stat-label">Event Access</div>
                 </div>
               </div>
-              <div className="mt-4 bg-neutral-50 rounded-lg p-3">
+              <div className="activity-tier-info">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-neutral-600">Tier ({getSubscriptionTierName(userStats.subscription_tier)}):</span>
-                  <span className="font-medium text-neutral-900">
+                  <span>Tier ({getSubscriptionTierName(userStats.subscription_tier)}):</span>
+                  <span className="font-medium">
                     {getEventLimitDescription(userStats.subscription_tier)}
                   </span>
                 </div>
@@ -455,57 +457,55 @@ export default function EventsPage() {
           )}
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1 relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
-                <input
-                  type="text"
-                  placeholder="Search events..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              
-              {/* Search Button */}
-              <Button onClick={handleSearch} disabled={loading}>
-                Search
-              </Button>
-              
-              {searchQuery && (
-                <Button variant="secondary" onClick={clearSearch}>
-                  Clear
-                </Button>
-              )}
-              
-              {/* Filter Toggle */}
-              <Button
-                variant="secondary"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center"
-              >
-                <FunnelIcon className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
+          <div className="search-card">
+            <div className="search-card-header">
+              Search & Filters
             </div>
+            <div className="search-card-body">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Search */}
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Search events..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    className="funky-search-input"
+                  />
+                </div>
+                
+                {/* Search Actions */}
+                <div className="search-actions">
+                  <button className="funky-button" onClick={handleSearch} disabled={loading}>
+                    Search
+                  </button>
+                  
+                  {searchQuery && (
+                    <button className="funky-button" onClick={clearSearch}>
+                      Clear
+                    </button>
+                  )}
+                  
+                  <button
+                    className="funky-button flex items-center"
+                    onClick={() => setShowFilters(!showFilters)}
+                  >
+                    <FunnelIcon className="h-4 w-4 mr-2" />
+                    Filters
+                  </button>
+                </div>
+              </div>
 
-            {/* Filters */}
-            {showFilters && (
-              <div className="mt-4 pt-4 border-t border-neutral-200">
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-sm font-medium text-neutral-700 mr-2">Filter by tier:</span>
+              {/* Filters */}
+              {showFilters && (
+                <div className="filter-pills-container">
+                  <span className="text-sm font-medium mr-2" style={{ color: 'var(--text)' }}>Filter by tier:</span>
                   {['all', 'free', 'basic_99', 'premium_149'].map((tier) => (
                     <button
                       key={tier}
                       onClick={() => setFilterTier(tier as any)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                        filterTier === tier
-                          ? 'bg-primary-100 text-primary-800'
-                          : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                      }`}
+                      className={`filter-pill ${filterTier === tier ? 'active' : ''}`}
                     >
                       {tier === 'all' ? 'All Events' : 
                        tier === 'free' ? 'Free' :
@@ -513,8 +513,8 @@ export default function EventsPage() {
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Events Grid */}
@@ -522,7 +522,7 @@ export default function EventsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="h-80 bg-neutral-200 rounded-xl"></div>
+                  <div className="h-80 bg-gray-800 rounded-xl"></div>
                 </div>
               ))}
             </div>
@@ -538,22 +538,22 @@ export default function EventsPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MagnifyingGlassIcon className="h-12 w-12 text-neutral-400" />
+              <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MagnifyingGlassIcon className="h-12 w-12 text-gray-500" />
               </div>
-              <h3 className="text-lg font-medium text-neutral-900 mb-2">
+              <h3 className="text-lg font-medium text-white mb-2">
                 {searchQuery ? 'No events found' : 'No events available'}
               </h3>
-              <p className="text-neutral-600 mb-4">
+              <p className="text-gray-400 mb-4">
                 {searchQuery 
                   ? 'Try adjusting your search terms or filters'
                   : 'Check back later for new events'
                 }
               </p>
               {searchQuery && (
-                <Button variant="secondary" onClick={clearSearch}>
+                <button className="white-btn" onClick={clearSearch}>
                   Clear Search
-                </Button>
+                </button>
               )}
             </div>
           )}

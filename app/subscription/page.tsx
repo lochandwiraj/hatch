@@ -3,6 +3,7 @@
 import { useAuth } from '@/components/auth/AuthProvider'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
+import RollerLoader from '@/components/ui/RollerLoader'
 import { 
   CheckCircleIcon, 
   StarIcon,
@@ -15,8 +16,8 @@ export default function SubscriptionPage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center funky-events-background">
+        <RollerLoader />
       </div>
     )
   }
@@ -80,43 +81,49 @@ export default function SubscriptionPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen funky-events-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
+      <header className="shadow-sm border-b border-gray-700" style={{ backgroundColor: '#1a1a1a' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
+              <Link href="/" className="text-2xl font-bold text-white">
                 HATCH
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/dashboard" className="text-gray-300 hover:text-cyan-400">
                 Dashboard
               </Link>
               {(user?.email === 'dwiraj06@gmail.com' || 
                 user?.email === 'pokkalilochan@gmail.com' ||
-                user?.email === 'dwiraj@HATCH.in' || 
-                user?.email === 'lochan@HATCH.in') && (
+                user?.email === 'dwiraj@hatch.in' || 
+                user?.email === 'lochan@hatch.in') && (
                 <>
-                  <Link href="/admin/events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    📅 Events
+                  <Link href="/admin/events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Events
                   </Link>
-                  <Link href="/admin/manage-events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    🔧 Manage
+                  <Link href="/admin/manage-events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Manage
                   </Link>
-                  <Link href="/admin/payments" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    💳 Payments
+                  <Link href="/admin/manage-users" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Users
+                  </Link>
+                  <Link href="/admin/payments" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Payments
                   </Link>
                 </>
               )}
-              <Link href="/events" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/events" className="text-gray-300 hover:text-cyan-400">
                 Events
               </Link>
-              <Link href="/subscription" className="text-primary-600 font-medium">
+              <Link href="/calendar" className="text-gray-300 hover:text-cyan-400">
+                Calendar
+              </Link>
+              <Link href="/subscription" className="text-cyan-400 font-medium">
                 Subscription
               </Link>
-              <Link href="/profile" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/profile" className="text-gray-300 hover:text-cyan-400">
                 Profile
               </Link>
             </nav>
@@ -127,25 +134,27 @@ export default function SubscriptionPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* Current Subscription */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Current Subscription</h2>
-            <div className="flex items-center justify-between">
+          <div className="funky-current-subscription-card">
+            <div className="funky-current-subscription-header">
+              Current Subscription
+            </div>
+            <div className="funky-current-subscription-body">
               <div>
                 <div className="flex items-center mb-2">
-                  <span className="text-lg font-semibold text-neutral-900 mr-2">
+                  <span className="text-lg font-bold text-gray-800 mr-2">
                     {getSubscriptionTierName(profile.subscription_tier)}
                   </span>
                   {profile.subscription_tier !== 'free' && (
-                    <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-1 rounded-full">
+                    <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full border border-black">
                       Active
                     </span>
                   )}
                 </div>
-                <p className="text-neutral-600">
+                <p className="text-gray-700 font-medium">
                   You have access to {getEventLimitDescription(profile.subscription_tier)}
                 </p>
                 {profile.subscription_expires_at && (
-                  <p className="text-sm text-neutral-500 mt-1">
+                  <p className="text-sm text-gray-600 mt-1 font-medium">
                     {profile.subscription_tier !== 'free' ? 'Renews' : 'Expires'} on{' '}
                     {new Date(profile.subscription_expires_at).toLocaleDateString()}
                   </p>
@@ -153,10 +162,10 @@ export default function SubscriptionPage() {
               </div>
               {profile.subscription_tier === 'free' && (
                 <Link href="/subscription/upgrade">
-                  <Button>
+                  <button className="funky-plan-button" style={{ width: 'auto', minWidth: '120px' }}>
                     Upgrade Now
-                    <ArrowRightIcon className="ml-2 h-4 w-4" />
-                  </Button>
+                    <ArrowRightIcon className="ml-2 h-4 w-4 inline" />
+                  </button>
                 </Link>
               )}
             </div>
@@ -165,85 +174,86 @@ export default function SubscriptionPage() {
           {/* Pricing Plans */}
           <div>
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-neutral-900 mb-4">Choose Your Plan</h2>
-              <p className="text-xl text-neutral-600">
+              <h2 className="text-4xl font-bold text-white mb-4 text-shadow">Choose Your Plan</h2>
+              <p className="text-xl text-gray-300 font-medium">
                 Quality over quantity - curated events for your growth
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
               {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`relative bg-white rounded-xl shadow-sm border-2 p-8 ${
-                    plan.popular
-                      ? 'border-primary-500 shadow-lg'
-                      : plan.current
-                      ? 'border-success-500'
-                      : 'border-neutral-200'
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-primary-500 text-white text-sm font-semibold px-4 py-2 rounded-full">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-
-                  {plan.current && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-success-500 text-white text-sm font-semibold px-4 py-2 rounded-full">
-                        Current Plan
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="text-center mb-6">
-                    <plan.icon className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
-                    <p className="text-neutral-600 mb-4">{plan.description}</p>
+                <div key={plan.id} className="subscription-parent">
+                  <div className={`subscription-card ${
+                    plan.popular ? 'popular' : plan.current ? 'current' : ''
+                  }`}>
                     
-                    <div className="space-y-2">
-                      <div className="text-4xl font-bold text-neutral-900">
+                    {/* Date Box */}
+                    <div className={`subscription-date-box ${
+                      plan.popular ? 'popular' : plan.current ? 'current' : ''
+                    }`}>
+                      <span className={`month ${
+                        plan.popular ? 'popular' : plan.current ? 'current' : ''
+                      }`}>
+                        {plan.popular ? 'HOT' : plan.current ? 'NOW' : plan.id === 'premium_149' ? 'PRO' : 'FREE'}
+                      </span>
+                      <span className={`date ${
+                        plan.popular ? 'popular' : plan.current ? 'current' : ''
+                      }`}>
+                        {plan.id === 'free' ? '0' : plan.id === 'basic_99' ? '99' : '149'}
+                      </span>
+                    </div>
+
+                    {/* Content Box */}
+                    <div className={`subscription-content-box ${
+                      plan.popular ? 'popular' : plan.current ? 'current' : ''
+                    }`}>
+                      <div className="subscription-card-title">
+                        {plan.name}
+                      </div>
+                      
+                      <div className="subscription-card-price">
                         {plan.price}
                       </div>
-                      {plan.id !== 'free' && (
-                        <div className="text-sm text-neutral-600">
-                          or {plan.annualPrice} (17% off)
+                      
+                      <div className="subscription-card-content">
+                        <p style={{ fontSize: '13px', fontWeight: '700', marginBottom: '15px', textAlign: 'center' }}>
+                          {plan.description}
+                        </p>
+                        
+                        {plan.id !== 'free' && (
+                          <p style={{ fontSize: '11px', fontWeight: '700', marginBottom: '15px', textAlign: 'center' }}>
+                            or {plan.annualPrice}/year (17% off)
+                          </p>
+                        )}
+
+                        <ul className="subscription-feature-list">
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className="subscription-feature-item">
+                              <CheckCircleIcon className="subscription-feature-icon" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div style={{ marginTop: 'auto' }}>
+                          {plan.current ? (
+                            <button disabled className={`subscription-see-more current`}>
+                              Current Plan
+                            </button>
+                          ) : plan.id === 'free' ? (
+                            <button disabled className="subscription-see-more">
+                              Free Forever
+                            </button>
+                          ) : (
+                            <Link href={`/subscription/upgrade?plan=${plan.id}`}>
+                              <button className={`subscription-see-more ${plan.popular ? 'popular' : ''}`}>
+                                {profile.subscription_tier === 'free' ? 'Upgrade Now' : 'Switch Plan'}
+                              </button>
+                            </Link>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <CheckCircleIcon className="h-5 w-5 text-success-500 mr-3 flex-shrink-0" />
-                        <span className="text-neutral-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-auto">
-                    {plan.current ? (
-                      <Button disabled className="w-full">
-                        Current Plan
-                      </Button>
-                    ) : plan.id === 'free' ? (
-                      <Button variant="secondary" disabled className="w-full">
-                        Free Forever
-                      </Button>
-                    ) : (
-                      <Link href={`/subscription/upgrade?plan=${plan.id}`}>
-                        <Button 
-                          variant={plan.popular ? 'primary' : 'secondary'} 
-                          className="w-full"
-                        >
-                          {profile.subscription_tier === 'free' ? 'Upgrade' : 'Switch Plan'}
-                        </Button>
-                      </Link>
-                    )}
                   </div>
                 </div>
               ))}
@@ -251,37 +261,39 @@ export default function SubscriptionPage() {
           </div>
 
           {/* Benefits */}
-          <div className="bg-gradient-secondary rounded-xl p-8">
-            <h3 className="text-2xl font-bold text-primary-800 mb-6 text-center">
+          <div className="funky-benefits-card">
+            <div className="funky-benefits-header">
               Why Choose HATCH?
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <StarIcon className="h-8 w-8 text-primary-600" />
+            </div>
+            <div className="funky-benefits-body">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="funky-benefit-item">
+                  <div className="funky-benefit-icon">
+                    <StarIcon className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="funky-benefit-title">Curated Quality</h4>
+                  <p className="funky-benefit-description">
+                    We research 50+ sources weekly to bring you only the best opportunities
+                  </p>
                 </div>
-                <h4 className="font-semibold text-primary-800 mb-2">Curated Quality</h4>
-                <p className="text-primary-600 text-sm">
-                  We research 50+ sources weekly to bring you only the best opportunities
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircleIcon className="h-8 w-8 text-primary-600" />
+                <div className="funky-benefit-item">
+                  <div className="funky-benefit-icon">
+                    <CheckCircleIcon className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="funky-benefit-title">Save Time</h4>
+                  <p className="funky-benefit-description">
+                    Stop scrolling through endless event lists. We do the hunting for you.
+                  </p>
                 </div>
-                <h4 className="font-semibold text-primary-800 mb-2">Save Time</h4>
-                <p className="text-primary-600 text-sm">
-                  Stop scrolling through endless event lists. We do the hunting for you.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <StarIcon className="h-8 w-8 text-primary-600" />
+                <div className="funky-benefit-item">
+                  <div className="funky-benefit-icon">
+                    <StarIcon className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="funky-benefit-title">Build Portfolio</h4>
+                  <p className="funky-benefit-description">
+                    Every event you attend goes on your profile to share with recruiters
+                  </p>
                 </div>
-                <h4 className="font-semibold text-primary-800 mb-2">Build Portfolio</h4>
-                <p className="text-primary-600 text-sm">
-                  Every event you attend goes on your profile to share with recruiters
-                </p>
               </div>
             </div>
           </div>

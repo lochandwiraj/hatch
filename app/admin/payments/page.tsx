@@ -155,18 +155,33 @@ export default function AdminPaymentsPage() {
 
       // If approved, upgrade user tier
       if (action === 'approve') {
+        // Determine duration based on payment amount or tier
+        // Explorer: ₹99 = 30 days, ₹999 = 365 days
+        // Professional: ₹149 = 30 days, ₹1499 = 365 days
+        let durationDays = 30; // Default to monthly
+        
+        if (selectedPayment.requested_tier === 'basic_99') {
+          // Explorer tier
+          durationDays = selectedPayment.amount_paid >= 999 ? 365 : 30;
+        } else if (selectedPayment.requested_tier === 'premium_149') {
+          // Professional tier  
+          durationDays = selectedPayment.amount_paid >= 1499 ? 365 : 30;
+        }
+
         const { error: tierError } = await supabase.rpc('admin_upgrade_user_tier', {
           target_user_id: selectedPayment.user_id,
           new_tier: selectedPayment.requested_tier,
           admin_user_id: user?.id,
-          duration_days: 30
+          duration_days: durationDays
         })
 
         if (tierError) {
           console.error('Error upgrading user tier:', tierError)
           toast.error('Payment approved but failed to upgrade user tier. Please upgrade manually.')
         } else {
-          toast.success(`Payment ${action}d and user upgraded to ${selectedPayment.requested_tier === 'basic_99' ? 'Explorer' : 'Professional'}!`)
+          const tierName = selectedPayment.requested_tier === 'basic_99' ? 'Explorer' : 'Professional';
+          const durationText = durationDays === 365 ? '365 days (1 year)' : '30 days';
+          toast.success(`Payment approved and user upgraded to ${tierName} for ${durationText}!`)
         }
       } else {
         toast.success(`Payment ${action}d successfully!`)
@@ -270,6 +285,17 @@ export default function AdminPaymentsPage() {
 
   const getTierName = (tier: string) => {
     return tier === 'basic_99' ? 'Explorer' : 'Professional'
+  }
+
+  const getSubscriptionDuration = (tier: string, amount: number) => {
+    if (tier === 'basic_99') {
+      // Explorer: ₹99 = 30 days, ₹999 = 365 days
+      return amount >= 999 ? '365 days (1 year)' : '30 days'
+    } else if (tier === 'premium_149') {
+      // Professional: ₹149 = 30 days, ₹1499 = 365 days
+      return amount >= 1499 ? '365 days (1 year)' : '30 days'
+    }
+    return '30 days'
   }
 
   const searchPayments = () => {
@@ -509,7 +535,7 @@ export default function AdminPaymentsPage() {
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-neutral-600">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 text-sm text-neutral-600">
                         <div>
                           <span className="font-medium">Transaction ID:</span> {payment.transaction_id}
                         </div>
@@ -518,6 +544,9 @@ export default function AdminPaymentsPage() {
                         </div>
                         <div>
                           <span className="font-medium">Amount:</span> ₹{payment.amount_paid}
+                        </div>
+                        <div>
+                          <span className="font-medium">Duration:</span> {getSubscriptionDuration(payment.requested_tier, payment.amount_paid)}
                         </div>
                         <div>
                           <span className="font-medium">Method:</span> {payment.payment_method}
@@ -629,6 +658,7 @@ export default function AdminPaymentsPage() {
                   <div><span className="font-medium">Email:</span> {selectedPayment.email}</div>
                   <div><span className="font-medium">Requested Tier:</span> {getTierName(selectedPayment.requested_tier)}</div>
                   <div><span className="font-medium">Amount:</span> ₹{selectedPayment.amount_paid}</div>
+                  <div><span className="font-medium">Duration:</span> {getSubscriptionDuration(selectedPayment.requested_tier, selectedPayment.amount_paid)}</div>
                   <div><span className="font-medium">Payment Method:</span> {selectedPayment.payment_method}</div>
                   <div><span className="font-medium">Transaction ID:</span> {selectedPayment.transaction_id}</div>
                   <div><span className="font-medium">Submitted:</span> {formatDate(selectedPayment.created_at)}</div>

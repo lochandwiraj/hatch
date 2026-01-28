@@ -11,7 +11,7 @@ import {
 import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import ReferralCard from '@/components/referral/ReferralCard'
-import CircleLoader from '@/components/ui/CircleLoader'
+import RollerLoader from '@/components/ui/RollerLoader'
 
 export default function DashboardPage() {
   const { profile, user, refreshProfile, loading } = useAuth()
@@ -42,8 +42,8 @@ export default function DashboardPage() {
   // Show loading state while auth is loading or profile is being created
   if (loading || (user && !profile)) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <CircleLoader />
+      <div className="min-h-screen flex items-center justify-center funky-events-background">
+        <RollerLoader />
       </div>
     )
   }
@@ -51,17 +51,17 @@ export default function DashboardPage() {
   // If still no profile after loading, show error state
   if (!loading && user && !profile) {
     return (
-      <div className="min-h-screen bg-neutral-50 p-6">
+      <div className="min-h-screen p-6 funky-events-background">
         <div className="max-w-7xl mx-auto text-center mt-20">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Setting up your account...
           </h2>
-          <p className="text-neutral-600 mb-6">
+          <p className="text-gray-400 mb-6">
             We're creating your profile. This should only take a moment.
           </p>
           <button 
             onClick={() => window.location.reload()} 
-            className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
+            className="white-btn"
           >
             Refresh Page
           </button>
@@ -81,18 +81,18 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen funky-events-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
+      <header className="shadow-sm border-b border-gray-700" style={{ backgroundColor: '#1a1a1a' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
+              <Link href="/" className="text-2xl font-bold text-white">
                 HATCH
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-primary-600 font-medium">
+              <Link href="/dashboard" className="text-cyan-400 font-medium">
                 Dashboard
               </Link>
               {(user?.email === 'dwiraj06@gmail.com' || 
@@ -100,30 +100,30 @@ export default function DashboardPage() {
                 user?.email === 'dwiraj@hatch.in' || 
                 user?.email === 'lochan@hatch.in') && (
                 <>
-                  <Link href="/admin/events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    📅 Events
+                  <Link href="/admin/events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Events
                   </Link>
-                  <Link href="/admin/manage-events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    🔧 Manage
+                  <Link href="/admin/manage-events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Manage
                   </Link>
-                  <Link href="/admin/manage-users" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    👥 Users
+                  <Link href="/admin/manage-users" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Users
                   </Link>
-                  <Link href="/admin/payments" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
-                    💳 Payments
+                  <Link href="/admin/payments" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
+                    Payments
                   </Link>
                 </>
               )}
-              <Link href="/events" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/events" className="text-gray-300 hover:text-cyan-400">
                 Events
               </Link>
-              <Link href="/calendar" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/calendar" className="text-gray-300 hover:text-cyan-400">
                 Calendar
               </Link>
-              <Link href="/subscription" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/subscription" className="text-gray-300 hover:text-cyan-400">
                 Subscription
               </Link>
-              <Link href="/profile" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/profile" className="text-gray-300 hover:text-cyan-400">
                 Profile
               </Link>
             </nav>
@@ -134,37 +134,37 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* Welcome Section */}
-          <div className="bg-gradient-primary rounded-xl p-8 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">
-                  Welcome back, {profile?.full_name?.split(' ')[0] || 'User'}! 👋
-                </h1>
-                <p className="text-neutral-200 text-lg">
-                  You have access to {getEventLimitDescription(profile?.subscription_tier || 'free')}
-                </p>
-              </div>
-              <div className="hidden md:block">
-                <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center">
-                  <span className="text-4xl font-bold">
-                    {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                  </span>
-                </div>
-              </div>
+          <div className="funky-welcome-card">
+            <div className="funky-welcome-card-pattern"></div>
+            <div className="funky-welcome-text">
+              <h1 className="text-3xl font-bold mb-2">
+                Welcome back, {profile?.full_name?.split(' ')[0] || 'User'}!
+              </h1>
+              <p className="text-lg font-medium opacity-80">
+                You have access to {getEventLimitDescription(profile?.subscription_tier || 'free')}
+              </p>
+            </div>
+            <div className="funky-welcome-avatar">
+              <span className="text-4xl font-bold text-white">
+                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
             </div>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
+          <div className="w-full flex justify-center">
             {stats.map((stat, index) => (
-              <div key={index} className="card">
-                <div className="flex items-center">
-                  <div className={`p-3 rounded-lg ${stat.bgColor} mr-4`}>
-                    <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <div key={index} className="funky-tier-card">
+                <div className="funky-tier-card-header">
+                  Subscription Tier
+                </div>
+                <div className="funky-tier-card-body">
+                  <div className="funky-tier-icon">
+                    <stat.icon className="h-6 w-6 text-white" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-neutral-600">{stat.name}</p>
-                    <p className="text-2xl font-bold text-neutral-900">{stat.value}</p>
+                  <div className="funky-tier-text">
+                    <div className="funky-tier-value">{stat.value}</div>
+                    <div className="funky-tier-label">Current Plan</div>
                   </div>
                 </div>
               </div>
@@ -172,35 +172,38 @@ export default function DashboardPage() {
           </div>
 
           {/* Browse Events - Centered */}
-          <div className="max-w-md mx-auto">
-            <div className="card">
-              <div className="flex items-center mb-4">
-                <CalendarDaysIcon className="h-8 w-8 text-primary-600 mr-3" />
-                <h3 className="text-xl font-semibold">Discover Events</h3>
-              </div>
-              <p className="text-neutral-600 mb-4">
+          <div className="funky-browse-card">
+            <div className="funky-browse-card-header">
+              Discover Events
+            </div>
+            <div className="funky-browse-card-body">
+              <p className="text-gray-700 mb-4 font-medium">
                 Browse and register for events happening in your community
               </p>
               <Link href="/events">
-                <Button className="w-full">Browse Events</Button>
+                <button className="funky-dashboard-button">
+                  Browse Events
+                </button>
               </Link>
             </div>
           </div>
 
           {/* Subscription Status */}
           {profile?.subscription_tier === 'free' && (
-            <div className="bg-gradient-secondary rounded-xl p-6 border border-primary-200">
-              <div className="flex items-center justify-between">
+            <div className="funky-upgrade-card">
+              <div className="funky-upgrade-card-body">
                 <div>
-                  <h3 className="text-xl font-semibold text-primary-800 mb-2">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
                     Upgrade Your Experience
                   </h3>
-                  <p className="text-primary-600">
+                  <p className="text-gray-600 font-medium">
                     Get access to more events and premium features
                   </p>
                 </div>
                 <Link href="/subscription/upgrade">
-                  <Button>Upgrade Now</Button>
+                  <button className="funky-dashboard-button" style={{ width: 'auto', minWidth: '120px' }}>
+                    Upgrade Now
+                  </button>
                 </Link>
               </div>
             </div>
@@ -210,37 +213,39 @@ export default function DashboardPage() {
           <ReferralCard />
 
           {/* Recent Activity */}
-          <div className="card">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">Recent Activity</h3>
+          <div className="funky-activity-card">
+            <div className="funky-activity-card-header">
+              Recent Activity
             </div>
-            
-            <div className="space-y-4">
+            <div className="funky-activity-card-body">
               <div className="text-center py-8">
-                <ChartBarIcon className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-                <p className="text-neutral-500">No events attended yet</p>
-                <p className="text-sm text-neutral-400">Start by browsing available events</p>
+                <p className="text-gray-700 font-semibold mb-2">No events attended yet</p>
+                <p className="text-sm text-gray-600 font-medium">Start by browsing available events</p>
               </div>
             </div>
           </div>
 
           {/* Profile Completion */}
-          <div className="card">
-            <h3 className="text-xl font-semibold mb-4">Complete Your Profile</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-700">Basic Information</span>
-                <span className="text-success-600 font-medium">✓ Complete</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-700">Bio & Skills</span>
-                {profile?.bio && profile?.skills ? (
-                  <span className="text-success-600 font-medium">✓ Complete</span>
-                ) : (
-                  <Link href="/profile" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                    Add Details
-                  </Link>
-                )}
+          <div className="funky-profile-card">
+            <div className="funky-profile-card-header">
+              Complete Your Profile
+            </div>
+            <div className="funky-profile-card-body">
+              <div className="space-y-3">
+                <div className="profile-completion-item">
+                  <span className="text-gray-700 font-semibold">Basic Information</span>
+                  <span className="text-green-600 font-bold">✓ Complete</span>
+                </div>
+                <div className="profile-completion-item">
+                  <span className="text-gray-700 font-semibold">Bio & Skills</span>
+                  {profile?.bio && profile?.skills ? (
+                    <span className="text-green-600 font-bold">✓ Complete</span>
+                  ) : (
+                    <Link href="/profile" className="text-purple-600 hover:text-purple-800 text-sm font-bold underline">
+                      Add Details
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>

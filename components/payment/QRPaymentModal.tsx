@@ -18,9 +18,10 @@ interface QRPaymentModalProps {
   onClose: () => void
   selectedTier: 'basic_99' | 'premium_149'
   amount: number
+  billingCycle?: 'monthly' | 'annual'
 }
 
-export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }: QRPaymentModalProps) {
+export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount, billingCycle = 'monthly' }: QRPaymentModalProps) {
   const { user, profile } = useAuth()
   const [currentQR, setCurrentQR] = useState('/dwiraj.jpeg')
   const [timeLeft, setTimeLeft] = useState(30)
@@ -166,6 +167,7 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
         requested_tier: selectedTier,
         amount_paid: amount,
         payment_method: formData.paymentMethod,
+        is_annual: billingCycle === 'annual',
         status: 'pending'
       }
 
@@ -239,88 +241,93 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
   const validation = validateTransactionId(formData.transactionId)
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-neutral-900">
-              {step === 'payment' ? 'Complete Payment' : 'Submit Payment Details'}
-            </h2>
-            <button
-              onClick={handleClose}
-              className="text-neutral-400 hover:text-neutral-600"
-            >
-              <XMarkIcon className="h-6 w-6" />
-            </button>
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[10000] p-4">
+      <div className="funky-payment-modal">
+        <div className="funky-payment-header">
+          <h2 className="text-xl font-semibold text-white">
+            {step === 'payment' ? 'Complete Payment' : 'Submit Payment Details'}
+          </h2>
+          <button
+            onClick={handleClose}
+            className="funky-close-button"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
 
+        <div className="funky-payment-body">
           {step === 'payment' ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Payment Details */}
-              <div className="bg-neutral-50 rounded-lg p-4">
-                <h3 className="font-medium text-neutral-900 mb-2">Payment Details</h3>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>Plan:</span>
-                    <span className="font-medium">
-                      {selectedTier === 'basic_99' ? 'Explorer' : 'Professional'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Amount:</span>
-                    <span className="font-medium">₹{amount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span className="font-medium">30 days</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>User:</span>
-                    <span className="font-medium">@{profile?.username}</span>
+              <div className="funky-payment-section funky-section-cyan">
+                <div className="funky-section-header">Payment Details</div>
+                <div className="funky-section-body">
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Plan:</span>
+                      <span className="font-medium text-gray-800">
+                        {selectedTier === 'basic_99' ? 'Explorer' : 'Professional'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Amount:</span>
+                      <span className="font-medium text-gray-800">₹{amount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Duration:</span>
+                      <span className="font-medium text-gray-800">
+                        {billingCycle === 'annual' ? '365 days (1 year)' : '30 days'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">User:</span>
+                      <span className="font-medium text-gray-800">@{profile?.username}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* QR Code */}
               <div className="text-center">
-                <div className="bg-white border-2 border-neutral-200 rounded-lg p-4 inline-block">
+                <div className="funky-qr-container">
                   <img 
                     src={currentQR} 
                     alt="Payment QR Code" 
-                    className="w-48 h-48 object-contain"
+                    className="w-44 h-44 object-contain"
                   />
                 </div>
-                <div className="mt-2 text-sm text-neutral-600">
-                  QR Code switches in: <span className="font-medium">{timeLeft}s</span>
+                <div className="mt-2 text-sm text-white">
+                  QR Code switches in: <span className="font-medium text-cyan-300">{timeLeft}s</span>
                 </div>
-                <div className="mt-1 text-xs text-neutral-500">
+                <div className="mt-1 text-xs text-white/80">
                   Pay to: {currentQR.includes('dwiraj') ? 'Dwiraj' : 'Lochan'}
                 </div>
               </div>
 
               {/* Instructions */}
-              <div className="space-y-4">
-                <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-                  <h4 className="font-medium text-primary-900 mb-2">Payment Instructions</h4>
-                  <ol className="text-sm text-primary-800 space-y-1 list-decimal list-inside">
-                    <li>Scan the QR code with any UPI app (GPay, PhonePe, Paytm, etc.)</li>
-                    <li>Pay the exact amount: ₹{amount}</li>
-                    <li>Take a screenshot of the payment confirmation screen</li>
-                    <li>Note down your transaction ID (12-digit UPI reference number)</li>
-                    <li>Click "I've Completed Payment" below</li>
-                  </ol>
+              <div className="space-y-3">
+                <div className="funky-payment-section funky-section-orange">
+                  <div className="funky-section-header">Payment Instructions</div>
+                  <div className="funky-section-body">
+                    <ol className="text-xs text-gray-800 space-y-1 list-decimal list-inside">
+                      <li>Scan QR with UPI app (GPay, PhonePe, Paytm)</li>
+                      <li>Pay exact amount: ₹{amount}</li>
+                      <li>Take screenshot of confirmation</li>
+                      <li>Note transaction ID (12-digit number)</li>
+                      <li>Click "I've Completed Payment"</li>
+                    </ol>
+                  </div>
                 </div>
 
-                <div className="bg-warning-50 border border-warning-200 rounded-lg p-4">
-                  <div className="flex items-start">
-                    <ExclamationTriangleIcon className="h-5 w-5 text-warning-600 mr-2 mt-0.5" />
-                    <div>
-                      <h4 className="font-medium text-warning-900 mb-1">Important</h4>
-                      <ul className="text-sm text-warning-800 space-y-1 list-disc list-inside">
-                        <li>Payment verification takes 24-48 hours</li>
-                        <li>Keep your transaction ID safe</li>
-                        <li>Screenshot should show payment success and transaction ID</li>
-                        <li>Contact support if not verified within 48 hours</li>
+                <div className="funky-payment-section funky-section-pink">
+                  <div className="funky-section-header">Important</div>
+                  <div className="funky-section-body">
+                    <div className="flex items-start">
+                      <ExclamationTriangleIcon className="h-4 w-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <ul className="text-xs text-gray-800 space-y-1 list-disc list-inside">
+                        <li>Verification takes 24-48 hours</li>
+                        <li>Keep transaction ID safe</li>
+                        <li>Screenshot must show success & ID</li>
                       </ul>
                     </div>
                   </div>
@@ -328,65 +335,62 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
               </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-3">
-                <Button
-                  variant="secondary"
+              <div className="flex space-x-3 mt-4">
+                <button
                   onClick={handleClose}
-                  className="flex-1"
+                  className="funky-payment-button funky-button-secondary flex-1"
                 >
                   Cancel
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={handlePaymentComplete}
-                  className="flex-1"
+                  className="funky-payment-button funky-button-primary flex-1"
                 >
                   I've Completed Payment
-                </Button>
+                </button>
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* User Info Display */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-medium text-blue-900 mb-2">Submitting for:</h3>
-                <div className="text-sm text-blue-800 space-y-1">
-                  <div><span className="font-medium">Name:</span> {profile?.full_name}</div>
-                  <div><span className="font-medium">Username:</span> @{profile?.username}</div>
-                  <div><span className="font-medium">Email:</span> {user?.email}</div>
-                  <div><span className="font-medium">Plan:</span> {selectedTier === 'basic_99' ? 'Explorer' : 'Professional'}</div>
+              <div className="funky-payment-section funky-section-purple">
+                <div className="funky-section-header">Submitting for:</div>
+                <div className="funky-section-body">
+                  <div className="text-xs text-gray-800 space-y-1">
+                    <div><span className="font-medium">Name:</span> {profile?.full_name}</div>
+                    <div><span className="font-medium">Username:</span> @{profile?.username}</div>
+                    <div><span className="font-medium">Plan:</span> {selectedTier === 'basic_99' ? 'Explorer' : 'Professional'}</div>
+                  </div>
                 </div>
               </div>
 
               {/* Transaction ID */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-xs font-medium text-white mb-1">
                   Transaction ID / UPI Reference Number *
                 </label>
                 <input
                   type="text"
                   value={formData.transactionId}
                   onChange={(e) => setFormData(prev => ({ ...prev, transactionId: e.target.value }))}
-                  placeholder="Enter your 12-digit transaction ID"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                  placeholder="Enter 12-digit transaction ID"
+                  className={`funky-payment-input ${
                     formData.transactionId && !validation.isValid 
-                      ? 'border-error-300 bg-error-50' 
-                      : 'border-neutral-300'
+                      ? 'funky-input-error' 
+                      : ''
                   }`}
                 />
                 <div className="mt-1 text-xs space-y-1">
-                  <p className="text-neutral-500">
-                    Examples: 123456789012, UPI123456789012, TXN1234567890
-                  </p>
                   {formData.transactionId && !validation.isValid && (
-                    <p className="text-error-600 flex items-center">
+                    <p className="text-red-400 flex items-center">
                       <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
                       {validation.message}
                     </p>
                   )}
                   {formData.transactionId && validation.isValid && (
-                    <p className="text-success-600 flex items-center">
+                    <p className="text-green-400 flex items-center">
                       <CheckCircleIcon className="h-3 w-3 mr-1" />
-                      Valid transaction ID format
+                      Valid format
                     </p>
                   )}
                 </div>
@@ -394,15 +398,15 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
 
               {/* Payment Method */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-xs font-medium text-white mb-1">
                   Payment Method
                 </label>
                 <select
                   value={formData.paymentMethod}
                   onChange={(e) => setFormData(prev => ({ ...prev, paymentMethod: e.target.value }))}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="funky-payment-input"
                 >
-                  <option value="UPI">UPI (Google Pay, PhonePe, Paytm)</option>
+                  <option value="UPI">UPI (GPay, PhonePe, Paytm)</option>
                   <option value="Net Banking">Net Banking</option>
                   <option value="Debit Card">Debit Card</option>
                   <option value="Credit Card">Credit Card</option>
@@ -411,20 +415,20 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
 
               {/* Screenshot Upload */}
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-xs font-medium text-white mb-1">
                   Payment Screenshot *
                 </label>
-                <div className="border-2 border-dashed border-neutral-300 rounded-lg p-4">
+                <div className="funky-upload-area">
                   {screenshotPreview ? (
                     <div className="text-center">
                       <img 
                         src={screenshotPreview} 
                         alt="Payment Screenshot" 
-                        className="max-w-full h-32 object-contain mx-auto mb-2"
+                        className="max-w-full h-20 object-contain mx-auto mb-1 rounded-lg"
                       />
-                      <p className="text-sm text-success-600 flex items-center justify-center">
-                        <CheckCircleIcon className="h-4 w-4 mr-1" />
-                        Screenshot uploaded successfully
+                      <p className="text-xs text-green-400 flex items-center justify-center">
+                        <CheckCircleIcon className="h-3 w-3 mr-1" />
+                        Screenshot uploaded
                       </p>
                       <button
                         type="button"
@@ -432,16 +436,16 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
                           setFormData(prev => ({ ...prev, screenshot: null }))
                           setScreenshotPreview(null)
                         }}
-                        className="text-xs text-neutral-500 hover:text-neutral-700 mt-1"
+                        className="text-xs text-white/60 hover:text-white mt-1 underline"
                       >
-                        Remove and upload different image
+                        Remove
                       </button>
                     </div>
                   ) : (
                     <div className="text-center">
-                      <PhotoIcon className="h-12 w-12 text-neutral-400 mx-auto mb-2" />
-                      <p className="text-sm text-neutral-600 mb-2">
-                        Upload payment confirmation screenshot
+                      <PhotoIcon className="h-8 w-8 text-white/60 mx-auto mb-1" />
+                      <p className="text-xs text-white mb-1">
+                        Upload payment screenshot
                       </p>
                       <input
                         type="file"
@@ -452,51 +456,49 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount }
                       />
                       <label
                         htmlFor="screenshot-upload"
-                        className="cursor-pointer bg-primary-50 text-primary-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-100 transition-colors"
+                        className="funky-upload-button"
                       >
-                        Choose Image File
+                        Choose File
                       </label>
-                      <p className="text-xs text-neutral-500 mt-2">
-                        Max size: 5MB. Formats: JPG, PNG, GIF
-                      </p>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Important Note */}
-              <div className="bg-warning-50 border border-warning-200 rounded-lg p-4">
-                <div className="flex items-start">
-                  <ClockIcon className="h-5 w-5 text-warning-600 mr-2 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium text-warning-900 mb-1">Verification Process</h4>
-                    <ul className="text-sm text-warning-800 space-y-1 list-disc list-inside">
-                      <li>Admin will verify your payment within 24-48 hours</li>
-                      <li>You'll receive email confirmation once approved</li>
-                      <li>Your account will be upgraded automatically</li>
-                      <li>Contact support if verification takes longer than 48 hours</li>
+              <div className="funky-payment-section funky-section-orange">
+                <div className="funky-section-header">Verification Process</div>
+                <div className="funky-section-body">
+                  <div className="flex items-start">
+                    <ClockIcon className="h-4 w-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <ul className="text-xs text-gray-800 space-y-1 list-disc list-inside">
+                      <li>Verification within 24-48 hours</li>
+                      <li>Email confirmation once approved</li>
+                      <li>Account upgraded automatically</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-3">
-                <Button
-                  variant="secondary"
+              <div className="flex space-x-3 mt-4">
+                <button
                   onClick={handleBack}
-                  className="flex-1"
+                  className="funky-payment-button funky-button-secondary flex-1"
                 >
                   Back
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={handleSubmitPayment}
-                  loading={submitting}
-                  disabled={!formData.transactionId || !formData.screenshot || !validation.isValid}
-                  className="flex-1"
+                  disabled={!formData.transactionId || !formData.screenshot || !validation.isValid || submitting}
+                  className="funky-payment-button funky-button-primary flex-1"
+                  style={{ 
+                    opacity: (!formData.transactionId || !formData.screenshot || !validation.isValid || submitting) ? 0.6 : 1,
+                    cursor: (!formData.transactionId || !formData.screenshot || !validation.isValid || submitting) ? 'not-allowed' : 'pointer'
+                  }}
                 >
-                  Submit for Verification
-                </Button>
+                  {submitting ? 'Submitting...' : 'Submit'}
+                </button>
               </div>
             </div>
           )}

@@ -208,7 +208,34 @@ export default function AdminManageUsersPage() {
   }
 
   const toggleUserTier = async (userId: string, currentTier: string, newTier: string) => {
-    if (!confirm(`Are you sure you want to change this user's tier from ${getSubscriptionTierName(currentTier)} to ${getSubscriptionTierName(newTier)}?`)) {
+    // Ask admin to specify duration for paid tiers
+    let durationDays = 0;
+    
+    if (newTier !== 'free') {
+      const durationChoice = prompt(
+        `Choose subscription duration for ${getSubscriptionTierName(newTier)}:\n\n` +
+        `Enter "30" for 30 days (monthly)\n` +
+        `Enter "365" for 365 days (annual)\n\n` +
+        `Duration (days):`,
+        '30'
+      );
+      
+      if (!durationChoice) return; // User cancelled
+      
+      const parsedDuration = parseInt(durationChoice);
+      if (isNaN(parsedDuration) || parsedDuration < 1) {
+        toast.error('Invalid duration. Please enter a valid number of days.');
+        return;
+      }
+      
+      durationDays = parsedDuration;
+    }
+
+    const durationText = durationDays === 0 ? '' : 
+                        durationDays === 365 ? ' for 365 days (1 year)' : 
+                        ` for ${durationDays} days`;
+
+    if (!confirm(`Are you sure you want to change this user's tier from ${getSubscriptionTierName(currentTier)} to ${getSubscriptionTierName(newTier)}${durationText}?`)) {
       return
     }
 
@@ -218,13 +245,12 @@ export default function AdminManageUsersPage() {
         target_user_id: userId,
         new_tier: newTier,
         admin_user_id: user?.id,
-        duration_days: newTier === 'free' ? 0 : 30
+        duration_days: durationDays
       })
 
       if (error) throw error
 
       const tierName = getSubscriptionTierName(newTier)
-      const durationText = newTier !== 'free' ? ' for 30 days' : ''
       
       toast.success(`User tier updated to ${tierName}${durationText}! Changes will reflect in their dashboard within 15 seconds.`)
       

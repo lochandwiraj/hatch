@@ -172,7 +172,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  --color: hsl(0, 0%, 87%);
+  --color: hsl(0, 0%, 100%);
   --animation: 2s ease-in-out infinite;
 }
 
@@ -538,7 +538,102 @@
   scale: 0.7;
 }
 
-/* Flip Card Auth Styles */
+/* Uiverse Card Styles */
+.uiverse-welcome-card {
+  width: 100%;
+  background: #353535;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+  transition: 0.5s ease-in-out;
+  padding: 2rem;
+}
+
+.uiverse-welcome-card:hover {
+  cursor: pointer;
+  transform: scale(1.02);
+}
+
+.uiverse-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(#d7cfcf, #9198e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s ease-in-out;
+}
+
+.uiverse-welcome-card:hover .uiverse-avatar {
+  background: linear-gradient(#9198e5, #712020);
+}
+
+.uiverse-welcome-text {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.uiverse-card {
+  width: 100%;
+  max-width: 290px;
+  height: 70px;
+  background: #353535;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  backdrop-filter: blur(10px);
+  transition: 0.5s ease-in-out;
+  margin: 0 auto;
+}
+
+.uiverse-card:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.uiverse-img {
+  width: 50px;
+  height: 50px;
+  margin-left: 10px;
+  border-radius: 10px;
+  background: linear-gradient(#d7cfcf, #9198e5);
+}
+
+.uiverse-card:hover > .uiverse-img {
+  transition: 0.5s ease-in-out;
+  background: linear-gradient(#9198e5, #712020);
+}
+
+.uiverse-textBox {
+  width: calc(100% - 90px);
+  margin-left: 10px;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.uiverse-textContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.uiverse-span {
+  font-size: 10px;
+}
+
+.uiverse-h1 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.uiverse-p {
+  font-size: 12px;
+  font-weight: lighter;
+}
 .wrapper {
   --input-focus: #2d8cf0;
   --font-color: #323232;
@@ -730,4 +825,3815 @@
   font-weight: 600;
   color: var(--font-color);
   cursor: pointer;
+}
+/* Fancy Button Styles */
+.btn {
+  --fancy-button-gradient-0: #8d49fd;
+  --fancy-button-gradient-50: #7f56f3;
+  --fancy-button-gradient-100: #5691f3;
+  --fancy-button-inner-shadow-top: rgba(233, 209, 255, 0.2);
+  --fancy-button-inner-shadow-top-lg: rgba(9, 12, 60, 0.1);
+  --fancy-button-inner-shadow-bottom: rgba(137, 222, 246, 0.3);
+  --fancy-button-shine-top: #e9d1ff;
+  --fancy-button-shine-bottom: #adfff9;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 21px;
+  text-shadow: 0px 0.5px 0.5px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  border: none;
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  z-index: 1;
+  border-radius: 25px;
+  color: #fff;
+  background-image: linear-gradient(to bottom, var(--fancy-button-gradient-0) 0%, var(--fancy-button-gradient-50) 50%, var(--fancy-button-gradient-100) 100%);
+  box-shadow: 0px 4px 12px rgba(9, 12, 60, 0.15), 0px 2px 8px rgba(9, 12, 60, 0.15), 0px 1px 3px var(--fancy-button-inner-shadow-top-lg), inset 0px 1px 1px var(--fancy-button-inner-shadow-top), inset 0px -1px 3px var(--fancy-button-inner-shadow-bottom);
+}
+
+.btn:before,
+.btn:after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+  will-change: transform;
+}
+
+.btn:before {
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--fancy-button-shine-top);
+  width: 96px;
+  height: 6px;
+  top: -3px;
+  opacity: 0.6;
+  filter: blur(6px);
+  transition: opacity 0.25s;
+}
+
+.btn:after {
+  inset: 0;
+  background-size: cover;
+  z-index: 2;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.btn span {
+  display: block;
+  padding: 12px 24px;
+  border-radius: inherit;
+  overflow: hidden;
+  position: relative;
+  background-image: linear-gradient(to bottom, var(--fancy-button-shine-top), transparent 8px);
+  background-position: 0 -6px;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.btn span:before,
+.btn span:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background-color: var(--fancy-button-shine-bottom);
+  transition: opacity 0.25s, transform 0.25s;
+  will-change: transform;
+}
+
+.btn span:before {
+  width: 92px;
+  height: 8px;
+  bottom: -4px;
+  opacity: 0.75;
+  filter: blur(6px);
+}
+
+.btn span:after {
+  width: 112px;
+  height: 1px;
+  bottom: 0;
+  opacity: 0.9;
+  filter: blur(1px);
+}
+
+.btn:hover span:before {
+  opacity: 0.8;
+  transform: translateX(-50%) scale(1.25);
+}
+
+.btn:hover span:after {
+  opacity: 1;
+}
+/* Simple White Button for Dashboard */
+.white-btn {
+  background-color: white;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.white-btn:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+/* Animated Card Styles */
+.card {
+  background: #171717;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0px 0px 3px 1px #00000088;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 5px;
+}
+
+.card .content {
+  border-radius: 17px;
+  background: #171717;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  padding: 1.5rem;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.content::before {
+  opacity: 0;
+  transition: opacity 300ms;
+  content: " ";
+  display: block;
+  background: white;
+  width: 5px;
+  height: 50px;
+  position: absolute;
+  filter: blur(50px);
+  overflow: hidden;
+}
+
+.card:hover .content::before {
+  opacity: 1;
+}
+
+.card::before {
+  opacity: 0;
+  content: " ";
+  position: absolute;
+  display: block;
+  width: 80px;
+  height: 360px;
+  background: linear-gradient(#ff2288, #387ef0);
+  transition: opacity 300ms;
+  animation: rotation_9018 8000ms infinite linear;
+  animation-play-state: paused;
+}
+
+.card:hover::before {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+.card::after {
+  position: absolute;
+  content: " ";
+  display: block;
+  width: 250px;
+  height: 360px;
+  background: #17171733;
+  backdrop-filter: blur(50px);
+}
+
+@keyframes rotation_9018 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Funky Event Card Styles */
+.event-card {
+  position: relative;
+  width: 100%;
+  max-width: 20em;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.event-card:hover {
+  transform: translate(-0.4em, -0.4em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.event-card:hover .card-pattern-grid,
+.event-card:hover .card-overlay-dots {
+  opacity: 1;
+}
+
+.event-card:active {
+  transform: translate(0.1em, 0.1em) scale(0.98);
+  box-shadow: 0.5em 0.5em 0 var(--shadow-color);
+}
+
+.event-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.event-card::after {
+  content: "★";
+  position: absolute;
+  top: 0.4em;
+  right: 0.4em;
+  color: var(--text);
+  font-size: 1.2em;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.event-card-pattern-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 0.5em 0.5em;
+  pointer-events: none;
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.event-card-overlay-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--pattern-color) 1px, transparent 1px);
+  background-size: 1em 1em;
+  background-position: -0.5em -0.5em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.event-card-title-area {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.event-card-title-area::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.event-card-tag {
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.6em;
+  font-weight: 800;
+  padding: 0.4em 0.8em;
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transform: rotate(3deg);
+  transition: all 0.3s ease;
+}
+
+.event-card:hover .event-card-tag {
+  transform: rotate(-2deg) scale(1.1);
+  box-shadow: 0.25em 0.25em 0 var(--shadow-color);
+}
+
+.event-card-body {
+  position: relative;
+  padding: 1.5em;
+  z-index: 2;
+}
+
+.event-card-description {
+  margin-bottom: 1.5em;
+  color: var(--text);
+  font-size: 0.95em;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.event-feature-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8em;
+  margin-bottom: 1.5em;
+}
+
+.event-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  transition: transform 0.2s ease;
+}
+
+.event-feature-item:hover {
+  transform: translateX(0.3em);
+}
+
+.event-feature-icon {
+  width: 1.4em;
+  height: 1.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary);
+  border: 0.12em solid var(--text);
+  border-radius: 0.3em;
+  box-shadow: 0.2em 0.2em 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.event-feature-item:hover .event-feature-icon {
+  background: var(--secondary-hover);
+  transform: rotate(-5deg);
+}
+
+.event-feature-text {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.event-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5em;
+  padding-top: 1.2em;
+  border-top: 0.15em dashed rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.event-card-button {
+  position: relative;
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.7em 1.2em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.event-card-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.event-card-button:hover {
+  background: var(--secondary-hover);
+  transform: translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.event-card-button:hover::before {
+  left: 100%;
+}
+
+.event-card-button:active {
+  transform: translate(0.1em, 0.1em);
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+}
+
+.event-accent-shape {
+  position: absolute;
+  width: 2.5em;
+  height: 2.5em;
+  background: var(--secondary);
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  transform: rotate(45deg);
+  bottom: -1.2em;
+  right: 2em;
+  z-index: 0;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-accent-shape {
+  transform: rotate(55deg) scale(1.1);
+}
+/* Funky Activity Card Styles */
+.activity-card {
+  --primary: #ff6b35;
+  --primary-hover: #ff8c42;
+  --secondary: #7209b7;
+  --secondary-hover: #8e2de2;
+  --accent: #f72585;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #ddd;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.activity-card:hover {
+  transform: translate(-0.2em, -0.2em) scale(1.01);
+  box-shadow: 0.9em 0.9em 0 var(--shadow-color);
+}
+
+.activity-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.activity-card::after {
+  display: none;
+}
+
+.activity-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.activity-card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.activity-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+  padding: 1.5em;
+}
+
+.activity-stat-item {
+  text-align: center;
+  position: relative;
+}
+
+.activity-stat-number {
+  font-size: 2.5em;
+  font-weight: 800;
+  color: var(--secondary);
+  text-shadow: 0.1em 0.1em 0 var(--shadow-color);
+  transform: rotate(-2deg);
+}
+
+.activity-stat-label {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.5em;
+}
+
+.activity-tier-info {
+  background: var(--secondary);
+  color: var(--bg);
+  padding: 1em;
+  margin: 0 1.5em 1.5em;
+  border-radius: 0.5em;
+  border: 0.2em solid var(--text);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  transform: rotate(1deg);
+  transition: transform 0.3s ease;
+}
+
+.activity-tier-info:hover {
+  transform: rotate(-1deg) scale(1.02);
+}
+
+/* Funky Search Card Styles */
+.search-card {
+  --primary: #06ffa5;
+  --primary-hover: #40ffb3;
+  --secondary: #ff006e;
+  --secondary-hover: #ff1744;
+  --accent: #8338ec;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #e0e0e0;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.search-card:hover {
+  transform: translate(-0.2em, -0.2em) scale(1.01);
+  box-shadow: 0.9em 0.9em 0 var(--shadow-color);
+}
+
+.search-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.search-card::after {
+  display: none;
+}
+
+.search-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.search-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-search-input {
+  width: 100%;
+  padding: 0.8em 1em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  background: var(--bg);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 1em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  transition: all 0.3s ease;
+  transform: rotate(-1deg);
+}
+
+.funky-search-input:focus {
+  outline: none;
+  transform: rotate(0deg) scale(1.02);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+  border-color: var(--secondary);
+}
+
+.funky-search-input::placeholder {
+  color: rgba(5, 5, 5, 0.6);
+  font-weight: 500;
+}
+
+.funky-button {
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.7em 1.2em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+  transform: rotate(2deg);
+}
+
+.funky-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-button:active {
+  transform: rotate(1deg) translate(0.1em, 0.1em);
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+}
+
+.filter-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8em;
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: 0.15em dashed rgba(0, 0, 0, 0.2);
+}
+
+.filter-pill {
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8em;
+  font-weight: 700;
+  padding: 0.5em 1em;
+  border: 0.15em solid var(--text);
+  border-radius: 2em;
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: rotate(-1deg);
+}
+
+.filter-pill:hover {
+  transform: rotate(1deg) scale(1.05);
+  box-shadow: 0.25em 0.25em 0 var(--shadow-color);
+}
+
+.filter-pill.active {
+  background: var(--accent);
+  color: var(--bg);
+  transform: rotate(2deg) scale(1.1);
+}
+
+.search-actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 1.5em;
+  flex-wrap: wrap;
+}
+/* Funky Events Page Background */
+.funky-events-background {
+  background: linear-gradient(-45deg, #0a0a0a, #1a0a1a, #0a1a1a, #1a1a0a);
+  background-size: 400% 400%;
+  animation: funky-gradient 15s ease infinite;
+  position: relative;
+}
+
+.funky-events-background::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(114, 9, 183, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(6, 255, 165, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.funky-events-background > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes funky-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhance header for funky background */
+.funky-events-background header {
+  background: rgba(26, 26, 26, 0.9) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+/* Funky Dashboard Card Styles */
+
+/* Funky Browse Events Card */
+.funky-browse-card {
+  --primary: #00e0b0;
+  --primary-hover: #00ffcc;
+  --secondary: #ff3e00;
+  --secondary-hover: #ff6d43;
+  --accent: #7209b7;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #e0f7fa;
+  
+  position: relative;
+  width: 100%;
+  max-width: 24em;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  margin: 0 auto;
+}
+
+.funky-browse-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-browse-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-browse-card::after {
+  display: none;
+}
+
+.funky-browse-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.funky-browse-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Upgrade Card */
+.funky-upgrade-card {
+  --primary: #ff006e;
+  --primary-hover: #ff1744;
+  --secondary: #8338ec;
+  --secondary-hover: #9d4edd;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fce4ec;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-upgrade-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-upgrade-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-upgrade-card::after {
+  display: none;
+}
+
+.funky-upgrade-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Funky Activity Card */
+.funky-activity-card {
+  --primary: #ffbe0b;
+  --primary-hover: #ffd60a;
+  --secondary: #fb8500;
+  --secondary-hover: #ffaa00;
+  --accent: #8ecae6;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fff8e1;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-activity-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-activity-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-activity-card::after {
+  display: none;
+}
+
+.funky-activity-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.funky-activity-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Profile Card */
+.funky-profile-card {
+  --primary: #7209b7;
+  --primary-hover: #8e2de2;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-profile-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-profile-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-profile-card::after {
+  display: none;
+}
+
+.funky-profile-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.funky-profile-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Button for Dashboard */
+.funky-dashboard-button {
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.8em 1.5em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+  transform: rotate(1deg);
+  width: 100%;
+  text-align: center;
+}
+
+.funky-dashboard-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-dashboard-button:active {
+  transform: rotate(-1deg) translate(0.1em, 0.1em);
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+}
+
+/* Profile completion items */
+.profile-completion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8em;
+  margin: 0.5em 0;
+  border: 0.15em solid var(--text);
+  border-radius: 0.4em;
+  background: rgba(255, 255, 255, 0.5);
+  transform: rotate(-0.5deg);
+  transition: all 0.3s ease;
+}
+
+.profile-completion-item:hover {
+  transform: rotate(0.5deg) scale(1.02);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.profile-completion-item:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.profile-completion-item:nth-child(even):hover {
+  transform: rotate(-0.5deg) scale(1.02);
+}
+/* Funky Referral Card */
+.funky-referral-card {
+  --primary: #ff3e00;
+  --primary-hover: #ff6d43;
+  --secondary: #4d61ff;
+  --secondary-hover: #5e70ff;
+  --accent: #00e0b0;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fff3e0;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-referral-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-referral-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-referral-card::after {
+  display: none;
+}
+
+.funky-referral-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.funky-referral-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-referral-icon {
+  width: 3em;
+  height: 3em;
+  background: var(--secondary);
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-5deg);
+  transition: all 0.3s ease;
+}
+
+.funky-referral-card:hover .funky-referral-icon {
+  transform: rotate(5deg) scale(1.1);
+}
+
+.funky-info-box {
+  background: rgba(255, 255, 255, 0.8);
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  padding: 1em;
+  margin: 1em 0;
+  transform: rotate(-1deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-input-group {
+  position: relative;
+  margin: 1em 0;
+}
+
+.funky-input {
+  width: 100%;
+  padding: 0.8em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em 0 0 0.4em;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9em;
+  transform: rotate(-0.5deg);
+}
+
+.funky-copy-button {
+  background: var(--secondary);
+  color: var(--bg);
+  border: 0.2em solid var(--text);
+  border-left: none;
+  border-radius: 0 0.4em 0.4em 0;
+  padding: 0.8em 1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: rotate(0.5deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-copy-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-share-button {
+  background: var(--accent);
+  color: var(--text);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.8em 1.2em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(1deg);
+  width: 100%;
+}
+
+.funky-share-button:hover {
+  background: #00ffcc;
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+/* Funky Welcome Card */
+.funky-welcome-card {
+  --primary: #ff006e;
+  --primary-hover: #ff1744;
+  --secondary: #8338ec;
+  --secondary-hover: #9d4edd;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fce4ec;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.funky-welcome-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-welcome-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-welcome-card::after {
+  display: none;
+}
+
+.funky-welcome-card-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--pattern-color) 1px, transparent 1px);
+  background-size: 1em 1em;
+  background-position: -0.5em -0.5em;
+  pointer-events: none;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.funky-welcome-text {
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-welcome-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--secondary);
+  border: 0.3em solid var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s ease-in-out;
+  position: relative;
+  z-index: 2;
+  transform: rotate(-5deg);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-welcome-card:hover .funky-welcome-avatar {
+  background: var(--secondary-hover);
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0.5em 0.5em 0 var(--shadow-color);
+}
+
+/* Funky Subscription Tier Card */
+.funky-tier-card {
+  --primary: #00e0b0;
+  --primary-hover: #00ffcc;
+  --secondary: #ff3e00;
+  --secondary-hover: #ff6d43;
+  --accent: #7209b7;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #e0f7fa;
+  
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  margin: 0 auto;
+}
+
+.funky-tier-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.05);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-tier-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-tier-card::after {
+  display: none;
+}
+
+.funky-tier-card-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.1em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  text-align: center;
+}
+
+.funky-tier-card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.funky-tier-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.funky-tier-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background: var(--secondary);
+  border: 0.2em solid var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-3deg);
+  transition: 0.5s ease-in-out;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-tier-card:hover .funky-tier-icon {
+  background: var(--secondary-hover);
+  transform: rotate(3deg) scale(1.1);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-tier-text {
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+
+.funky-tier-value {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.2em;
+}
+
+.funky-tier-label {
+  font-size: 0.9em;
+  font-weight: 600;
+  opacity: 0.8;
+}
+/* Funky Calendar Card Styles */
+
+/* Funky Calendar Main Card */
+.funky-calendar-card {
+  --primary: #8338ec;
+  --primary-hover: #9d4edd;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-calendar-card:hover {
+  transform: translate(-0.2em, -0.2em) scale(1.01);
+  box-shadow: 0.9em 0.9em 0 var(--shadow-color);
+}
+
+.funky-calendar-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-calendar-card::after {
+  display: none;
+}
+
+.funky-calendar-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.funky-calendar-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Calendar Navigation Buttons */
+.funky-nav-button {
+  background: var(--secondary);
+  color: var(--bg);
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  padding: 0.5em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: rotate(2deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-nav-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-today-button {
+  background: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+  padding: 0.5em 1em;
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: rotate(-1deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  text-transform: uppercase;
+  font-size: 0.8em;
+  letter-spacing: 0.05em;
+}
+
+.funky-today-button:hover {
+  background: #00ffcc;
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+/* Funky Calendar Grid */
+.funky-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 0.1em solid rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.funky-calendar-day:hover {
+  background: rgba(131, 56, 236, 0.1);
+  transform: scale(1.05);
+  border-color: var(--primary);
+}
+
+.funky-calendar-day.today {
+  background: var(--primary);
+  color: var(--bg);
+  border-color: var(--text);
+  border-width: 0.15em;
+  border-radius: 0.3em;
+  transform: rotate(-2deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-calendar-day.has-event {
+  background: var(--accent);
+  color: var(--text);
+  border-color: var(--text);
+  border-width: 0.15em;
+  border-radius: 0.3em;
+  transform: rotate(1deg);
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+}
+
+.funky-calendar-day.has-event:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+/* Funky Events List Card */
+.funky-events-list-card {
+  --primary: #ff006e;
+  --primary-hover: #ff1744;
+  --secondary: #8338ec;
+  --secondary-hover: #9d4edd;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fce4ec;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-events-list-card:hover {
+  transform: translate(-0.2em, -0.2em) scale(1.01);
+  box-shadow: 0.9em 0.9em 0 var(--shadow-color);
+}
+
+.funky-events-list-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-events-list-card::after {
+  display: none;
+}
+
+.funky-events-list-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.funky-events-list-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Funky Event Item */
+.funky-event-item {
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  padding: 1em;
+  margin-bottom: 1em;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  transform: rotate(-0.5deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-event-item:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: rotate(0.5deg) scale(1.02);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-event-item:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.funky-event-item:nth-child(even):hover {
+  transform: rotate(-0.5deg) scale(1.02);
+}
+
+/* Funky Event Buttons */
+.funky-event-button {
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.75em;
+  font-weight: 700;
+  padding: 0.5em 0.8em;
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+  transform: rotate(1deg);
+}
+
+.funky-event-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-event-button.primary {
+  background: var(--primary);
+}
+
+.funky-event-button.primary:hover {
+  background: var(--primary-hover);
+}
+
+/* Funky Empty State */
+.funky-empty-state {
+  text-align: center;
+  padding: 2em;
+}
+
+.funky-empty-icon {
+  font-size: 4em;
+  margin-bottom: 1em;
+  transition: transform 0.3s ease;
+  display: none;
+}
+
+.funky-empty-state:hover .funky-empty-icon {
+  transform: rotate(10deg) scale(1.1);
+}
+
+.funky-browse-events-button {
+  background: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+  padding: 0.8em 1.5em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+  transform: rotate(-2deg);
+}
+
+.funky-browse-events-button:hover {
+  background: #00ffcc;
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+/* Funky Subscription Page Styles */
+
+/* Funky Current Subscription Card */
+.funky-current-subscription-card {
+  --primary: #00e0b0;
+  --primary-hover: #00ffcc;
+  --secondary: #ff3e00;
+  --secondary-hover: #ff6d43;
+  --accent: #7209b7;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #e0f7fa;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-current-subscription-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-current-subscription-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  left: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-current-subscription-card::after {
+  display: none;
+}
+
+.funky-current-subscription-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.funky-current-subscription-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Funky Pricing Plan Cards */
+.funky-pricing-card {
+  --primary: #8338ec;
+  --primary-hover: #9d4edd;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: visible;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1em;
+}
+
+.funky-pricing-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-pricing-card.popular {
+  --primary: #ff006e;
+  --primary-hover: #ff1744;
+  --secondary: #8338ec;
+  --accent: #06ffa5;
+  border-width: 0.4em;
+}
+
+.funky-pricing-card.current {
+  --primary: #06ffa5;
+  --primary-hover: #00ffcc;
+  --secondary: #ff3e00;
+  --accent: #7209b7;
+  border-width: 0.4em;
+}
+
+.funky-pricing-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-pricing-card::after {
+  display: none;
+}
+
+.funky-pricing-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.1em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  text-align: center;
+}
+
+.funky-pricing-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.funky-pricing-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.funky-pricing-icon {
+  width: 3em;
+  height: 3em;
+  background: var(--secondary);
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1em;
+  transform: rotate(-5deg);
+  transition: all 0.3s ease;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-pricing-card:hover .funky-pricing-icon {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-pricing-price {
+  font-size: 2em;
+  font-weight: 800;
+  color: var(--text);
+  text-align: center;
+  margin: 0.5em 0;
+  text-shadow: 0.05em 0.05em 0 var(--shadow-color);
+}
+
+.funky-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5em 0;
+  flex-grow: 1;
+}
+
+.funky-feature-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5em 0;
+  font-weight: 600;
+  color: var(--text);
+  transform: rotate(-0.5deg);
+  transition: transform 0.2s ease;
+}
+
+.funky-feature-item:hover {
+  transform: rotate(0.5deg) translateX(0.2em);
+}
+
+.funky-feature-item:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.funky-feature-item:nth-child(even):hover {
+  transform: rotate(-0.5deg) translateX(0.2em);
+}
+
+.funky-feature-icon {
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.8em;
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+/* Funky Plan Buttons */
+.funky-plan-button {
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.8em 1.5em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+  transform: rotate(1deg);
+  width: 100%;
+  text-align: center;
+  margin-top: auto;
+}
+
+.funky-plan-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-plan-button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  transform: rotate(0deg);
+}
+
+.funky-plan-button:disabled:hover {
+  background: #ccc;
+  transform: rotate(0deg);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-plan-button.current {
+  background: var(--primary);
+}
+
+.funky-plan-button.current:hover {
+  background: var(--primary-hover);
+}
+
+/* Funky Plan Badge */
+.funky-plan-badge {
+  position: absolute;
+  top: -0.6em;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.7em;
+  font-weight: 700;
+  padding: 0.4em 1em;
+  border: 0.15em solid var(--text);
+  border-radius: 1.5em;
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 3;
+  white-space: nowrap;
+}
+
+.funky-plan-badge.popular {
+  background: #ff006e;
+}
+
+.funky-plan-badge.current {
+  background: #06ffa5;
+  color: var(--text);
+}
+
+/* Funky Benefits Card */
+.funky-benefits-card {
+  --primary: #ffbe0b;
+  --primary-hover: #ffd60a;
+  --secondary: #fb8500;
+  --secondary-hover: #ffaa00;
+  --accent: #8ecae6;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fff8e1;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-benefits-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-benefits-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-benefits-card::after {
+  display: none;
+}
+
+.funky-benefits-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  text-align: center;
+}
+
+.funky-benefits-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-benefit-item {
+  text-align: center;
+  padding: 1em;
+}
+
+.funky-benefit-icon {
+  width: 4em;
+  height: 4em;
+  background: var(--secondary);
+  border: 0.2em solid var(--text);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1em;
+  transform: rotate(-5deg);
+  transition: all 0.3s ease;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-benefit-item:hover .funky-benefit-icon {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-benefit-title {
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+}
+
+.funky-benefit-description {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+/* Uiverse 3D Subscription Cards */
+.subscription-parent {
+  width: 300px;
+  padding: 20px;
+  perspective: 1000px;
+}
+
+.subscription-card {
+  padding-top: 50px;
+  border: 3px solid #141414;
+  transform-style: preserve-3d;
+  background: linear-gradient(135deg, #0000 18.75%, #f3f3f3 0 31.25%, #0000 0),
+              repeating-linear-gradient(45deg, #f3f3f3 -6.25% 6.25%, #141414 0 18.75%);
+  background-size: 60px 60px;
+  background-position: 0 0, 0 0;
+  background-color: #141414;
+  width: 100%;
+  box-shadow: rgba(142, 142, 142, 0.3) 0px 30px 30px -10px;
+  transition: all 0.5s ease-in-out;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.subscription-card:hover {
+  background-position: -100px 100px, -100px 100px;
+  transform: rotate3d(0.5, 1, 0, 30deg);
+}
+
+.subscription-card.popular {
+  border-color: #ff006e;
+}
+
+.subscription-card.current {
+  border-color: #06ffa5;
+}
+
+.subscription-content-box {
+  background: #8ed500;
+  transition: all 0.5s ease-in-out;
+  padding: 60px 25px 25px 25px;
+  transform-style: preserve-3d;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+.subscription-content-box.popular {
+  background: #ff006e;
+}
+
+.subscription-content-box.current {
+  background: #06ffa5;
+}
+
+.subscription-card-title {
+  display: inline-block;
+  color: #141414;
+  font-size: 25px;
+  font-weight: 900;
+  transition: all 0.5s ease-in-out;
+  transform: translate3d(0px, 0px, 50px);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.subscription-card-title:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.subscription-card-price {
+  display: inline-block;
+  color: #141414;
+  font-size: 35px;
+  font-weight: 900;
+  transition: all 0.5s ease-in-out;
+  transform: translate3d(0px, 0px, 45px);
+  text-align: center;
+  margin: 15px 0;
+}
+
+.subscription-card-price:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.subscription-card-content {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #141414;
+  transition: all 0.5s ease-in-out;
+  transform: translate3d(0px, 0px, 30px);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.subscription-card-content:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.subscription-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+  flex-grow: 1;
+}
+
+.subscription-feature-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #141414;
+}
+
+.subscription-feature-icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  color: #141414;
+}
+
+.subscription-see-more {
+  cursor: pointer;
+  margin-top: auto;
+  display: inline-block;
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8ed500;
+  background: #141414;
+  padding: 12px 20px;
+  transition: all 0.5s ease-in-out;
+  transform: translate3d(0px, 0px, 20px);
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  width: 100%;
+  align-self: flex-end;
+}
+
+.subscription-see-more:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.subscription-see-more:disabled {
+  background: #666;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.subscription-see-more.popular {
+  color: #ff006e;
+}
+
+.subscription-see-more.current {
+  color: #06ffa5;
+}
+
+.subscription-date-box {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  height: 60px;
+  width: 60px;
+  background: #141414;
+  border: 1px solid #8ed500;
+  padding: 10px;
+  transform: translate3d(0px, 0px, 80px);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 17px 10px -10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.subscription-date-box.popular {
+  border-color: #ff006e;
+}
+
+.subscription-date-box.current {
+  border-color: #06ffa5;
+}
+
+.subscription-date-box span {
+  display: block;
+  text-align: center;
+}
+
+.subscription-date-box .month {
+  color: #8ed500;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.subscription-date-box .month.popular {
+  color: #ff006e;
+}
+
+.subscription-date-box .month.current {
+  color: #06ffa5;
+}
+
+.subscription-date-box .date {
+  font-size: 20px;
+  font-weight: 900;
+  color: #8ed500;
+}
+
+.subscription-date-box .date.popular {
+  color: #ff006e;
+}
+
+.subscription-date-box .date.current {
+  color: #06ffa5;
+}
+/* Funky Profile Page Styles */
+
+/* Funky Profile Header Card */
+.funky-profile-header-card {
+  --primary: #ff006e;
+  --primary-hover: #ff1744;
+  --secondary: #8338ec;
+  --secondary-hover: #9d4edd;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fce4ec;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-profile-header-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.01);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-profile-gradient-header {
+  height: 8rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  position: relative;
+}
+
+.funky-profile-gradient-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+}
+
+.funky-profile-avatar {
+  width: 8rem;
+  height: 8rem;
+  background: var(--bg);
+  border: 0.3em solid var(--text);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+  transform: rotate(-3deg);
+  transition: all 0.3s ease;
+}
+
+.funky-profile-avatar:hover {
+  transform: rotate(3deg) scale(1.05);
+  box-shadow: 0.5em 0.5em 0 var(--shadow-color);
+}
+
+/* Funky Info Cards */
+.funky-info-card {
+  --primary: #8338ec;
+  --primary-hover: #9d4edd;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-info-card:hover {
+  transform: translate(-0.2em, -0.2em) scale(1.02);
+  box-shadow: 0.9em 0.9em 0 var(--shadow-color);
+}
+
+.funky-info-card-header {
+  position: relative;
+  padding: 1.2em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.1em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.funky-info-card-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.funky-info-card-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Activity Card */
+.funky-profile-activity-card {
+  --primary: #ffbe0b;
+  --primary-hover: #ffd60a;
+  --secondary: #fb8500;
+  --secondary-hover: #ffaa00;
+  --accent: #8ecae6;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fff8e1;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-profile-activity-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-profile-activity-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.funky-profile-activity-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Bio Card */
+.funky-bio-card {
+  --primary: #06ffa5;
+  --primary-hover: #00ffcc;
+  --secondary: #ff3e00;
+  --secondary-hover: #ff6d43;
+  --accent: #7209b7;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #e0f7fa;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-bio-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-bio-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.funky-bio-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Funky Subscription Status Card */
+.funky-subscription-status-card {
+  --primary: #7209b7;
+  --primary-hover: #8e2de2;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  padding: 1.5em;
+  color: var(--bg);
+}
+
+.funky-subscription-status-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+/* Funky Account Actions Card */
+.funky-account-actions-card {
+  --primary: #ff3e00;
+  --primary-hover: #ff6d43;
+  --secondary: #4d61ff;
+  --secondary-hover: #5e70ff;
+  --accent: #00e0b0;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #fff3e0;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-account-actions-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-account-actions-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.funky-account-actions-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-action-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  margin: 0.8em 0;
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  transform: rotate(-0.5deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-action-item:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: rotate(0.5deg) scale(1.02);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-action-item:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.funky-action-item:nth-child(even):hover {
+  transform: rotate(-0.5deg) scale(1.02);
+}
+
+.funky-stat-number {
+  font-size: 1.8em;
+  font-weight: 800;
+  color: var(--secondary);
+  text-shadow: 0.05em 0.05em 0 var(--shadow-color);
+}
+
+.funky-stat-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.3em;
+}
+
+/* Funky Action Item */
+.funky-action-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  margin: 0.5em 0;
+  border: 0.15em solid var(--text);
+  border-radius: 0.4em;
+  background: rgba(255, 255, 255, 0.8);
+  transform: rotate(-0.5deg);
+  transition: all 0.3s ease;
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-action-item:hover {
+  transform: rotate(0.5deg) scale(1.02);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-action-item:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.funky-action-item:nth-child(even):hover {
+  transform: rotate(-0.5deg) scale(1.02);
+}
+
+/* Funky Profile Button */
+.funky-profile-button {
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.6em 1.2em;
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transform: rotate(1deg);
+}
+
+.funky-profile-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-profile-button.danger {
+  background: #dc2626;
+  color: white;
+}
+
+.funky-profile-button.danger:hover {
+  background: #b91c1c;
+}
+
+/* Funky Stats Grid */
+.funky-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1em;
+  margin: 0;
+}
+
+.funky-stat-item {
+  text-align: center;
+  padding: 1em;
+  border: 0.15em solid var(--text);
+  border-radius: 0.4em;
+  background: rgba(255, 255, 255, 0.9);
+  transform: rotate(-1deg);
+  transition: all 0.3s ease;
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+
+.funky-stat-item:hover {
+  transform: rotate(1deg) scale(1.05);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-stat-item:nth-child(even) {
+  transform: rotate(1deg);
+}
+
+.funky-stat-item:nth-child(even):hover {
+  transform: rotate(-1deg) scale(1.05);
+}
+
+.funky-stat-number {
+  font-size: 1.8em;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.2em;
+}
+
+.funky-stat-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Compact Info Cards */
+.funky-info-card-compact {
+  --primary: #8338ec;
+  --primary-hover: #9d4edd;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.25em solid var(--text);
+  border-radius: 0.5em;
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+}
+
+.funky-info-card-compact:hover {
+  transform: translate(-0.1em, -0.1em) scale(1.01);
+  box-shadow: 0.5em 0.5em 0 var(--shadow-color);
+}
+
+.funky-info-card-header-compact {
+  position: relative;
+  padding: 0.8em 1em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 0.9em;
+  border-bottom: 0.25em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.funky-info-card-header-compact::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.3em, transparent 0.3em, transparent 0.6em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.funky-info-card-body-compact {
+  padding: 1em;
+  position: relative;
+  z-index: 2;
+}
+/* Funky Modal Styles */
+.funky-modal-card {
+  --primary: #8338ec;
+  --primary-hover: #9d4edd;
+  --secondary: #f72585;
+  --secondary-hover: #ff1744;
+  --accent: #06ffa5;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  --pattern-color: #f3e5f5;
+  
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.8em;
+  box-shadow: 1em 1em 0 var(--shadow-color);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  animation: funky-modal-appear 0.5s ease-out;
+}
+
+@keyframes funky-modal-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.funky-modal-card::before {
+  content: "";
+  position: absolute;
+  top: -1em;
+  right: -1em;
+  width: 4em;
+  height: 4em;
+  background: var(--accent);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.funky-modal-header {
+  position: relative;
+  padding: 1.5em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  border-bottom: 0.35em solid var(--text);
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.funky-modal-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 0.5em, transparent 0.5em, transparent 1em);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.funky-modal-title {
+  font-size: 1.3em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-modal-close-button {
+  background: var(--bg);
+  color: var(--text);
+  border: 0.15em solid var(--text);
+  border-radius: 0.3em;
+  padding: 0.5em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: rotate(5deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  position: relative;
+  z-index: 2;
+}
+
+.funky-modal-close-button:hover {
+  background: var(--secondary);
+  color: var(--bg);
+  transform: rotate(0deg) scale(1.1);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-modal-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+}
+
+/* Event Info Card */
+.funky-event-info-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  transform: rotate(-1deg);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.funky-event-info-card:hover {
+  transform: rotate(1deg) scale(1.02);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-event-title {
+  font-size: 1.1em;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.funky-event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.funky-event-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.funky-event-detail-item svg {
+  color: var(--secondary);
+}
+
+/* Confirmation Section */
+.funky-confirmation-section {
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+.funky-confirmation-icon {
+  width: 4em;
+  height: 4em;
+  background: var(--secondary);
+  border: 0.2em solid var(--text);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1em;
+  transform: rotate(-5deg);
+  transition: all 0.3s ease;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  color: var(--bg);
+}
+
+.funky-confirmation-icon:hover {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-warning-icon {
+  width: 4em;
+  height: 4em;
+  background: #ffbe0b;
+  border: 0.2em solid var(--text);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1em;
+  transform: rotate(-5deg);
+  transition: all 0.3s ease;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  color: var(--text);
+}
+
+.funky-warning-icon:hover {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-confirmation-title {
+  font-size: 1.2em;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.funky-confirmation-text {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+/* Modal Actions */
+.funky-modal-actions {
+  display: flex;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+.funky-modal-button {
+  background: var(--secondary);
+  color: var(--bg);
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 0.8em 1.2em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(1deg);
+  flex: 1;
+}
+
+.funky-modal-button:hover {
+  background: var(--secondary-hover);
+  transform: rotate(0deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-modal-button:active {
+  transform: rotate(-1deg) translate(0.1em, 0.1em);
+  box-shadow: 0.15em 0.15em 0 var(--shadow-color);
+}
+
+.funky-modal-button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  transform: rotate(0deg);
+}
+
+.funky-modal-button:disabled:hover {
+  background: #ccc;
+  transform: rotate(0deg);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-modal-button.secondary {
+  background: var(--bg);
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.funky-modal-button.secondary:hover {
+  background: var(--accent);
+  color: var(--text);
+}
+
+.funky-modal-button.primary {
+  background: var(--primary);
+  color: var(--bg);
+}
+
+.funky-modal-button.primary:hover {
+  background: var(--primary-hover);
+}
+
+.funky-modal-button.full-width {
+  width: 100%;
+  flex: none;
+}
+
+.funky-modal-help-text {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.6;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Upgrade Card */
+.funky-upgrade-card {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: 0.2em solid var(--text);
+  border-radius: 0.6em;
+  padding: 1.2em;
+  margin-bottom: 1.5em;
+  transform: rotate(1deg);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+  transition: all 0.3s ease;
+  color: var(--bg);
+}
+
+.funky-upgrade-card:hover {
+  transform: rotate(-1deg) scale(1.02);
+  box-shadow: 0.5em 0.5em 0 var(--shadow-color);
+}
+
+.funky-upgrade-title {
+  font-size: 1.1em;
+  font-weight: 800;
+  margin-bottom: 1em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.funky-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  margin-bottom: 1.2em;
+}
+
+.funky-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.funky-feature-item svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.funky-pricing-section {
+  text-align: center;
+}
+
+.funky-price-text {
+  font-size: 0.9em;
+  font-weight: 700;
+  margin-bottom: 1em;
+  opacity: 0.9;
+}
+
+/* Info Card */
+.funky-info-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  transform: rotate(-0.5deg);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.funky-info-card:hover {
+  transform: rotate(0.5deg) scale(1.01);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-info-title {
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5em;
+}
+
+.funky-info-text {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.8;
+  line-height: 1.4;
+}
+/* Funky Upgrade Page Styles */
+.funky-upgrade-card {
+  position: relative;
+  width: 100%;
+  background: var(--bg);
+  border: 0.35em solid var(--text);
+  border-radius: 0.6em;
+  box-shadow: 0.7em 0.7em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transform-origin: center;
+  margin-bottom: 1.5em;
+}
+
+.funky-upgrade-card:hover {
+  transform: translate(-0.3em, -0.3em) scale(1.02);
+  box-shadow: 1em 1em 0 var(--shadow-color);
+}
+
+.funky-upgrade-card-cyan {
+  --primary: #00e0b0;
+  --secondary: #ff6d43;
+  --accent: #4d61ff;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+}
+
+.funky-upgrade-card-purple {
+  --primary: #8b5cf6;
+  --secondary: #ec4899;
+  --accent: #06b6d4;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+}
+
+.funky-upgrade-card-orange {
+  --primary: #f97316;
+  --secondary: #8b5cf6;
+  --accent: #10b981;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+}
+
+.funky-upgrade-card-pink {
+  --primary: #ec4899;
+  --secondary: #8b5cf6;
+  --accent: #06b6d4;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+}
+
+.funky-upgrade-header {
+  position: relative;
+  padding: 1.4em;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 1.2em;
+  border-bottom: 0.35em solid var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.funky-upgrade-body {
+  padding: 1.5em;
+  position: relative;
+  z-index: 2;
+  color: var(--text);
+}
+
+.funky-plan-option {
+  width: 100%;
+  padding: 1em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  background: var(--secondary);
+  transition: all 0.3s ease;
+  transform: rotate(-0.5deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  text-align: left;
+  cursor: pointer;
+  color: white;
+}
+
+.funky-plan-option:hover {
+  background: var(--accent);
+  transform: rotate(0.5deg) scale(1.02);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-plan-selected {
+  background: var(--accent) !important;
+  transform: rotate(0deg) scale(1.05) !important;
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color) !important;
+}
+
+.funky-billing-option {
+  width: 100%;
+  padding: 1em;
+  border: 0.2em solid var(--text);
+  border-radius: 0.5em;
+  background: var(--secondary);
+  transition: all 0.3s ease;
+  transform: rotate(0.5deg);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  text-align: left;
+  cursor: pointer;
+  margin-bottom: 0.5em;
+  color: white;
+}
+
+.funky-billing-option:hover {
+  background: var(--accent);
+  transform: rotate(-0.5deg) scale(1.02);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-billing-selected {
+  background: var(--accent) !important;
+  transform: rotate(0deg) scale(1.05) !important;
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color) !important;
+}
+
+.funky-upgrade-button {
+  --primary: #ff3e00;
+  --secondary: #4d61ff;
+  --accent: #00e0b0;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  
+  position: relative;
+  padding: 1em 2em;
+  background: var(--primary);
+  color: var(--bg);
+  font-size: 1.1em;
+  font-weight: 700;
+  border: 0.25em solid var(--text);
+  border-radius: 0.5em;
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: rotate(-1deg);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.funky-upgrade-button:hover {
+  background: var(--secondary);
+  transform: rotate(1deg) translate(-0.2em, -0.2em);
+  box-shadow: 0.6em 0.6em 0 var(--shadow-color);
+}
+
+.funky-upgrade-button:active {
+  transform: rotate(0deg) translate(0.1em, 0.1em);
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+}
+/* Funky Payment Modal Styles */
+.funky-payment-modal {
+  --primary: #8b5cf6;
+  --secondary: #ec4899;
+  --accent: #06b6d4;
+  --text: #050505;
+  --bg: #ffffff;
+  --shadow-color: #000000;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-1deg);
+  max-width: 450px;
+  width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 0.3em solid var(--text);
+  border-radius: 0.8em;
+  box-shadow: 0.8em 0.8em 0 var(--shadow-color), inset 0 0 0 0.15em rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: modalSlideIn 0.5s ease-out;
+  z-index: 10000;
+}
+
+@keyframes modalSlideIn {
+  0% { 
+    opacity: 0;
+    transform: translate(-50%, -60%) rotate(-5deg) scale(0.8);
+  }
+  100% { 
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-1deg) scale(1);
+  }
+}
+
+.funky-payment-header {
+  position: relative;
+  padding: 1em 1.2em;
+  background: var(--primary);
+  color: white;
+  font-weight: 800;
+  font-size: 1.1em;
+  border-bottom: 0.3em solid var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.funky-payment-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  animation: headerShine 3s linear infinite;
+}
+
+@keyframes headerShine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.funky-close-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 0.12em solid white;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: rotate(0deg);
+  flex-shrink: 0;
+}
+
+.funky-close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.funky-payment-body {
+  padding: 1em;
+  position: relative;
+  z-index: 2;
+}
+
+.funky-payment-section {
+  position: relative;
+  margin-bottom: 1em;
+  background: var(--bg);
+  border: 0.2em solid var(--text);
+  border-radius: 0.4em;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  transition: all 0.3s ease;
+  transform: rotate(-0.3deg);
+  overflow: hidden;
+}
+
+.funky-payment-section:hover {
+  transform: rotate(0.3deg) scale(1.01);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-payment-section:nth-child(even) {
+  transform: rotate(0.3deg);
+}
+
+.funky-payment-section:nth-child(even):hover {
+  transform: rotate(-0.3deg) scale(1.01);
+}
+
+.funky-section-cyan {
+  --primary: #06b6d4;
+  --secondary: #0891b2;
+}
+
+.funky-section-orange {
+  --primary: #f97316;
+  --secondary: #ea580c;
+}
+
+.funky-section-pink {
+  --primary: #ec4899;
+  --secondary: #db2777;
+}
+
+.funky-section-purple {
+  --primary: #8b5cf6;
+  --secondary: #7c3aed;
+}
+
+.funky-section-header {
+  background: var(--primary);
+  color: white;
+  padding: 0.6em 0.8em;
+  font-weight: 700;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 0.2em solid var(--text);
+}
+
+.funky-section-body {
+  padding: 0.8em;
+  color: var(--text);
+}
+
+.funky-qr-container {
+  background: white;
+  border: 0.25em solid var(--text);
+  border-radius: 0.6em;
+  padding: 0.8em;
+  display: inline-block;
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+  transform: rotate(1deg);
+  transition: all 0.3s ease;
+}
+
+.funky-qr-container:hover {
+  transform: rotate(-1deg) scale(1.02);
+  box-shadow: 0.4em 0.4em 0 var(--shadow-color);
+}
+
+.funky-qr-container img {
+  width: 180px !important;
+  height: 180px !important;
+}
+
+.funky-payment-input {
+  width: 100%;
+  padding: 0.6em;
+  border: 0.15em solid white;
+  border-radius: 0.4em;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-size: 0.85em;
+  font-weight: 600;
+  box-shadow: 0.15em 0.15em 0 rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  transform: rotate(-0.3deg);
+}
+
+.funky-payment-input:focus {
+  outline: none;
+  border-color: #06b6d4;
+  background: white;
+  transform: rotate(0deg) scale(1.01);
+  box-shadow: 0.2em 0.2em 0 rgba(0, 0, 0, 0.3);
+}
+
+.funky-input-error {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+.funky-upload-area {
+  border: 0.15em dashed rgba(255, 255, 255, 0.6);
+  border-radius: 0.6em;
+  padding: 1em;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+  transform: rotate(-0.5deg);
+}
+
+.funky-upload-area:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
+  transform: rotate(0.5deg);
+}
+
+.funky-upload-button {
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  color: white;
+  padding: 0.5em 1em;
+  border: 0.12em solid white;
+  border-radius: 0.3em;
+  font-weight: 600;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  transform: rotate(-1deg);
+  box-shadow: 0.15em 0.15em 0 rgba(0, 0, 0, 0.3);
+}
+
+.funky-upload-button:hover {
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  transform: rotate(1deg) scale(1.05);
+  box-shadow: 0.2em 0.2em 0 rgba(0, 0, 0, 0.3);
+}
+
+.funky-payment-button {
+  padding: 0.7em 1.2em;
+  border: 0.15em solid var(--text);
+  border-radius: 0.4em;
+  font-weight: 700;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0.2em 0.2em 0 var(--shadow-color);
+  transform: rotate(-0.5deg);
+}
+
+.funky-button-primary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.funky-button-primary:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: rotate(0.5deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+.funky-button-secondary {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+}
+
+.funky-button-secondary:hover {
+  background: white;
+  transform: rotate(0.5deg) translate(-0.1em, -0.1em);
+  box-shadow: 0.3em 0.3em 0 var(--shadow-color);
+}
+
+/* Compact spacing for modal content */
+.funky-payment-modal .space-y-6 > * + * {
+  margin-top: 1rem !important;
+}
+
+.funky-payment-modal .space-y-4 > * + * {
+  margin-top: 0.75rem !important;
+}
+
+.funky-payment-modal .space-y-3 > * + * {
+  margin-top: 0.5rem !important;
+}
+
+.funky-payment-modal .space-y-2 > * + * {
+  margin-top: 0.4rem !important;
 }

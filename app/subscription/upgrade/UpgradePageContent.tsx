@@ -5,6 +5,7 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
+import RollerLoader from '@/components/ui/RollerLoader'
 import QRPaymentModal from '@/components/payment/QRPaymentModal'
 import { 
   CheckCircleIcon, 
@@ -29,8 +30,8 @@ export default function UpgradePageContent() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#000000' }}>
+        <RollerLoader />
       </div>
     )
   }
@@ -81,24 +82,24 @@ export default function UpgradePageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen funky-events-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
+      <header className="glass-header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
+              <Link href="/" className="text-2xl font-bold text-white">
                 HATCH
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/dashboard" className="text-white/80 hover:text-white">
                 Dashboard
               </Link>
-              <Link href="/events" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/events" className="text-white/80 hover:text-white">
                 Events
               </Link>
-              <Link href="/subscription" className="text-primary-600 font-medium">
+              <Link href="/subscription" className="text-white font-medium">
                 Subscription
               </Link>
             </nav>
@@ -111,7 +112,7 @@ export default function UpgradePageContent() {
           {/* Back Button */}
           <Link 
             href="/subscription" 
-            className="inline-flex items-center text-primary-600 hover:text-primary-700"
+            className="inline-flex items-center text-white hover:text-cyan-300 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Back to Subscription
@@ -119,151 +120,152 @@ export default function UpgradePageContent() {
 
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4">
+            <h1 className="text-3xl font-bold text-white mb-4">
               Upgrade Your HATCH Experience
             </h1>
-            <p className="text-xl text-neutral-600">
+            <p className="text-xl text-white/80">
               Get access to more curated events and premium features
             </p>
           </div>
 
           {/* Plan Selection */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">Choose Your Plan</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(plans).map(([planId, plan]) => (
-                <button
-                  key={planId}
-                  onClick={() => setSelectedPlan(planId as any)}
-                  className={`p-4 rounded-lg border-2 text-left transition-colors ${
-                    selectedPlan === planId
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-neutral-200 hover:border-neutral-300'
-                  }`}
-                >
-                  <div className="flex items-center mb-2">
-                    <plan.icon className="h-6 w-6 text-primary-600 mr-2" />
-                    <span className="font-semibold text-neutral-900">{plan.name}</span>
-                  </div>
-                  <p className="text-sm text-neutral-600 mb-2">{plan.description}</p>
-                  <div className="text-lg font-bold text-primary-600">
-                    ₹{plan.monthlyPrice}
-                  </div>
-                </button>
-              ))}
+          <div className="funky-upgrade-card funky-upgrade-card-cyan">
+            <div className="funky-upgrade-header">Choose Your Plan</div>
+            <div className="funky-upgrade-body">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(plans).map(([planId, plan]) => (
+                  <button
+                    key={planId}
+                    onClick={() => setSelectedPlan(planId as any)}
+                    className={`funky-plan-option ${
+                      selectedPlan === planId ? 'funky-plan-selected' : ''
+                    }`}
+                  >
+                    <div className="flex items-center mb-2">
+                      <plan.icon className="h-6 w-6 text-white mr-2" />
+                      <span className="font-semibold text-white">{plan.name}</span>
+                    </div>
+                    <p className="text-sm text-white/90 mb-2">{plan.description}</p>
+                    <div className="text-lg font-bold text-white">
+                      ₹{plan.monthlyPrice}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Billing Cycle */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">Billing Cycle</h2>
-            <div className="space-y-3">
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`w-full p-4 rounded-lg border-2 text-left transition-colors ${
-                  billingCycle === 'monthly'
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-neutral-200 hover:border-neutral-300'
-                }`}
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="font-semibold text-neutral-900">One-time</div>
-                    <div className="text-sm text-neutral-600">Pay once, access forever</div>
+          <div className="funky-upgrade-card funky-upgrade-card-purple">
+            <div className="funky-upgrade-header">Billing Cycle</div>
+            <div className="funky-upgrade-body">
+              <div className="space-y-3">
+                <button
+                  onClick={() => setBillingCycle('monthly')}
+                  className={`funky-billing-option ${
+                    billingCycle === 'monthly' ? 'funky-billing-selected' : ''
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="font-semibold text-white">One-time</div>
+                      <div className="text-sm text-white/90">Pay once, access forever</div>
+                    </div>
+                    <div className="text-lg font-bold text-white">
+                      ₹{currentPlan.monthlyPrice}
+                    </div>
                   </div>
-                  <div className="text-lg font-bold text-neutral-900">
-                    ₹{currentPlan.monthlyPrice}
-                  </div>
-                </div>
-              </button>
+                </button>
 
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`w-full p-4 rounded-lg border-2 text-left transition-colors ${
-                  billingCycle === 'annual'
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-neutral-200 hover:border-neutral-300'
-                }`}
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="flex items-center">
-                      <span className="font-semibold text-neutral-900 mr-2">Annual</span>
-                      <span className="bg-success-100 text-success-800 text-xs font-medium px-2 py-1 rounded-full">
-                        Save ₹{currentPlan.savings}
-                      </span>
+                <button
+                  onClick={() => setBillingCycle('annual')}
+                  className={`funky-billing-option ${
+                    billingCycle === 'annual' ? 'funky-billing-selected' : ''
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="flex items-center">
+                        <span className="font-semibold text-white mr-2">Annual</span>
+                        <span className="bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+                          Save ₹{currentPlan.savings}
+                        </span>
+                      </div>
+                      <div className="text-sm text-white/90">17% off - best value</div>
                     </div>
-                    <div className="text-sm text-neutral-600">17% off - best value</div>
+                    <div>
+                      <div className="text-lg font-bold text-white">
+                        ₹{currentPlan.annualPrice}
+                      </div>
+                      <div className="text-sm text-white/70 line-through">
+                        ₹{currentPlan.monthlyPrice * 12}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-lg font-bold text-neutral-900">
-                      ₹{currentPlan.annualPrice}
-                    </div>
-                    <div className="text-sm text-neutral-500 line-through">
-                      ₹{currentPlan.monthlyPrice * 12}
-                    </div>
-                  </div>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Plan Features */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+          <div className="funky-upgrade-card funky-upgrade-card-orange">
+            <div className="funky-upgrade-header">
               What's included in {currentPlan.name}
-            </h2>
-            <ul className="space-y-3">
-              {currentPlan.features.map((feature, index) => (
-                <li key={index} className="flex items-center">
-                  <CheckCircleIcon className="h-5 w-5 text-success-500 mr-3 flex-shrink-0" />
-                  <span className="text-neutral-700">{feature}</span>
-                </li>
-              ))}
-            </ul>
+            </div>
+            <div className="funky-upgrade-body">
+              <ul className="space-y-3">
+                {currentPlan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    <CheckCircleIcon className="h-5 w-5 text-green-400 mr-3 flex-shrink-0" />
+                    <span className="text-gray-800">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Order Summary */}
-          <div className="bg-gradient-secondary rounded-xl p-6 border border-primary-200">
-            <h2 className="text-xl font-semibold text-primary-800 mb-4">Order Summary</h2>
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between">
-                <span className="text-primary-700">Plan:</span>
-                <span className="font-medium text-primary-800">{currentPlan.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-primary-700">Billing:</span>
-                <span className="font-medium text-primary-800">
-                  {billingCycle === 'annual' ? 'Annual' : 'Monthly'}
-                </span>
-              </div>
-              {billingCycle === 'annual' && (
-                <div className="flex justify-between text-success-700">
-                  <span>Savings:</span>
-                  <span className="font-medium">₹{currentPlan.savings}</span>
+          <div className="funky-upgrade-card funky-upgrade-card-pink">
+            <div className="funky-upgrade-header">Order Summary</div>
+            <div className="funky-upgrade-body">
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Plan:</span>
+                  <span className="font-medium text-gray-800">{currentPlan.name}</span>
                 </div>
-              )}
-            </div>
-            <div className="border-t border-primary-300 pt-4">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold text-primary-800">Total:</span>
-                <span className="text-2xl font-bold text-primary-800">
-                  ₹{finalPrice}
-                </span>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Billing:</span>
+                  <span className="font-medium text-gray-800">
+                    {billingCycle === 'annual' ? 'Annual' : 'Monthly'}
+                  </span>
+                </div>
+                {billingCycle === 'annual' && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Savings:</span>
+                    <span className="font-medium">₹{currentPlan.savings}</span>
+                  </div>
+                )}
+              </div>
+              <div className="border-t border-gray-300 pt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-semibold text-gray-800">Total:</span>
+                  <span className="text-2xl font-bold text-gray-800">
+                    ₹{finalPrice}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Upgrade Button */}
           <div className="text-center">
-            <Button 
-              size="lg" 
+            <button 
               onClick={handleUpgrade}
-              className="px-8 py-4 text-lg"
+              className="funky-upgrade-button"
             >
               Upgrade to {currentPlan.name}
-            </Button>
-            <p className="text-sm text-neutral-500 mt-2">
+            </button>
+            <p className="text-sm text-white/60 mt-2">
               Secure payment • Lifetime access • 30-day money-back guarantee
             </p>
           </div>
@@ -277,6 +279,7 @@ export default function UpgradePageContent() {
           onClose={() => setShowPaymentModal(false)}
           selectedTier={selectedPlan}
           amount={finalPrice}
+          billingCycle={billingCycle}
         />
       )}
     </div>

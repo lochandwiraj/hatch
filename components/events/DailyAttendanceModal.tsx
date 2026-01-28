@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
-import Button from '@/components/ui/Button'
 import { 
   XMarkIcon,
   CheckCircleIcon,
@@ -60,7 +59,7 @@ export default function DailyAttendanceModal({
       if (error) throw error
 
       if (data) {
-        toast.success('🎉 Attendance confirmed! Your stats have been updated.')
+        toast.success('Attendance confirmed! Your stats have been updated.')
       } else {
         toast.success('Attendance already recorded!')
       }
@@ -108,78 +107,79 @@ export default function DailyAttendanceModal({
   })
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-md w-full">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-neutral-900">
-              Attendance Confirmation
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-neutral-400 hover:text-neutral-600"
-            >
-              <XMarkIcon className="h-6 w-6" />
-            </button>
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4">
+      <div className="funky-modal-card">
+        <div className="funky-modal-header">
+          <h2 className="funky-modal-title">
+            Attendance Confirmation
+          </h2>
+          <button
+            onClick={onClose}
+            className="funky-modal-close-button"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
 
+        <div className="funky-modal-body">
           {/* Event Info */}
-          <div className="bg-neutral-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-neutral-900 mb-2">{event.title}</h3>
-            <div className="space-y-2 text-sm text-neutral-600">
-              <div className="flex items-center">
-                <CalendarDaysIcon className="h-4 w-4 mr-2" />
+          <div className="funky-event-info-card">
+            <h3 className="funky-event-title">{event.title}</h3>
+            <div className="funky-event-details">
+              <div className="funky-event-detail-item">
+                <CalendarDaysIcon className="h-4 w-4" />
                 <span>{formattedDate}</span>
               </div>
               {event.event_time && (
-                <div className="flex items-center">
-                  <ClockIcon className="h-4 w-4 mr-2" />
+                <div className="funky-event-detail-item">
+                  <ClockIcon className="h-4 w-4" />
                   <span>at {event.event_time}</span>
                 </div>
               )}
-              <div className="flex items-center">
-                <span className="mr-2">📍</span>
+              <div className="funky-event-detail-item">
+                <span>📍</span>
                 <span>{event.mode}</span>
               </div>
-              <div className="flex items-center">
-                <UserGroupIcon className="h-4 w-4 mr-2" />
+              <div className="funky-event-detail-item">
+                <UserGroupIcon className="h-4 w-4" />
                 <span>{event.organizer}</span>
               </div>
             </div>
           </div>
 
           {/* Confirmation Question */}
-          <div className="text-center mb-6">
-            <CheckCircleIcon className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+          <div className="funky-confirmation-section">
+            <div className="funky-confirmation-icon">
+              <CheckCircleIcon className="h-12 w-12" />
+            </div>
+            <h3 className="funky-confirmation-title">
               Did you attend this event?
             </h3>
-            <p className="text-neutral-600 text-sm">
+            <p className="funky-confirmation-text">
               If you attended, we'll update your attendance stats and recent activity.
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex space-x-3">
-            <Button
-              variant="secondary"
+          <div className="funky-modal-actions">
+            <button
               onClick={handleDidNotAttend}
-              className="flex-1"
               disabled={confirming}
+              className="funky-modal-button secondary"
             >
               No, I didn't attend
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={handleAttendanceConfirm}
-              loading={confirming}
-              className="flex-1"
+              disabled={confirming}
+              className="funky-modal-button primary"
             >
-              Yes, I attended
-            </Button>
+              {confirming ? 'Confirming...' : 'Yes, I attended'}
+            </button>
           </div>
 
           {/* Help Text */}
-          <p className="text-xs text-neutral-500 text-center mt-4">
+          <p className="funky-modal-help-text">
             This helps us track your event participation and update your profile stats
           </p>
         </div>

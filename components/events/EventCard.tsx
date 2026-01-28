@@ -9,10 +9,6 @@ import {
   ClockIcon,
   ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline'
-import Card from '@/components/ui/Card'
-import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
-import RegistrationConfirmationModal from './RegistrationConfirmationModal'
 import { formatDateShort, formatTime, getSubscriptionTierName, isEventAccessible } from '@/lib/utils'
 
 interface Event {
@@ -41,8 +37,69 @@ interface EventCardProps {
   showActions?: boolean
 }
 
+// Color schemes for different events
+const colorSchemes = [
+  {
+    primary: '#ff3e00',
+    primaryHover: '#ff6d43',
+    secondary: '#4d61ff',
+    secondaryHover: '#5e70ff',
+    accent: '#00e0b0',
+    text: '#050505',
+    bg: '#ffffff',
+    shadowColor: '#000000',
+    patternColor: '#cfcfcf'
+  },
+  {
+    primary: '#ff6b35',
+    primaryHover: '#ff8c42',
+    secondary: '#7209b7',
+    secondaryHover: '#8e2de2',
+    accent: '#f72585',
+    text: '#2d3436',
+    bg: '#ffffff',
+    shadowColor: '#000000',
+    patternColor: '#ddd'
+  },
+  {
+    primary: '#06ffa5',
+    primaryHover: '#40ffb3',
+    secondary: '#ff006e',
+    secondaryHover: '#ff1744',
+    accent: '#8338ec',
+    text: '#2d3436',
+    bg: '#ffffff',
+    shadowColor: '#000000',
+    patternColor: '#e0e0e0'
+  },
+  {
+    primary: '#ffbe0b',
+    primaryHover: '#ffd60a',
+    secondary: '#fb8500',
+    secondaryHover: '#ffaa00',
+    accent: '#8ecae6',
+    text: '#2d3436',
+    bg: '#ffffff',
+    shadowColor: '#000000',
+    patternColor: '#f0f0f0'
+  },
+  {
+    primary: '#7209b7',
+    primaryHover: '#8e2de2',
+    secondary: '#f72585',
+    secondaryHover: '#ff1744',
+    accent: '#06ffa5',
+    text: '#2d3436',
+    bg: '#ffffff',
+    shadowColor: '#000000',
+    patternColor: '#e8e8e8'
+  }
+]
+
 export default function EventCard({ event, userTier = 'free', showActions = true }: EventCardProps) {
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false)
+  // Get consistent color scheme based on event ID
+  const colorIndex = parseInt(event.id.slice(-1), 16) % colorSchemes.length
+  const colors = colorSchemes[colorIndex]
   
   // Create proper datetime from date and time
   const eventDateTime = event.event_time 
@@ -53,160 +110,110 @@ export default function EventCard({ event, userTier = 'free', showActions = true
   const isPast = eventDateTime < new Date()
   const canAccess = isEventAccessible(event.required_tier, userTier)
 
-  // Check if user just came back from registration
-  useEffect(() => {
-    const checkRegistrationReturn = () => {
-      const registrationReturn = sessionStorage.getItem(`registration_return_${event.id}`)
-      if (registrationReturn === 'true') {
-        sessionStorage.removeItem(`registration_return_${event.id}`)
-        setShowRegistrationModal(true)
-      }
-    }
-
-    // Check after a short delay to ensure the page has loaded
-    const timer = setTimeout(checkRegistrationReturn, 1000)
-    return () => clearTimeout(timer)
-  }, [event.id])
-
   const handleRegisterClick = () => {
-    // Set flag that user is going to register
-    sessionStorage.setItem(`registration_return_${event.id}`, 'true')
-    // Open the event link
+    // Store registration intent globally instead of per-card
+    sessionStorage.setItem('global_registration_return', JSON.stringify({
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.event_date,
+      eventTime: event.event_time,
+      organizer: event.organizer,
+      mode: event.mode,
+      timestamp: Date.now()
+    }))
     window.open(event.event_link, '_blank')
   }
 
-  const getTierBadgeVariant = (tier: string) => {
-    switch (tier) {
-      case 'free': return 'success'
-      case 'basic_99': return 'primary'
-      case 'premium_149': return 'secondary'
-      default: return 'default'
-    }
-  }
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'published': return 'success'
-      case 'draft': return 'warning'
-      case 'cancelled': return 'error'
-      default: return 'default'
-    }
-  }
+  const cardStyle = {
+    '--primary': colors.primary,
+    '--primary-hover': colors.primaryHover,
+    '--secondary': colors.secondary,
+    '--secondary-hover': colors.secondaryHover,
+    '--accent': colors.accent,
+    '--text': colors.text,
+    '--bg': colors.bg,
+    '--shadow-color': colors.shadowColor,
+    '--pattern-color': colors.patternColor
+  } as React.CSSProperties
 
   return (
-    <Card className={`${!canAccess ? 'opacity-75' : ''} ${isPast ? 'bg-neutral-50' : ''}`}>
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex space-x-2">
-          <Badge variant={getTierBadgeVariant(event.required_tier)}>
-            {getSubscriptionTierName(event.required_tier)}
-          </Badge>
-          {event.status !== 'published' && (
-            <Badge variant={getStatusBadgeVariant(event.status)}>
-              {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-            </Badge>
-          )}
-          {isPast && (
-            <Badge variant="default">Past Event</Badge>
-          )}
-        </div>
-      </div>
-
-      <h3 className="text-xl font-semibold text-neutral-900 mb-2 line-clamp-2">
-        {event.title}
-      </h3>
+    <div className="event-card" style={cardStyle}>
+      <div className="event-card-pattern-grid"></div>
+      <div className="event-card-overlay-dots"></div>
       
-      <p className="text-neutral-600 mb-4 line-clamp-3">
-        {event.description}
-      </p>
-
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center text-sm text-neutral-600">
-          <CalendarDaysIcon className="h-4 w-4 mr-2" />
-          <span>{formatDateShort(event.event_date)}</span>
-          {event.event_time && (
-            <span className="ml-2 text-primary-600 font-medium">
-              at {event.event_time}
-            </span>
-          )}
+      <div className="event-card-title-area">
+        <div className="flex-1">
+          <h3 className="text-sm font-bold leading-tight">{event.title}</h3>
         </div>
-        
-        {event.registration_deadline && (
-          <div className="flex items-center text-sm text-neutral-600">
-            <ClockIcon className="h-4 w-4 mr-2" />
-            <span>Registration ends: {formatDateShort(event.registration_deadline)}</span>
-          </div>
-        )}
-        
-        <div className="flex items-center text-sm text-neutral-600">
-          <MapPinIcon className="h-4 w-4 mr-2" />
-          <span className="line-clamp-1">{event.mode}</span>
+        <div className="event-card-tag">
+          {getSubscriptionTierName(event.required_tier)}
         </div>
-        
-        <div className="flex items-center text-sm text-neutral-600">
-          <UserGroupIcon className="h-4 w-4 mr-2" />
-          <span>{event.organizer}</span>
-        </div>
-
-        {event.prize_pool && (
-          <div className="flex items-center text-sm text-neutral-600">
-            <span className="mr-2">🏆</span>
-            <span>{event.prize_pool}</span>
-          </div>
-        )}
       </div>
 
-      {showActions && (
-        <div className="flex space-x-2">
-          <Link href={`/events/${event.id}`} className="flex-1">
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              className="w-full"
-            >
-              View Details
-            </Button>
-          </Link>
-          
-          {canAccess && isUpcoming && event.status === 'published' && (
-            <>
-              {event.event_link ? (
-                <Button 
-                  size="sm" 
-                  className="w-full flex-1"
-                  onClick={handleRegisterClick}
-                >
-                  <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-1" />
-                  Register Now
-                </Button>
-              ) : (
-                <Button 
-                  size="sm" 
-                  variant="secondary"
-                  className="w-full flex-1"
-                  disabled
-                >
-                  Registration Link Not Available
-                </Button>
-              )}
-            </>
+      <div className="event-card-body">
+        <div className="event-card-description">
+          {event.description.length > 100 
+            ? `${event.description.substring(0, 100)}...` 
+            : event.description}
+        </div>
+
+        <div className="event-feature-grid">
+          <div className="event-feature-item">
+            <div className="event-feature-icon">
+              <CalendarDaysIcon className="w-4 h-4 text-white" />
+            </div>
+            <div className="event-feature-text">
+              {formatDateShort(event.event_date)}
+              {event.event_time && ` at ${event.event_time}`}
+            </div>
+          </div>
+
+          <div className="event-feature-item">
+            <div className="event-feature-icon">
+              <MapPinIcon className="w-4 h-4 text-white" />
+            </div>
+            <div className="event-feature-text">{event.mode}</div>
+          </div>
+
+          <div className="event-feature-item">
+            <div className="event-feature-icon">
+              <UserGroupIcon className="w-4 h-4 text-white" />
+            </div>
+            <div className="event-feature-text">{event.organizer}</div>
+          </div>
+
+          {event.prize_pool && (
+            <div className="event-feature-item">
+              <div className="event-feature-icon">
+                <span className="text-white text-sm">🏆</span>
+              </div>
+              <div className="event-feature-text">{event.prize_pool}</div>
+            </div>
           )}
-          
-          {!canAccess && (
-            <Link href="/subscription/upgrade" className="flex-1">
-              <Button size="sm" className="w-full">
-                Upgrade to Access
-              </Button>
+        </div>
+
+        {showActions && (
+          <div className="event-card-actions">
+            <Link href={`/events/${event.id}`} className="event-card-button">
+              Details
             </Link>
-          )}
-        </div>
-      )}
-      
-      {/* Registration Confirmation Modal */}
-      <RegistrationConfirmationModal
-        isOpen={showRegistrationModal}
-        onClose={() => setShowRegistrationModal(false)}
-        event={event}
-      />
-    </Card>
+            
+            {canAccess && isUpcoming && event.status === 'published' && event.event_link && (
+              <button className="event-card-button" onClick={handleRegisterClick}>
+                Register
+              </button>
+            )}
+            
+            {!canAccess && (
+              <Link href="/subscription/upgrade" className="event-card-button">
+                Upgrade
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="event-accent-shape"></div>
+    </div>
   )
 }
