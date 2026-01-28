@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
       await supabase.auth.signOut()
       
       // Redirect to login
-      router.push('/auth/login')
+      router.push('/auth')
     } catch (error: any) {
       console.error('Error updating password:', error)
       toast.error('Failed to update password. Please try again.')
@@ -239,7 +239,7 @@ export default function ResetPasswordPage() {
 
           <div className="mt-6 text-center">
             <Link 
-              href="/auth/login" 
+              href="/auth" 
               className="text-accent-300 hover:text-accent-200 text-sm"
             >
               Back to Sign In

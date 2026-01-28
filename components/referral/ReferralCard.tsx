@@ -18,7 +18,7 @@ export default function ReferralCard() {
 
   if (!profile) return null
 
-  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/signup?ref=${profile.id}`
+  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth?ref=${profile.id}`
 
   const copyToClipboard = async () => {
     try {

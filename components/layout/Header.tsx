@@ -22,7 +22,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     // Navigate immediately for faster UX
-    router.push('/auth/login')
+    router.push('/auth')
     // Then perform signout (this will be fast due to AuthProvider optimization)
     await signOut()
   }
@@ -127,10 +127,10 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link href="/auth/login">
+                <Link href="/auth">
                   <Button variant="ghost" size="sm">Sign In</Button>
                 </Link>
-                <Link href="/auth/signup">
+                <Link href="/auth">
                   <Button size="sm">Get Started</Button>
                 </Link>
               </div>

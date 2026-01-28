@@ -20,7 +20,7 @@ export default function PricingPage() {
         router.push('/subscription/upgrade')
       }
     } else {
-      router.push('/auth/signup')
+      router.push('/auth')
     }
   }
 
@@ -44,10 +44,10 @@ export default function PricingPage() {
                 </Link>
               ) : (
                 <>
-                  <Link href="/auth/login">
+                  <Link href="/auth">
                     <Button variant="ghost" size="sm">Sign In</Button>
                   </Link>
-                  <Link href="/auth/signup">
+                  <Link href="/auth">
                     <Button size="sm">Get Started</Button>
                   </Link>
                 </>

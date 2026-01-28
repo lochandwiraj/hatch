@@ -115,7 +115,7 @@ export default function SignupPage() {
       })
       
       toast.success('Account created successfully! Please check your email to verify your account.')
-      router.push('/auth/login')
+      router.push('/auth')
     } catch (error: any) {
       toast.error(error.message || 'Failed to create account')
     } finally {
@@ -313,7 +313,7 @@ export default function SignupPage() {
             <div className="mt-6 text-center">
               <p className="text-neutral-300">
                 Already have an account?{' '}
-                <Link href="/auth/login" className="text-accent-300 hover:text-accent-200 font-medium">
+                <Link href="/auth" className="text-accent-300 hover:text-accent-200 font-medium">
                   Sign in
                 </Link>
               </p>

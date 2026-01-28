@@ -78,7 +78,7 @@ export default function ProfilePage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/auth/login')
+    router.push('/auth')
   }
 
   const handleChangePassword = () => {

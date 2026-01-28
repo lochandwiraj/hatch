@@ -136,7 +136,23 @@ export default function AuthPage() {
       })
       
       toast.success('Account created successfully! Please check your email to verify your account.')
-      router.push('/auth/login')
+      
+      // Reset signup form
+      setSignupData({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        username: '',
+        full_name: '',
+        college: '',
+        graduation_year: new Date().getFullYear()
+      })
+      
+      // Flip to login side
+      const toggleElement = document.getElementById('toggle') as HTMLInputElement
+      if (toggleElement) {
+        toggleElement.checked = false
+      }
     } catch (error: any) {
       toast.error(error.message || 'Failed to create account')
     } finally {
