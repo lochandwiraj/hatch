@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   return (
     <ProtectedRoute requireAuth={false}>
-      <div className="min-h-screen bg-gradient-hero flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#000000' }}>
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-white mb-2">Welcome Back</h2>

@@ -84,7 +84,7 @@ export default function Home() {
           
           <div className="flex justify-center mb-16">
             <button 
-              onClick={() => router.push('/auth/signup')}
+              onClick={() => router.push('/auth')}
               className="animated-button text-lg px-8 py-4 flex items-center justify-center"
             >
               <span className="flex items-center">
@@ -182,7 +182,7 @@ export default function Home() {
                 <div className="flex justify-center mt-auto">
                   <button 
                     className="animated-button flex items-center justify-center"
-                    onClick={() => router.push('/auth/signup')}
+                    onClick={() => router.push('/auth')}
                   >
                     Get Started
                   </button>
@@ -205,7 +205,7 @@ export default function Home() {
           </p>
           <div className="flex justify-center">
             <button 
-              onClick={() => router.push('/auth/signup')}
+              onClick={() => router.push('/auth')}
               className="text-lg px-8 py-4 bg-black text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105"
               style={{
                 border: '3px solid',
