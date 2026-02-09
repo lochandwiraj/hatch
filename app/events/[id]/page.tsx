@@ -109,20 +109,26 @@ export default function EventDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-8 border-purple-200 border-t-purple-600 mx-auto mb-4"></div>
+          <p className="text-lg font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">Loading event details...</p>
+        </div>
       </div>
     )
   }
 
   if (notFound || !event) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-4">Event Not Found</h1>
-          <p className="text-neutral-600 mb-4">The event you're looking for doesn't exist or is no longer available.</p>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center funky-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-4 border-purple-300 p-8 max-w-md mx-4">
+          <div className="text-6xl mb-4">😕</div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">Event Not Found</h1>
+          <p className="text-neutral-700 mb-6">The event you're looking for doesn't exist or is no longer available.</p>
           <Link href="/events">
-            <Button>Back to Events</Button>
+            <Button className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+              Back to Events
+            </Button>
           </Link>
         </div>
       </div>
@@ -136,18 +142,18 @@ export default function EventDetailsPage() {
   const isRegistrationOpen = !registrationDeadline || registrationDeadline > new Date()
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
+      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b-4 border-gradient-to-r from-purple-500 via-pink-500 to-blue-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
+              <Link href="/" className="text-2xl font-bold gradient-text hover:scale-110 transition-transform">
                 HATCH
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600 hover:scale-105 transition-transform">
                 Dashboard
               </Link>
               {(user?.email === 'dwiraj06@gmail.com' || 
@@ -155,24 +161,24 @@ export default function EventDetailsPage() {
                 user?.email === 'dwiraj@eventscout.in' || 
                 user?.email === 'lochan@eventscout.in') && (
                 <>
-                  <Link href="/admin/events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                  <Link href="/admin/events" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
                     📅 Events
                   </Link>
-                  <Link href="/admin/manage-events" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                  <Link href="/admin/manage-events" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
                     🔧 Manage
                   </Link>
-                  <Link href="/admin/manage-users" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                  <Link href="/admin/manage-users" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
                     👥 Users
                   </Link>
-                  <Link href="/admin/payments" className="bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-primary-200">
+                  <Link href="/admin/payments" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
                     💳 Payments
                   </Link>
                 </>
               )}
-              <Link href="/events" className="text-primary-600 font-medium">
+              <Link href="/events" className="text-primary-600 font-medium hover:scale-105 transition-transform">
                 Events
               </Link>
-              <Link href="/subscription" className="text-neutral-600 hover:text-primary-600">
+              <Link href="/subscription" className="text-neutral-600 hover:text-primary-600 hover:scale-105 transition-transform">
                 Subscription
               </Link>
             </nav>
@@ -185,14 +191,14 @@ export default function EventDetailsPage() {
           {/* Back Button */}
           <Link 
             href="/events" 
-            className="inline-flex items-center text-primary-600 hover:text-primary-700"
+            className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold hover:scale-105 transition-transform bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg border-2 border-purple-200"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Back to Events
           </Link>
 
           {/* Event Header */}
-          <Card>
+          <div className="funky-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-4 border-transparent hover:border-purple-300 transition-all duration-300 p-6">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
               <div className="flex-1">
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -208,35 +214,35 @@ export default function EventDetailsPage() {
                   <Badge variant="secondary">{event.category}</Badge>
                 </div>
 
-                <h1 className="text-3xl font-bold text-neutral-900 mb-4">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">
                   {event.title}
                 </h1>
 
-                <p className="text-lg text-neutral-600 mb-6">
+                <p className="text-lg text-neutral-700 mb-6 leading-relaxed">
                   {event.description}
                 </p>
 
                 {/* Event Details Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div className="space-y-4">
-                    <div className="flex items-center">
-                      <CalendarDaysIcon className="h-5 w-5 text-neutral-500 mr-3" />
+                    <div className="flex items-center bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg border-2 border-purple-200 hover:shadow-md transition-shadow">
+                      <CalendarDaysIcon className="h-5 w-5 text-purple-600 mr-3" />
                       <div>
                         <p className="font-medium text-neutral-900">Event Date</p>
                         <p className="text-neutral-600">{formatDate(event.event_date)}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center">
-                      <ClockIcon className="h-5 w-5 text-neutral-500 mr-3" />
+                    <div className="flex items-center bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded-lg border-2 border-blue-200 hover:shadow-md transition-shadow">
+                      <ClockIcon className="h-5 w-5 text-blue-600 mr-3" />
                       <div>
                         <p className="font-medium text-neutral-900">Time</p>
                         <p className="text-neutral-600">{formatTime(event.event_date)}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center">
-                      <MapPinIcon className="h-5 w-5 text-neutral-500 mr-3" />
+                    <div className="flex items-center bg-gradient-to-r from-pink-50 to-purple-50 p-3 rounded-lg border-2 border-pink-200 hover:shadow-md transition-shadow">
+                      <MapPinIcon className="h-5 w-5 text-pink-600 mr-3" />
                       <div>
                         <p className="font-medium text-neutral-900">Mode</p>
                         <p className="text-neutral-600">{event.mode}</p>
@@ -245,8 +251,8 @@ export default function EventDetailsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center">
-                      <UserGroupIcon className="h-5 w-5 text-neutral-500 mr-3" />
+                    <div className="flex items-center bg-gradient-to-r from-purple-50 to-blue-50 p-3 rounded-lg border-2 border-purple-200 hover:shadow-md transition-shadow">
+                      <UserGroupIcon className="h-5 w-5 text-purple-600 mr-3" />
                       <div>
                         <p className="font-medium text-neutral-900">Organizer</p>
                         <p className="text-neutral-600">{event.organizer}</p>
@@ -254,8 +260,8 @@ export default function EventDetailsPage() {
                     </div>
 
                     {event.prize_pool && (
-                      <div className="flex items-center">
-                        <CurrencyRupeeIcon className="h-5 w-5 text-neutral-500 mr-3" />
+                      <div className="flex items-center bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border-2 border-yellow-200 hover:shadow-md transition-shadow">
+                        <CurrencyRupeeIcon className="h-5 w-5 text-yellow-600 mr-3" />
                         <div>
                           <p className="font-medium text-neutral-900">Prize Pool</p>
                           <p className="text-neutral-600">{event.prize_pool}</p>
@@ -264,8 +270,8 @@ export default function EventDetailsPage() {
                     )}
 
                     {registrationDeadline && (
-                      <div className="flex items-center">
-                        <ClockIcon className="h-5 w-5 text-neutral-500 mr-3" />
+                      <div className="flex items-center bg-gradient-to-r from-pink-50 to-red-50 p-3 rounded-lg border-2 border-pink-200 hover:shadow-md transition-shadow">
+                        <ClockIcon className="h-5 w-5 text-pink-600 mr-3" />
                         <div>
                           <p className="font-medium text-neutral-900">Registration Deadline</p>
                           <p className={`${isRegistrationOpen ? 'text-neutral-600' : 'text-error-600'}`}>
@@ -280,13 +286,13 @@ export default function EventDetailsPage() {
                 {/* Tags */}
                 {event.tags && event.tags.length > 0 && (
                   <div className="mb-6">
-                    <div className="flex items-center mb-2">
-                      <TagIcon className="h-5 w-5 text-neutral-500 mr-2" />
+                    <div className="flex items-center mb-3">
+                      <TagIcon className="h-5 w-5 text-purple-600 mr-2" />
                       <p className="font-medium text-neutral-900">Tags</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {event.tags.map((tag, index) => (
-                        <span key={index} className="bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-sm">
+                        <span key={index} className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium border-2 border-purple-200 hover:shadow-md transition-shadow">
                           {tag}
                         </span>
                       ))}
@@ -297,11 +303,11 @@ export default function EventDetailsPage() {
                 {/* Eligibility */}
                 {event.eligibility && (
                   <div className="mb-6">
-                    <div className="flex items-center mb-2">
-                      <InformationCircleIcon className="h-5 w-5 text-neutral-500 mr-2" />
+                    <div className="flex items-center mb-3">
+                      <InformationCircleIcon className="h-5 w-5 text-blue-600 mr-2" />
                       <p className="font-medium text-neutral-900">Eligibility</p>
                     </div>
-                    <p className="text-neutral-600">{event.eligibility}</p>
+                    <p className="text-neutral-600 bg-blue-50 p-3 rounded-lg border-2 border-blue-200">{event.eligibility}</p>
                   </div>
                 )}
               </div>
@@ -313,7 +319,7 @@ export default function EventDetailsPage() {
                     <Button 
                       size="lg"
                       onClick={() => window.open(event.event_link, '_blank')}
-                      className="w-full lg:w-auto"
+                      className="w-full lg:w-auto bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                     >
                       <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
                       Register for Event
@@ -323,7 +329,7 @@ export default function EventDetailsPage() {
                       size="lg"
                       variant="secondary"
                       disabled
-                      className="w-full lg:w-auto"
+                      className="w-full lg:w-auto opacity-60"
                     >
                       Registration Closed
                     </Button>
@@ -332,7 +338,7 @@ export default function EventDetailsPage() {
                       size="lg"
                       variant="secondary"
                       disabled
-                      className="w-full lg:w-auto"
+                      className="w-full lg:w-auto opacity-60"
                     >
                       Event Ended
                     </Button>
@@ -341,7 +347,7 @@ export default function EventDetailsPage() {
                       size="lg"
                       variant="secondary"
                       disabled
-                      className="w-full lg:w-auto"
+                      className="w-full lg:w-auto opacity-60"
                     >
                       Registration Not Available
                     </Button>
@@ -351,7 +357,7 @@ export default function EventDetailsPage() {
                     <Button 
                       variant="secondary" 
                       size="lg"
-                      className="w-full lg:w-auto"
+                      className="w-full lg:w-auto bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 font-semibold border-2 border-purple-300 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                     >
                       Browse More Events
                     </Button>
@@ -359,23 +365,23 @@ export default function EventDetailsPage() {
                 </div>
 
                 {/* Event Status Info */}
-                <div className="mt-6 p-4 bg-neutral-50 rounded-lg">
-                  <h3 className="font-medium text-neutral-900 mb-2">Event Status</h3>
-                  <div className="space-y-1 text-sm">
-                    <p className="text-neutral-600">
-                      Status: <span className={isUpcoming ? 'text-success-600' : 'text-neutral-500'}>
-                        {isUpcoming ? 'Upcoming' : 'Past Event'}
+                <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-xl border-2 border-purple-200 shadow-md">
+                  <h3 className="font-bold text-neutral-900 mb-3 text-lg">Event Status</h3>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-neutral-700 font-medium">
+                      Status: <span className={`${isUpcoming ? 'text-green-600' : 'text-neutral-500'} font-bold`}>
+                        {isUpcoming ? '✨ Upcoming' : '📅 Past Event'}
                       </span>
                     </p>
                     {registrationDeadline && (
-                      <p className="text-neutral-600">
-                        Registration: <span className={isRegistrationOpen ? 'text-success-600' : 'text-error-600'}>
-                          {isRegistrationOpen ? 'Open' : 'Closed'}
+                      <p className="text-neutral-700 font-medium">
+                        Registration: <span className={`${isRegistrationOpen ? 'text-green-600' : 'text-red-600'} font-bold`}>
+                          {isRegistrationOpen ? '✅ Open' : '❌ Closed'}
                         </span>
                       </p>
                     )}
-                    <p className="text-neutral-600">
-                      Required Tier: <span className="text-primary-600">
+                    <p className="text-neutral-700 font-medium">
+                      Required Tier: <span className="text-purple-600 font-bold">
                         {getSubscriptionTierName(event.required_tier)}
                       </span>
                     </p>
@@ -383,27 +389,33 @@ export default function EventDetailsPage() {
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* Additional Information */}
           {(event.prize_pool || event.eligibility) && (
-            <Card>
-              <h2 className="text-xl font-semibold text-neutral-900 mb-4">Additional Information</h2>
+            <div className="funky-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-4 border-transparent hover:border-pink-300 transition-all duration-300 p-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">Additional Information</h2>
               <div className="space-y-4">
                 {event.prize_pool && (
-                  <div>
-                    <h3 className="font-medium text-neutral-900 mb-1">Prize Pool</h3>
-                    <p className="text-neutral-600">{event.prize_pool}</p>
+                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg border-2 border-yellow-200">
+                    <h3 className="font-bold text-neutral-900 mb-2 flex items-center">
+                      <CurrencyRupeeIcon className="h-5 w-5 text-yellow-600 mr-2" />
+                      Prize Pool
+                    </h3>
+                    <p className="text-neutral-700 font-medium">{event.prize_pool}</p>
                   </div>
                 )}
                 {event.eligibility && (
-                  <div>
-                    <h3 className="font-medium text-neutral-900 mb-1">Eligibility Criteria</h3>
-                    <p className="text-neutral-600">{event.eligibility}</p>
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border-2 border-blue-200">
+                    <h3 className="font-bold text-neutral-900 mb-2 flex items-center">
+                      <InformationCircleIcon className="h-5 w-5 text-blue-600 mr-2" />
+                      Eligibility Criteria
+                    </h3>
+                    <p className="text-neutral-700 font-medium">{event.eligibility}</p>
                   </div>
                 )}
               </div>
-            </Card>
+            </div>
           )}
         </div>
       </div>
