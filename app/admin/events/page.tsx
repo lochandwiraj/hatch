@@ -481,21 +481,24 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
     setSaving(true)
 
     try {
-      // Combine date and time for proper datetime storage
-      const eventDateTime = formData.event_time 
-        ? new Date(`${formData.event_date}T${formData.event_time}:00`).toISOString()
-        : new Date(formData.event_date).toISOString()
-
       const eventData = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        event_link: formData.event_link,
+        poster_image_url: formData.poster_image_url || null,
+        category: formData.category,
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : null,
-        event_date: eventDateTime,
-        event_time: formData.event_time || null,
+        event_date: formData.event_date, // Keep as date string YYYY-MM-DD
+        event_time: formData.event_time || null, // Keep as time string HH:MM
         registration_deadline: formData.registration_deadline 
           ? new Date(formData.registration_deadline).toISOString() 
           : null,
-        poster_image_url: formData.poster_image_url || null,
+        required_tier: formData.required_tier,
+        status: formData.status,
+        is_early_access: formData.is_early_access,
+        organizer: formData.organizer,
         prize_pool: formData.prize_pool || null,
+        mode: formData.mode,
         eligibility: formData.eligibility || null
       }
 
