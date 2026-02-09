@@ -109,10 +109,10 @@ export default function EventDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-8 border-purple-200 border-t-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">Loading event details...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-8 border-white border-t-purple-600 mx-auto mb-4"></div>
+          <p className="text-xl font-black text-white uppercase">Loading...</p>
         </div>
       </div>
     )
@@ -120,13 +120,13 @@ export default function EventDetailsPage() {
 
   if (notFound || !event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center funky-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-4 border-purple-300 p-8 max-w-md mx-4">
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="text-center bg-white rounded-xl border-8 border-purple-600 shadow-[12px_12px_0px_0px_rgba(147,51,234,1)] p-8 max-w-md">
           <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">Event Not Found</h1>
-          <p className="text-neutral-700 mb-6">The event you're looking for doesn't exist or is no longer available.</p>
+          <h1 className="text-3xl font-black text-purple-600 mb-4 uppercase">Not Found</h1>
+          <p className="text-black font-bold mb-6">This event doesn't exist or is no longer available.</p>
           <Link href="/events">
-            <Button className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white font-black border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] uppercase">
               Back to Events
             </Button>
           </Link>
@@ -142,18 +142,18 @@ export default function EventDetailsPage() {
   const isRegistrationOpen = !registrationDeadline || registrationDeadline > new Date()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b-4 border-gradient-to-r from-purple-500 via-pink-500 to-blue-500">
+      <header className="bg-white shadow-lg border-b-8 border-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text hover:scale-110 transition-transform">
+              <Link href="/" className="text-2xl font-bold gradient-text">
                 HATCH
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600 hover:scale-105 transition-transform">
+              <Link href="/dashboard" className="text-neutral-900 hover:text-primary-600 font-semibold">
                 Dashboard
               </Link>
               {(user?.email === 'dwiraj06@gmail.com' || 
@@ -161,24 +161,24 @@ export default function EventDetailsPage() {
                 user?.email === 'dwiraj@eventscout.in' || 
                 user?.email === 'lochan@eventscout.in') && (
                 <>
-                  <Link href="/admin/events" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
+                  <Link href="/admin/events" className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-2 rounded text-sm font-bold transition-colors border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     📅 Events
                   </Link>
-                  <Link href="/admin/manage-events" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
+                  <Link href="/admin/manage-events" className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-2 rounded text-sm font-bold transition-colors border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     🔧 Manage
                   </Link>
-                  <Link href="/admin/manage-users" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
+                  <Link href="/admin/manage-users" className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-2 rounded text-sm font-bold transition-colors border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     👥 Users
                   </Link>
-                  <Link href="/admin/payments" className="bg-gradient-to-r from-purple-100 to-pink-100 text-primary-700 hover:from-purple-200 hover:to-pink-200 px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 border-purple-300 shadow-md hover:shadow-lg hover:scale-105">
+                  <Link href="/admin/payments" className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-2 rounded text-sm font-bold transition-colors border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     💳 Payments
                   </Link>
                 </>
               )}
-              <Link href="/events" className="text-primary-600 font-medium hover:scale-105 transition-transform">
+              <Link href="/events" className="text-primary-600 font-bold">
                 Events
               </Link>
-              <Link href="/subscription" className="text-neutral-600 hover:text-primary-600 hover:scale-105 transition-transform">
+              <Link href="/subscription" className="text-neutral-900 hover:text-primary-600 font-semibold">
                 Subscription
               </Link>
             </nav>
@@ -191,17 +191,17 @@ export default function EventDetailsPage() {
           {/* Back Button */}
           <Link 
             href="/events" 
-            className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold hover:scale-105 transition-transform bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg border-2 border-purple-200"
+            className="inline-flex items-center text-white font-bold hover:scale-105 transition-transform bg-purple-600 px-6 py-3 rounded border-4 border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
           >
-            <ArrowLeftIcon className="h-4 w-4 mr-2" />
+            <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back to Events
           </Link>
 
           {/* Event Header */}
-          <div className="funky-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-4 border-transparent hover:border-purple-300 transition-all duration-300 p-6">
+          <div className="bg-white rounded-xl border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
               <div className="flex-1">
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-3 mb-6">
                   <Badge variant={getTierBadgeVariant(event.required_tier)}>
                     {getSubscriptionTierName(event.required_tier)}
                   </Badge>
@@ -214,67 +214,67 @@ export default function EventDetailsPage() {
                   <Badge variant="secondary">{event.category}</Badge>
                 </div>
 
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">
+                <h1 className="text-4xl font-black text-purple-600 mb-6 uppercase tracking-tight">
                   {event.title}
                 </h1>
 
-                <p className="text-lg text-neutral-700 mb-6 leading-relaxed">
+                <p className="text-lg text-neutral-900 mb-8 leading-relaxed font-medium">
                   {event.description}
                 </p>
 
                 {/* Event Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   <div className="space-y-4">
-                    <div className="flex items-center bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg border-2 border-purple-200 hover:shadow-md transition-shadow">
-                      <CalendarDaysIcon className="h-5 w-5 text-purple-600 mr-3" />
+                    <div className="flex items-center bg-purple-600 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <CalendarDaysIcon className="h-6 w-6 mr-3" />
                       <div>
-                        <p className="font-medium text-neutral-900">Event Date</p>
-                        <p className="text-neutral-600">{formatDate(event.event_date)}</p>
+                        <p className="font-bold text-sm">EVENT DATE</p>
+                        <p className="font-semibold">{formatDate(event.event_date)}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded-lg border-2 border-blue-200 hover:shadow-md transition-shadow">
-                      <ClockIcon className="h-5 w-5 text-blue-600 mr-3" />
+                    <div className="flex items-center bg-cyan-400 text-black p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <ClockIcon className="h-6 w-6 mr-3" />
                       <div>
-                        <p className="font-medium text-neutral-900">Time</p>
-                        <p className="text-neutral-600">{formatTime(event.event_date)}</p>
+                        <p className="font-bold text-sm">TIME</p>
+                        <p className="font-semibold">{formatTime(event.event_date)}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center bg-gradient-to-r from-pink-50 to-purple-50 p-3 rounded-lg border-2 border-pink-200 hover:shadow-md transition-shadow">
-                      <MapPinIcon className="h-5 w-5 text-pink-600 mr-3" />
+                    <div className="flex items-center bg-pink-500 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <MapPinIcon className="h-6 w-6 mr-3" />
                       <div>
-                        <p className="font-medium text-neutral-900">Mode</p>
-                        <p className="text-neutral-600">{event.mode}</p>
+                        <p className="font-bold text-sm">MODE</p>
+                        <p className="font-semibold">{event.mode}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center bg-gradient-to-r from-purple-50 to-blue-50 p-3 rounded-lg border-2 border-purple-200 hover:shadow-md transition-shadow">
-                      <UserGroupIcon className="h-5 w-5 text-purple-600 mr-3" />
+                    <div className="flex items-center bg-orange-500 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <UserGroupIcon className="h-6 w-6 mr-3" />
                       <div>
-                        <p className="font-medium text-neutral-900">Organizer</p>
-                        <p className="text-neutral-600">{event.organizer}</p>
+                        <p className="font-bold text-sm">ORGANIZER</p>
+                        <p className="font-semibold">{event.organizer}</p>
                       </div>
                     </div>
 
                     {event.prize_pool && (
-                      <div className="flex items-center bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border-2 border-yellow-200 hover:shadow-md transition-shadow">
-                        <CurrencyRupeeIcon className="h-5 w-5 text-yellow-600 mr-3" />
+                      <div className="flex items-center bg-yellow-400 text-black p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <CurrencyRupeeIcon className="h-6 w-6 mr-3" />
                         <div>
-                          <p className="font-medium text-neutral-900">Prize Pool</p>
-                          <p className="text-neutral-600">{event.prize_pool}</p>
+                          <p className="font-bold text-sm">PRIZE POOL</p>
+                          <p className="font-semibold">{event.prize_pool}</p>
                         </div>
                       </div>
                     )}
 
                     {registrationDeadline && (
-                      <div className="flex items-center bg-gradient-to-r from-pink-50 to-red-50 p-3 rounded-lg border-2 border-pink-200 hover:shadow-md transition-shadow">
-                        <ClockIcon className="h-5 w-5 text-pink-600 mr-3" />
+                      <div className="flex items-center bg-red-500 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <ClockIcon className="h-6 w-6 mr-3" />
                         <div>
-                          <p className="font-medium text-neutral-900">Registration Deadline</p>
-                          <p className={`${isRegistrationOpen ? 'text-neutral-600' : 'text-error-600'}`}>
+                          <p className="font-bold text-sm">REGISTRATION DEADLINE</p>
+                          <p className="font-semibold">
                             {formatDate(event.registration_deadline!)}
                           </p>
                         </div>
@@ -285,14 +285,14 @@ export default function EventDetailsPage() {
 
                 {/* Tags */}
                 {event.tags && event.tags.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center mb-3">
-                      <TagIcon className="h-5 w-5 text-purple-600 mr-2" />
-                      <p className="font-medium text-neutral-900">Tags</p>
+                  <div className="mb-8">
+                    <div className="flex items-center mb-4">
+                      <TagIcon className="h-6 w-6 text-black mr-2" />
+                      <p className="font-black text-black uppercase text-lg">Tags</p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3">
                       {event.tags.map((tag, index) => (
-                        <span key={index} className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium border-2 border-purple-200 hover:shadow-md transition-shadow">
+                        <span key={index} className="bg-white text-black px-4 py-2 rounded font-bold text-sm border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                           {tag}
                         </span>
                       ))}
@@ -303,33 +303,33 @@ export default function EventDetailsPage() {
                 {/* Eligibility */}
                 {event.eligibility && (
                   <div className="mb-6">
-                    <div className="flex items-center mb-3">
-                      <InformationCircleIcon className="h-5 w-5 text-blue-600 mr-2" />
-                      <p className="font-medium text-neutral-900">Eligibility</p>
+                    <div className="flex items-center mb-4">
+                      <InformationCircleIcon className="h-6 w-6 text-black mr-2" />
+                      <p className="font-black text-black uppercase text-lg">Eligibility</p>
                     </div>
-                    <p className="text-neutral-600 bg-blue-50 p-3 rounded-lg border-2 border-blue-200">{event.eligibility}</p>
+                    <p className="text-neutral-900 font-semibold bg-cyan-100 p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{event.eligibility}</p>
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
               <div className="lg:ml-8 mt-6 lg:mt-0">
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {isUpcoming && isRegistrationOpen && event.event_link ? (
                     <Button 
                       size="lg"
                       onClick={() => window.open(event.event_link, '_blank')}
-                      className="w-full lg:w-auto bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                      className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white font-black text-lg border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                     >
-                      <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
-                      Register for Event
+                      <ArrowTopRightOnSquareIcon className="h-6 w-6 mr-2" />
+                      Register Now
                     </Button>
                   ) : isUpcoming && !isRegistrationOpen ? (
                     <Button 
                       size="lg"
                       variant="secondary"
                       disabled
-                      className="w-full lg:w-auto opacity-60"
+                      className="w-full lg:w-auto opacity-60 font-bold border-4 border-black"
                     >
                       Registration Closed
                     </Button>
@@ -338,7 +338,7 @@ export default function EventDetailsPage() {
                       size="lg"
                       variant="secondary"
                       disabled
-                      className="w-full lg:w-auto opacity-60"
+                      className="w-full lg:w-auto opacity-60 font-bold border-4 border-black"
                     >
                       Event Ended
                     </Button>
@@ -347,9 +347,9 @@ export default function EventDetailsPage() {
                       size="lg"
                       variant="secondary"
                       disabled
-                      className="w-full lg:w-auto opacity-60"
+                      className="w-full lg:w-auto opacity-60 font-bold border-4 border-black"
                     >
-                      Registration Not Available
+                      Not Available
                     </Button>
                   )}
 
@@ -357,32 +357,32 @@ export default function EventDetailsPage() {
                     <Button 
                       variant="secondary" 
                       size="lg"
-                      className="w-full lg:w-auto bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 font-semibold border-2 border-purple-300 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                      className="w-full lg:w-auto bg-pink-500 hover:bg-pink-600 text-white font-black border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                     >
-                      Browse More Events
+                      Browse Events
                     </Button>
                   </Link>
                 </div>
 
                 {/* Event Status Info */}
-                <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-xl border-2 border-purple-200 shadow-md">
-                  <h3 className="font-bold text-neutral-900 mb-3 text-lg">Event Status</h3>
-                  <div className="space-y-2 text-sm">
-                    <p className="text-neutral-700 font-medium">
-                      Status: <span className={`${isUpcoming ? 'text-green-600' : 'text-neutral-500'} font-bold`}>
-                        {isUpcoming ? '✨ Upcoming' : '📅 Past Event'}
+                <div className="mt-6 p-6 bg-cyan-400 rounded border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                  <h3 className="font-black text-black mb-4 text-xl uppercase">Event Status</h3>
+                  <div className="space-y-3 text-base">
+                    <p className="text-black font-bold">
+                      Status: <span className={`${isUpcoming ? 'text-green-700' : 'text-neutral-700'} font-black`}>
+                        {isUpcoming ? '✨ UPCOMING' : '📅 PAST'}
                       </span>
                     </p>
                     {registrationDeadline && (
-                      <p className="text-neutral-700 font-medium">
-                        Registration: <span className={`${isRegistrationOpen ? 'text-green-600' : 'text-red-600'} font-bold`}>
-                          {isRegistrationOpen ? '✅ Open' : '❌ Closed'}
+                      <p className="text-black font-bold">
+                        Registration: <span className={`${isRegistrationOpen ? 'text-green-700' : 'text-red-700'} font-black`}>
+                          {isRegistrationOpen ? '✅ OPEN' : '❌ CLOSED'}
                         </span>
                       </p>
                     )}
-                    <p className="text-neutral-700 font-medium">
-                      Required Tier: <span className="text-purple-600 font-bold">
-                        {getSubscriptionTierName(event.required_tier)}
+                    <p className="text-black font-bold">
+                      Tier: <span className="text-purple-700 font-black">
+                        {getSubscriptionTierName(event.required_tier).toUpperCase()}
                       </span>
                     </p>
                   </div>
@@ -393,25 +393,25 @@ export default function EventDetailsPage() {
 
           {/* Additional Information */}
           {(event.prize_pool || event.eligibility) && (
-            <div className="funky-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-4 border-transparent hover:border-pink-300 transition-all duration-300 p-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">Additional Information</h2>
+            <div className="bg-white rounded-xl border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8">
+              <h2 className="text-2xl font-black text-purple-600 mb-6 uppercase">Additional Info</h2>
               <div className="space-y-4">
                 {event.prize_pool && (
-                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg border-2 border-yellow-200">
-                    <h3 className="font-bold text-neutral-900 mb-2 flex items-center">
-                      <CurrencyRupeeIcon className="h-5 w-5 text-yellow-600 mr-2" />
+                  <div className="bg-yellow-400 p-6 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <h3 className="font-black text-black mb-3 flex items-center text-lg uppercase">
+                      <CurrencyRupeeIcon className="h-6 w-6 mr-2" />
                       Prize Pool
                     </h3>
-                    <p className="text-neutral-700 font-medium">{event.prize_pool}</p>
+                    <p className="text-black font-bold text-xl">{event.prize_pool}</p>
                   </div>
                 )}
                 {event.eligibility && (
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border-2 border-blue-200">
-                    <h3 className="font-bold text-neutral-900 mb-2 flex items-center">
-                      <InformationCircleIcon className="h-5 w-5 text-blue-600 mr-2" />
-                      Eligibility Criteria
+                  <div className="bg-cyan-400 p-6 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <h3 className="font-black text-black mb-3 flex items-center text-lg uppercase">
+                      <InformationCircleIcon className="h-6 w-6 mr-2" />
+                      Eligibility
                     </h3>
-                    <p className="text-neutral-700 font-medium">{event.eligibility}</p>
+                    <p className="text-black font-bold">{event.eligibility}</p>
                   </div>
                 )}
               </div>
