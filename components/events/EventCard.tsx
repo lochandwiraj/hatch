@@ -141,6 +141,24 @@ export default function EventCard({ event, userTier = 'free', showActions = true
       <div className="event-card-pattern-grid"></div>
       <div className="event-card-overlay-dots"></div>
       
+      {/* Event Completed Badge */}
+      {isPast && (
+        <div 
+          className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold z-10"
+          style={{
+            backgroundColor: colors.accent,
+            color: colors.text,
+            border: `2px solid ${colors.text}`,
+            boxShadow: `0.2em 0.2em 0 ${colors.shadowColor}`,
+            transform: 'rotate(-3deg)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}
+        >
+          Event Completed
+        </div>
+      )}
+      
       <div className="event-card-title-area">
         <div className="flex-1">
           <h3 className="text-sm font-bold leading-tight">{event.title}</h3>

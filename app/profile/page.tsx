@@ -11,7 +11,8 @@ import {
   PencilIcon,
   CheckCircleIcon,
   CalendarDaysIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 import { getSubscriptionTierName, getEventLimit } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
@@ -27,7 +28,6 @@ interface AttendanceStats {
 
 export default function ProfilePage() {
   const { profile, user, signOut, refreshProfile } = useAuth()
-  const [isEditing, setIsEditing] = useState(false)
   const [editingBio, setEditingBio] = useState(false)
   const [bioText, setBioText] = useState('')
   const [skillsText, setSkillsText] = useState('')
@@ -35,12 +35,28 @@ export default function ProfilePage() {
   const [attendanceStats, setAttendanceStats] = useState<AttendanceStats | null>(null)
   const [loadingStats, setLoadingStats] = useState(true)
   const [downloadingPDF, setDownloadingPDF] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editFormData, setEditFormData] = useState({
+    full_name: '',
+    college: '',
+    graduation_year: new Date().getFullYear(),
+    bio: '',
+    skills: ''
+  })
   const router = useRouter()
 
   // Load attendance statistics
   useEffect(() => {
     if (profile && user) {
       loadAttendanceStats()
+      // Initialize edit form data when profile loads
+      setEditFormData({
+        full_name: profile.full_name || '',
+        college: profile.college || '',
+        graduation_year: profile.graduation_year || new Date().getFullYear(),
+        bio: profile.bio || '',
+        skills: profile.skills?.join(', ') || ''
+      })
     }
   }, [profile, user])
 
@@ -125,6 +141,67 @@ export default function ProfilePage() {
     setEditingBio(false)
     setBioText('')
     setSkillsText('')
+  }
+
+  const handleOpenEditModal = () => {
+    if (profile) {
+      setEditFormData({
+        full_name: profile.full_name || '',
+        college: profile.college || '',
+        graduation_year: profile.graduation_year || new Date().getFullYear(),
+        bio: profile.bio || '',
+        skills: profile.skills?.join(', ') || ''
+      })
+      setShowEditModal(true)
+    }
+  }
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false)
+    // Reset form data to original values
+    if (profile) {
+      setEditFormData({
+        full_name: profile.full_name || '',
+        college: profile.college || '',
+        graduation_year: profile.graduation_year || new Date().getFullYear(),
+        bio: profile.bio || '',
+        skills: profile.skills?.join(', ') || ''
+      })
+    }
+  }
+
+  const handleSaveProfile = async () => {
+    if (!profile) return
+
+    setSaving(true)
+    try {
+      const skillsArray = editFormData.skills
+        .split(',')
+        .map(skill => skill.trim())
+        .filter(skill => skill.length > 0)
+
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          full_name: editFormData.full_name.trim(),
+          college: editFormData.college.trim() || null,
+          graduation_year: editFormData.graduation_year,
+          bio: editFormData.bio.trim() || null,
+          skills: skillsArray.length > 0 ? skillsArray : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', profile.id)
+
+      if (error) throw error
+
+      toast.success('Profile updated successfully!')
+      setShowEditModal(false)
+      refreshProfile()
+    } catch (error: any) {
+      toast.error('Failed to update profile: ' + error.message)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleDownloadData = async () => {
@@ -224,7 +301,7 @@ export default function ProfilePage() {
           <div className="funky-profile-header-card">
             <div className="funky-profile-gradient-header"></div>
             <div className="relative px-6 pb-6">
-              <div className="flex items-end -mt-16 mb-6">
+              <div className="flex items-end -mt-16 mb-8">
                 <div className="funky-profile-avatar">
                   <span className="text-4xl font-bold text-gray-800">
                     {profile.full_name.charAt(0).toUpperCase()}
@@ -340,10 +417,15 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Right Column - Edit Profile Button */}
-                <div className="flex justify-center lg:justify-end">
+                <div className="flex justify-center lg:justify-end" style={{ position: 'relative', zIndex: 100 }}>
                   <button
-                    onClick={() => setIsEditing(!isEditing)}
+                    onClick={() => {
+                      console.log('Button clicked!')
+                      setShowEditModal(true)
+                    }}
                     className="funky-profile-button"
+                    style={{ cursor: 'pointer', position: 'relative', zIndex: 100 }}
+                    type="button"
                   >
                     <PencilIcon className="h-4 w-4 mr-2" />
                     Edit Profile
@@ -607,6 +689,155 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
+          style={{ zIndex: 10000, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCloseEditModal()
+            }
+          }}
+        >
+          <div 
+            className="funky-modal-card" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            <div className="funky-modal-header">
+              <h2 className="funky-modal-title">
+                Edit Profile
+              </h2>
+              <button
+                onClick={handleCloseEditModal}
+                className="funky-modal-close-button"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="funky-modal-body">
+              <div className="space-y-4">
+                {/* Username (Read-only) */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">
+                    Username (Read-only)
+                  </label>
+                  <input
+                    type="text"
+                    value={`@${profile?.username || ''}`}
+                    disabled
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg bg-gray-100 text-gray-600 font-medium cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-600 mt-1 font-medium">
+                    Username cannot be changed
+                  </p>
+                </div>
+
+                {/* Full Name */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.full_name}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                    placeholder="Enter your full name"
+                    className="w-full px-3 py-2 border-2 border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-medium"
+                    required
+                  />
+                </div>
+
+                {/* College/Organization */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">
+                    College/Organization
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.college}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, college: e.target.value }))}
+                    placeholder="Enter your college or organization"
+                    className="w-full px-3 py-2 border-2 border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-medium"
+                  />
+                </div>
+
+                {/* Graduation Year */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">
+                    Graduation Year
+                  </label>
+                  <input
+                    type="number"
+                    value={editFormData.graduation_year}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, graduation_year: parseInt(e.target.value) || new Date().getFullYear() }))}
+                    min="1950"
+                    max="2050"
+                    className="w-full px-3 py-2 border-2 border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-medium"
+                  />
+                </div>
+
+                {/* Bio */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">
+                    Bio
+                  </label>
+                  <textarea
+                    value={editFormData.bio}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder="Tell us about yourself... (e.g., your interests, goals, what you're passionate about)"
+                    rows={4}
+                    className="w-full px-3 py-2 border-2 border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-medium"
+                  />
+                </div>
+
+                {/* Skills */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">
+                    Skills (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.skills}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, skills: e.target.value }))}
+                    placeholder="e.g., React, Python, UI/UX Design, Machine Learning, Public Speaking"
+                    className="w-full px-3 py-2 border-2 border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-medium"
+                  />
+                  <p className="text-xs text-gray-600 mt-1 font-medium">
+                    Add any skills, technologies, or areas of expertise you have
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="funky-modal-actions mt-6">
+                <button
+                  onClick={handleCloseEditModal}
+                  disabled={saving}
+                  className="funky-modal-button secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveProfile}
+                  disabled={saving || !editFormData.full_name.trim()}
+                  className="funky-modal-button primary"
+                >
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+
+              {/* Help Text */}
+              <p className="funky-modal-help-text mt-4">
+                Your profile information helps others connect with you and showcases your expertise
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
