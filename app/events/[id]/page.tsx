@@ -199,195 +199,190 @@ export default function EventDetailsPage() {
 
           {/* Event Header */}
           <div className="bg-white rounded-xl border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] p-8">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex-1">
-                <div className="flex flex-wrap gap-3 mb-6">
-                  <Badge variant={getTierBadgeVariant(event.required_tier)}>
-                    {getSubscriptionTierName(event.required_tier)}
-                  </Badge>
-                  {event.is_early_access && (
-                    <Badge variant="primary">Early Access</Badge>
-                  )}
-                  {isPast && (
-                    <Badge variant="default">Past Event</Badge>
-                  )}
-                  <Badge variant="secondary">{event.category}</Badge>
+            {/* Badges */}
+            <div className="flex flex-wrap gap-3 mb-6">
+              <Badge variant={getTierBadgeVariant(event.required_tier)}>
+                {getSubscriptionTierName(event.required_tier)}
+              </Badge>
+              {event.is_early_access && (
+                <Badge variant="primary">Early Access</Badge>
+              )}
+              {isPast && (
+                <Badge variant="default">Past Event</Badge>
+              )}
+              <Badge variant="secondary">{event.category}</Badge>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-4xl font-black text-purple-600 mb-6 uppercase tracking-tight">
+              {event.title}
+            </h1>
+
+            {/* Description - Full Width Paragraph */}
+            <div className="mb-8 p-6 bg-gray-50 rounded-lg border-4 border-black">
+              <p className="text-lg text-neutral-900 leading-relaxed font-medium whitespace-pre-wrap">
+                {event.description}
+              </p>
+            </div>
+
+            {/* Event Details Grid - Organized 2x3 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="flex items-center bg-purple-600 text-white p-5 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <CalendarDaysIcon className="h-8 w-8 mr-4 flex-shrink-0" />
+                <div>
+                  <p className="font-black text-sm uppercase">Event Date</p>
+                  <p className="font-bold text-lg">{formatDate(event.event_date)}</p>
                 </div>
+              </div>
 
-                <h1 className="text-4xl font-black text-purple-600 mb-6 uppercase tracking-tight">
-                  {event.title}
-                </h1>
+              <div className="flex items-center bg-cyan-400 text-black p-5 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <ClockIcon className="h-8 w-8 mr-4 flex-shrink-0" />
+                <div>
+                  <p className="font-black text-sm uppercase">Time</p>
+                  <p className="font-bold text-lg">{formatTime(event.event_date)}</p>
+                </div>
+              </div>
 
-                <p className="text-lg text-neutral-900 mb-8 leading-relaxed font-medium">
-                  {event.description}
+              <div className="flex items-center bg-pink-500 text-white p-5 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <MapPinIcon className="h-8 w-8 mr-4 flex-shrink-0" />
+                <div>
+                  <p className="font-black text-sm uppercase">Mode</p>
+                  <p className="font-bold text-lg">{event.mode}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center bg-orange-500 text-white p-5 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <UserGroupIcon className="h-8 w-8 mr-4 flex-shrink-0" />
+                <div>
+                  <p className="font-black text-sm uppercase">Organizer</p>
+                  <p className="font-bold text-lg">{event.organizer}</p>
+                </div>
+              </div>
+
+              {registrationDeadline && (
+                <div className="flex items-center bg-red-500 text-white p-5 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <ClockIcon className="h-8 w-8 mr-4 flex-shrink-0" />
+                  <div>
+                    <p className="font-black text-sm uppercase">Registration Deadline</p>
+                    <p className="font-bold text-lg">
+                      {formatDate(event.registration_deadline!)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {event.prize_pool && (
+                <div className="flex items-center bg-yellow-400 text-black p-5 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <CurrencyRupeeIcon className="h-8 w-8 mr-4 flex-shrink-0" />
+                  <div>
+                    <p className="font-black text-sm uppercase">Prize Pool</p>
+                    <p className="font-bold text-lg">{event.prize_pool}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Tags */}
+            {event.tags && event.tags.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <TagIcon className="h-6 w-6 text-black mr-2" />
+                  <p className="font-black text-black uppercase text-lg">Tags</p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {event.tags.map((tag, index) => (
+                    <span key={index} className="bg-white text-black px-4 py-2 rounded font-bold text-sm border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Eligibility */}
+            {event.eligibility && (
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <InformationCircleIcon className="h-6 w-6 text-black mr-2" />
+                  <p className="font-black text-black uppercase text-lg">Eligibility</p>
+                </div>
+                <p className="text-neutral-900 font-semibold bg-cyan-100 p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{event.eligibility}</p>
+              </div>
+            )}
+
+            {/* Event Status Info */}
+            <div className="mb-8 p-6 bg-cyan-400 rounded border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+              <h3 className="font-black text-black mb-4 text-xl uppercase">Event Status</h3>
+              <div className="space-y-3 text-base">
+                <p className="text-black font-bold">
+                  Status: <span className={`${isUpcoming ? 'text-green-700' : 'text-neutral-700'} font-black`}>
+                    {isUpcoming ? '✨ UPCOMING' : '📅 PAST'}
+                  </span>
                 </p>
-
-                {/* Event Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                  <div className="space-y-4">
-                    <div className="flex items-center bg-purple-600 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                      <CalendarDaysIcon className="h-6 w-6 mr-3" />
-                      <div>
-                        <p className="font-bold text-sm">EVENT DATE</p>
-                        <p className="font-semibold">{formatDate(event.event_date)}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center bg-cyan-400 text-black p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                      <ClockIcon className="h-6 w-6 mr-3" />
-                      <div>
-                        <p className="font-bold text-sm">TIME</p>
-                        <p className="font-semibold">{formatTime(event.event_date)}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center bg-pink-500 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                      <MapPinIcon className="h-6 w-6 mr-3" />
-                      <div>
-                        <p className="font-bold text-sm">MODE</p>
-                        <p className="font-semibold">{event.mode}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center bg-orange-500 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                      <UserGroupIcon className="h-6 w-6 mr-3" />
-                      <div>
-                        <p className="font-bold text-sm">ORGANIZER</p>
-                        <p className="font-semibold">{event.organizer}</p>
-                      </div>
-                    </div>
-
-                    {event.prize_pool && (
-                      <div className="flex items-center bg-yellow-400 text-black p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <CurrencyRupeeIcon className="h-6 w-6 mr-3" />
-                        <div>
-                          <p className="font-bold text-sm">PRIZE POOL</p>
-                          <p className="font-semibold">{event.prize_pool}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {registrationDeadline && (
-                      <div className="flex items-center bg-red-500 text-white p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <ClockIcon className="h-6 w-6 mr-3" />
-                        <div>
-                          <p className="font-bold text-sm">REGISTRATION DEADLINE</p>
-                          <p className="font-semibold">
-                            {formatDate(event.registration_deadline!)}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Tags */}
-                {event.tags && event.tags.length > 0 && (
-                  <div className="mb-8">
-                    <div className="flex items-center mb-4">
-                      <TagIcon className="h-6 w-6 text-black mr-2" />
-                      <p className="font-black text-black uppercase text-lg">Tags</p>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {event.tags.map((tag, index) => (
-                        <span key={index} className="bg-white text-black px-4 py-2 rounded font-bold text-sm border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                {registrationDeadline && (
+                  <p className="text-black font-bold">
+                    Registration: <span className={`${isRegistrationOpen ? 'text-green-700' : 'text-red-700'} font-black`}>
+                      {isRegistrationOpen ? '✅ OPEN' : '❌ CLOSED'}
+                    </span>
+                  </p>
                 )}
-
-                {/* Eligibility */}
-                {event.eligibility && (
-                  <div className="mb-6">
-                    <div className="flex items-center mb-4">
-                      <InformationCircleIcon className="h-6 w-6 text-black mr-2" />
-                      <p className="font-black text-black uppercase text-lg">Eligibility</p>
-                    </div>
-                    <p className="text-neutral-900 font-semibold bg-cyan-100 p-4 rounded border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{event.eligibility}</p>
-                  </div>
-                )}
+                <p className="text-black font-bold">
+                  Tier: <span className="text-purple-700 font-black">
+                    {getSubscriptionTierName(event.required_tier).toUpperCase()}
+                  </span>
+                </p>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="lg:ml-8 mt-6 lg:mt-0">
-                <div className="space-y-4">
-                  {isUpcoming && isRegistrationOpen && event.event_link ? (
-                    <Button 
-                      size="lg"
-                      onClick={() => window.open(event.event_link, '_blank')}
-                      className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white font-black text-lg border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
-                    >
-                      <ArrowTopRightOnSquareIcon className="h-6 w-6 mr-2" />
-                      Register Now
-                    </Button>
-                  ) : isUpcoming && !isRegistrationOpen ? (
-                    <Button 
-                      size="lg"
-                      variant="secondary"
-                      disabled
-                      className="w-full lg:w-auto opacity-60 font-bold border-4 border-black"
-                    >
-                      Registration Closed
-                    </Button>
-                  ) : isPast ? (
-                    <Button 
-                      size="lg"
-                      variant="secondary"
-                      disabled
-                      className="w-full lg:w-auto opacity-60 font-bold border-4 border-black"
-                    >
-                      Event Ended
-                    </Button>
-                  ) : (
-                    <Button 
-                      size="lg"
-                      variant="secondary"
-                      disabled
-                      className="w-full lg:w-auto opacity-60 font-bold border-4 border-black"
-                    >
-                      Not Available
-                    </Button>
-                  )}
+            {/* Action Buttons - At the Bottom */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {isUpcoming && isRegistrationOpen && event.event_link ? (
+                <Button 
+                  size="lg"
+                  onClick={() => window.open(event.event_link, '_blank')}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-black text-lg border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
+                >
+                  <ArrowTopRightOnSquareIcon className="h-6 w-6 mr-2" />
+                  Register Now
+                </Button>
+              ) : isUpcoming && !isRegistrationOpen ? (
+                <Button 
+                  size="lg"
+                  variant="secondary"
+                  disabled
+                  className="flex-1 opacity-60 font-bold border-4 border-black uppercase"
+                >
+                  Registration Closed
+                </Button>
+              ) : isPast ? (
+                <Button 
+                  size="lg"
+                  variant="secondary"
+                  disabled
+                  className="flex-1 opacity-60 font-bold border-4 border-black uppercase"
+                >
+                  Event Ended
+                </Button>
+              ) : (
+                <Button 
+                  size="lg"
+                  variant="secondary"
+                  disabled
+                  className="flex-1 opacity-60 font-bold border-4 border-black uppercase"
+                >
+                  Not Available
+                </Button>
+              )}
 
-                  <Link href="/events">
-                    <Button 
-                      variant="secondary" 
-                      size="lg"
-                      className="w-full lg:w-auto bg-pink-500 hover:bg-pink-600 text-white font-black border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
-                    >
-                      Browse Events
-                    </Button>
-                  </Link>
-                </div>
-
-                {/* Event Status Info */}
-                <div className="mt-6 p-6 bg-cyan-400 rounded border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-                  <h3 className="font-black text-black mb-4 text-xl uppercase">Event Status</h3>
-                  <div className="space-y-3 text-base">
-                    <p className="text-black font-bold">
-                      Status: <span className={`${isUpcoming ? 'text-green-700' : 'text-neutral-700'} font-black`}>
-                        {isUpcoming ? '✨ UPCOMING' : '📅 PAST'}
-                      </span>
-                    </p>
-                    {registrationDeadline && (
-                      <p className="text-black font-bold">
-                        Registration: <span className={`${isRegistrationOpen ? 'text-green-700' : 'text-red-700'} font-black`}>
-                          {isRegistrationOpen ? '✅ OPEN' : '❌ CLOSED'}
-                        </span>
-                      </p>
-                    )}
-                    <p className="text-black font-bold">
-                      Tier: <span className="text-purple-700 font-black">
-                        {getSubscriptionTierName(event.required_tier).toUpperCase()}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <Link href="/events" className="flex-1">
+                <Button 
+                  variant="secondary" 
+                  size="lg"
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-black border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
+                >
+                  Browse Events
+                </Button>
+              </Link>
             </div>
           </div>
 
