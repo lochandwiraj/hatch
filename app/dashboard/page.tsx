@@ -10,7 +10,6 @@ import {
 } from '@heroicons/react/24/outline'
 import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
 import Button from '@/components/ui/Button'
-import ReferralCard from '@/components/referral/ReferralCard'
 import RollerLoader from '@/components/ui/RollerLoader'
 
 export default function DashboardPage() {
@@ -208,9 +207,6 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
-
-          {/* Referral Card */}
-          <ReferralCard />
 
           {/* Recent Activity */}
           <div className="funky-activity-card">

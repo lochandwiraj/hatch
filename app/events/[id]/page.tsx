@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
+import RegistrationConfirmationModal from '@/components/events/RegistrationConfirmationModal'
 import { 
   CalendarDaysIcon, 
   MapPinIcon, 
@@ -31,6 +32,7 @@ interface Event {
   category: string
   tags: string[] | null
   event_date: string
+  event_time: string | null
   registration_deadline: string | null
   required_tier: 'free' | 'basic_99' | 'premium_149'
   status: 'draft' | 'published'
@@ -50,6 +52,7 @@ export default function EventDetailsPage() {
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false)
 
   const eventId = params.id as string
 
@@ -104,6 +107,17 @@ export default function EventDetailsPage() {
       case 'basic_99': return 'primary'
       case 'premium_149': return 'warning'
       default: return 'default'
+    }
+  }
+
+  const handleRegisterClick = () => {
+    if (event?.event_link) {
+      // Open registration link in new tab
+      window.open(event.event_link, '_blank')
+      // Show confirmation modal after a short delay
+      setTimeout(() => {
+        setShowRegistrationModal(true)
+      }, 500)
     }
   }
 
@@ -339,7 +353,7 @@ export default function EventDetailsPage() {
               {isUpcoming && isRegistrationOpen && event.event_link ? (
                 <Button 
                   size="lg"
-                  onClick={() => window.open(event.event_link, '_blank')}
+                  onClick={handleRegisterClick}
                   className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-black text-lg border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                 >
                   <ArrowTopRightOnSquareIcon className="h-6 w-6 mr-2" />
@@ -414,6 +428,13 @@ export default function EventDetailsPage() {
           )}
         </div>
       </div>
+
+      {/* Registration Confirmation Modal */}
+      <RegistrationConfirmationModal
+        isOpen={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+        event={event}
+      />
     </div>
   )
 }
