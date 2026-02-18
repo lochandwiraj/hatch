@@ -215,7 +215,9 @@ export default function AdminManageUsersPage() {
       const durationChoice = prompt(
         `Choose subscription duration for ${getSubscriptionTierName(newTier)}:\n\n` +
         `Enter "30" for 30 days (monthly)\n` +
-        `Enter "365" for 365 days (annual)\n\n` +
+        `Enter "365" for 365 days (annual)\n` +
+        `Enter "36500" for 100 years (lifetime)\n\n` +
+        `Maximum: 36500 days\n\n` +
         `Duration (days):`,
         '30'
       );
@@ -228,11 +230,18 @@ export default function AdminManageUsersPage() {
         return;
       }
       
-      durationDays = parsedDuration;
+      // Cap at 36500 days (100 years) to prevent date overflow
+      if (parsedDuration > 36500) {
+        toast.error('Maximum duration is 36500 days (100 years). Setting to maximum.');
+        durationDays = 36500;
+      } else {
+        durationDays = parsedDuration;
+      }
     }
 
     const durationText = durationDays === 0 ? '' : 
                         durationDays === 365 ? ' for 365 days (1 year)' : 
+                        durationDays === 36500 ? ' for 36500 days (100 years - lifetime)' :
                         ` for ${durationDays} days`;
 
     if (!confirm(`Are you sure you want to change this user's tier from ${getSubscriptionTierName(currentTier)} to ${getSubscriptionTierName(newTier)}${durationText}?`)) {
