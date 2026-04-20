@@ -6,15 +6,6 @@ import Footer from '@/components/layout/Footer'
 import { toast } from 'react-hot-toast'
 import { EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
 
-const subjects = [
-  'Payment issue',
-  'Subscription not activated',
-  'Account issue',
-  'Event suggestion',
-  'Bug report',
-  'Other',
-]
-
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [sending, setSending] = useState(false)
@@ -94,11 +85,8 @@ export default function ContactPage() {
             </div>
             <div>
               <label className="block text-xs font-medium text-zinc-400 mb-1.5">Subject</label>
-              <select required value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
-                className={inputCls} style={inputStyle}>
-                <option value="" style={{ background: '#0a0a12' }}>Select a subject</option>
-                {subjects.map(s => <option key={s} value={s} style={{ background: '#0a0a12' }}>{s}</option>)}
-              </select>
+              <input type="text" required value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
+                placeholder="What is this about?" className={inputCls} style={inputStyle} />
             </div>
             <div>
               <label className="block text-xs font-medium text-zinc-400 mb-1.5">Message</label>
