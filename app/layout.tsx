@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import AttendanceConfirmationProvider from '@/components/events/AttendanceConfirmationProvider'
 import CompleteProfileModal from '@/components/auth/CompleteProfileModal'
+import Footer from '@/components/layout/Footer'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CompleteProfileModal />
           <AttendanceConfirmationProvider>
             {children}
+            <Footer />
           </AttendanceConfirmationProvider>
           <Toaster
             position="top-right"

@@ -132,7 +132,8 @@ export default function UpgradePageContent() {
       </div>
 
       <p className="text-xs text-zinc-600 text-center">
-        Payments are secured by Razorpay. Subscription activates instantly after payment.
+        Payments secured by Razorpay. Activates instantly.{' '}
+        <a href="/refund" className="text-zinc-500 hover:text-zinc-400 transition-colors underline underline-offset-2">Refund policy</a>
       </p>
     </main>
   )

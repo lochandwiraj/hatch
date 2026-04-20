@@ -323,7 +323,10 @@ export default function AuthPage() {
           </div>
 
           <p className="text-center text-xs text-zinc-600 mt-6">
-            By continuing you agree to our terms of service.
+            By continuing you agree to our{' '}
+            <a href="/terms" className="text-zinc-500 hover:text-zinc-400 transition-colors underline underline-offset-2">Terms</a>
+            {' '}and{' '}
+            <a href="/privacy" className="text-zinc-500 hover:text-zinc-400 transition-colors underline underline-offset-2">Privacy Policy</a>
           </p>
         </motion.div>
       </div>
