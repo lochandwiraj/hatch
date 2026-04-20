@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast'
 import { EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sending, setSending] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +22,7 @@ export default function ContactPage() {
           email: form.email,
           subject: form.subject,
           message: form.message,
-          _subject: `<span className="font-qepho">HATCH</span> Contact: ${form.subject}`,
+          _subject: `HATCH Contact from ${form.name}`,
         }),
       })
       toast.success('Message sent! We\'ll get back to you within 24–48 hours.')
@@ -82,11 +82,6 @@ export default function ContactPage() {
                 <input type="email" required value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                   placeholder="yourmail@gmail.com" className={inputCls} style={inputStyle} />
               </div>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Subject</label>
-              <input type="text" required value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
-                placeholder="What is this about?" className={inputCls} style={inputStyle} />
             </div>
             <div>
               <label className="block text-xs font-medium text-zinc-400 mb-1.5">Message</label>
