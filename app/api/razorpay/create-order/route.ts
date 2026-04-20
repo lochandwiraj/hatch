@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
-
 export async function POST(request: NextRequest) {
   try {
     const { amount, tier, billingCycle, userId, userEmail, userName } = await request.json()
@@ -13,6 +8,11 @@ export async function POST(request: NextRequest) {
     if (!amount || !tier || !userId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    })
 
     const order = await razorpay.orders.create({
       amount: amount * 100, // convert to paise
