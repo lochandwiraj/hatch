@@ -20,13 +20,12 @@ export default function ContactPage() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
-          subject: form.subject,
           message: form.message,
           _subject: `HATCH Contact from ${form.name}`,
         }),
       })
       toast.success('Message sent! We\'ll get back to you within 24–48 hours.')
-      setForm({ name: '', email: '', subject: '', message: '' })
+      setForm({ name: '', email: '', message: '' })
     } catch {
       toast.error('Failed to send. Email us directly at hatch0258@gmail.com')
     } finally {
