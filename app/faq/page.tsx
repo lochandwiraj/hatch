@@ -6,13 +6,15 @@ import Footer from '@/components/layout/Footer'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
-const faqs = [
+const H = () => <span className="font-qepho">HATCH</span>
+
+const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
   {
     group: 'Subscriptions',
     items: [
       {
         q: "What's the difference between Explorer and Professional?",
-        a: "Explorer (₹99/month) gives you access to 7 curated events per week, priority registration, and advanced filtering. Professional (₹149/month) gives you access to all events including VIP and early access events, networking opportunities, career guidance, and priority support.",
+        a: 'Explorer (₹99/month) gives you access to 7 curated events per week, priority registration, and advanced filtering. Professional (₹149/month) gives you access to all events including VIP and early access events, networking opportunities, career guidance, and priority support.',
       },
       {
         q: 'Can I upgrade mid-month?',
@@ -37,15 +39,15 @@ const faqs = [
       },
       {
         q: 'My payment went through but subscription did not activate. What do I do?',
-        a: 'This is rare but can happen. Email us at hatch0258@gmail.com with your Razorpay payment ID and we will manually activate your subscription within 48 hours or issue a full refund.',
+        a: <>Email us at <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> with your Razorpay payment ID and we will manually activate your subscription within 48 hours or issue a full refund.</>,
       },
       {
         q: 'Is my payment information safe?',
-        a: 'Yes. All payments are processed by Razorpay — we never see or store your card or UPI details. Razorpay is PCI-DSS compliant and RBI regulated.',
+        a: <>Yes. All payments are processed by Razorpay — <H /> never sees or stores your card or UPI details. Razorpay is PCI-DSS compliant and RBI regulated.</>,
       },
       {
         q: 'Can I get a refund?',
-        a: 'Refunds are available for duplicate payments or activation failures. There are no refunds for change of mind after a subscription activates. See our full Refund Policy for details.',
+        a: <>Refunds are available for duplicate payments or activation failures. There are no refunds for change of mind after a subscription activates. See our full <Link href="/refund" className="text-violet-400 hover:text-violet-300 transition-colors">Refund Policy</Link> for details.</>,
       },
     ],
   },
@@ -54,11 +56,11 @@ const faqs = [
     items: [
       {
         q: 'How are events curated?',
-        a: 'Every event on HATCH is manually reviewed by our team before it goes live. We check for legitimacy, relevance to students, and quality before adding anything to the platform.',
+        a: <>Every event on <H /> is manually reviewed by our team before it goes live. We check for legitimacy, relevance to students, and quality before adding anything to the platform.</>,
       },
       {
         q: 'Can I suggest an event?',
-        a: 'Absolutely. Use the Contact page and select "Event suggestion" — we review every submission and add events that meet our quality bar.',
+        a: <>Absolutely. Use the <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact page</Link> and select &quot;Event suggestion&quot; — we review every submission and add events that meet our quality bar.</>,
       },
       {
         q: "Why can't I see some events?",
@@ -66,7 +68,7 @@ const faqs = [
       },
       {
         q: 'What if I miss an event I registered for?',
-        a: "We send reminders before events. If you miss it, that's between you and the event organiser — HATCH is a discovery platform and doesn't manage event attendance directly.",
+        a: <><H /> sends reminders before events. If you miss it, that is between you and the event organiser — <H /> is a discovery platform and does not manage event attendance directly.</>,
       },
     ],
   },
@@ -75,7 +77,7 @@ const faqs = [
     items: [
       {
         q: 'Can I have multiple accounts?',
-        a: 'No. One account per person. Multiple accounts violate our Terms & Conditions and may result in all accounts being suspended.',
+        a: <>No. One account per person. Multiple accounts violate our <Link href="/terms" className="text-violet-400 hover:text-violet-300 transition-colors">Terms & Conditions</Link> and may result in all accounts being suspended.</>,
       },
       {
         q: 'How do I delete my account?',
@@ -83,13 +85,13 @@ const faqs = [
       },
       {
         q: 'I signed up with Google but need to add my college details.',
-        a: "A prompt will appear automatically the first time you log in asking for your college and graduation year. You can't proceed until these are filled in.",
+        a: 'A prompt will appear automatically the first time you log in asking for your college and graduation year. You cannot proceed until these are filled in.',
       },
     ],
   },
 ]
 
-function FAQItem({ q, a }: { q: string; a: string }) {
+function FAQItem({ q, a }: { q: string; a: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   return (
     <div
@@ -121,7 +123,7 @@ export default function FAQPage() {
         <div className="mb-10">
           <p className="text-xs text-violet-400 uppercase tracking-widest font-medium mb-3">FAQ</p>
           <h1 className="text-3xl font-bold text-white mb-3">Frequently asked questions</h1>
-          <p className="text-zinc-400">Can't find what you're looking for? <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact us</Link>.</p>
+          <p className="text-zinc-400">Can&apos;t find what you&apos;re looking for? <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact us</Link>.</p>
         </div>
 
         <div className="space-y-10">
@@ -129,7 +131,7 @@ export default function FAQPage() {
             <div key={group.group}>
               <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3">{group.group}</h2>
               <div className="space-y-2">
-                {group.items.map(item => <FAQItem key={item.q} q={item.q} a={item.a} />)}
+                {group.items.map((item, i) => <FAQItem key={i} q={item.q} a={item.a} />)}
               </div>
             </div>
           ))}

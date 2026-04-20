@@ -2,7 +2,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 
-export const metadata = { title: 'Refund & Cancellation Policy — HATCH' }
+export const metadata = { title: 'Refund & Cancellation Policy — <span className="font-qepho">HATCH</span>' }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -29,7 +29,7 @@ export default function RefundPage() {
           style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
         >
           <Section title="1. General Policy">
-            <p>All subscription payments on HATCH are final once the subscription has been successfully activated. We do not offer refunds for change of mind, partial months used, or subscriptions that have already been utilised to access events.</p>
+            <p>All subscription payments on <span className="font-qepho">HATCH</span> are final once the subscription has been successfully activated. We do not offer refunds for change of mind, partial months used, or subscriptions that have already been utilised to access events.</p>
           </Section>
 
           <Section title="2. When Refunds Are Issued">
@@ -37,7 +37,7 @@ export default function RefundPage() {
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li><strong className="text-zinc-300">Duplicate payment</strong> — you were charged more than once for the same subscription period.</li>
               <li><strong className="text-zinc-300">Payment deducted but subscription not activated</strong> — your money was taken but your account was not upgraded.</li>
-              <li><strong className="text-zinc-300">Technical error on our end</strong> — a verified error caused by HATCH's payment or subscription system.</li>
+              <li><strong className="text-zinc-300">Technical error on our end</strong> — a verified error caused by <span className="font-qepho">HATCH</span>'s payment or subscription system.</li>
             </ul>
           </Section>
 
@@ -63,7 +63,7 @@ export default function RefundPage() {
           </Section>
 
           <Section title="5. Subscription Cancellation">
-            <p>HATCH subscriptions are not auto-renewing. Each subscription runs for the duration shown at purchase (30 days or 365 days) and simply expires after that period — no action needed to cancel. Your account downgrades to Free automatically upon expiry.</p>
+            <p><span className="font-qepho">HATCH</span> subscriptions are not auto-renewing. Each subscription runs for the duration shown at purchase (30 days or 365 days) and simply expires after that period — no action needed to cancel. Your account downgrades to Free automatically upon expiry.</p>
           </Section>
 
           <Section title="6. Razorpay Dispute Process">

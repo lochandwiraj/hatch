@@ -2,7 +2,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 
-export const metadata = { title: 'About — HATCH' }
+export const metadata = { title: 'About — <span className="font-qepho">HATCH</span>' }
 
 export default function AboutPage() {
   return (
@@ -12,7 +12,7 @@ export default function AboutPage() {
 
         <div className="mb-12">
           <p className="text-xs text-violet-400 uppercase tracking-widest font-medium mb-3">About</p>
-          <h1 className="text-3xl font-bold text-white mb-4">We built HATCH because we were tired of missing out.</h1>
+          <h1 className="text-3xl font-bold text-white mb-4">We built <span className="font-qepho">HATCH</span> because we were tired of missing out.</h1>
           <p className="text-zinc-400 text-base leading-relaxed">
             Every week, hundreds of hackathons, competitions, workshops, and networking events happen across India — and most students never hear about them. They're buried across Instagram pages, WhatsApp groups, college notice boards, and random Discord servers.
           </p>
@@ -27,16 +27,16 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">What HATCH does</h2>
+            <h2 className="text-lg font-semibold text-white mb-3">What <span className="font-qepho">HATCH</span> does</h2>
             <p className="text-zinc-400 leading-relaxed">
-              HATCH aggregates and hand-curates the best student events across India — hackathons, case competitions, cultural fests, tech workshops, career fairs, and more. We filter out the noise so you only see events worth your time. No algorithm, no spam, just quality.
+              <span className="font-qepho">HATCH</span> aggregates and hand-curates the best student events across India — hackathons, case competitions, cultural fests, tech workshops, career fairs, and more. We filter out the noise so you only see events worth your time. No algorithm, no spam, just quality.
             </p>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">Who we are</h2>
             <p className="text-zinc-400 leading-relaxed">
-              HATCH was built by <span className="text-white">Dwiraj</span> and <span className="text-white">Lochan</span> — two students who spent too much time searching and not enough time participating. We're building this from the ground up, shaped entirely by feedback from students like you.
+              <span className="font-qepho">HATCH</span> was built by <span className="text-white">Dwiraj</span> and <span className="text-white">Lochan</span> — two students who spent too much time searching and not enough time participating. We're building this from the ground up, shaped entirely by feedback from students like you.
             </p>
           </section>
 

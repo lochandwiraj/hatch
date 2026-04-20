@@ -1,7 +1,7 @@
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
-export const metadata = { title: 'Privacy Policy — HATCH' }
+export const metadata = { title: 'Privacy Policy — <span className="font-qepho">HATCH</span>' }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="9. Children's Privacy">
-            <p>HATCH is not intended for users under 18. We do not knowingly collect data from minors. If you believe a minor has created an account, contact us and we will delete it promptly.</p>
+            <p><span className="font-qepho">HATCH</span> is not intended for users under 18. We do not knowingly collect data from minors. If you believe a minor has created an account, contact us and we will delete it promptly.</p>
           </Section>
 
           <Section title="10. Compliance">

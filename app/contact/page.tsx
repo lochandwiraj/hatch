@@ -31,7 +31,7 @@ export default function ContactPage() {
           email: form.email,
           subject: form.subject,
           message: form.message,
-          _subject: `HATCH Contact: ${form.subject}`,
+          _subject: `<span className="font-qepho">HATCH</span> Contact: ${form.subject}`,
         }),
       })
       toast.success('Message sent! We\'ll get back to you within 24–48 hours.')

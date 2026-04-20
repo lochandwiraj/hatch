@@ -10,6 +10,10 @@ import {
   ChevronDownIcon,
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
+  InformationCircleIcon,
+  EnvelopeIcon,
+  DocumentTextIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'motion/react'
 import { getSubscriptionTierName } from '@/lib/utils'
@@ -193,6 +197,24 @@ export default function Header() {
                           <UserCircleIcon className="w-4 h-4" />
                           Profile
                         </Link>
+                        <div className="my-1 border-t border-white/[0.07]" />
+                        <p className="px-3 py-1 text-xs text-zinc-600 uppercase tracking-widest">Info</p>
+                        {[
+                          { href: '/about', label: 'About', Icon: InformationCircleIcon },
+                          { href: '/contact', label: 'Contact', Icon: EnvelopeIcon },
+                          { href: '/terms', label: 'Terms', Icon: DocumentTextIcon },
+                          { href: '/privacy', label: 'Privacy', Icon: ShieldCheckIcon },
+                        ].map(({ href, label, Icon }) => (
+                          <Link
+                            key={href}
+                            href={href}
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 text-sm text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors"
+                          >
+                            <Icon className="w-4 h-4" />
+                            {label}
+                          </Link>
+                        ))}
                         <div className="my-1 border-t border-white/[0.07]" />
                         <button
                           onClick={handleSignOut}
