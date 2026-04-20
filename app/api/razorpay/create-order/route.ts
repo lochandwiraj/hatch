@@ -8,8 +8,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID!
-    const keySecret = process.env.RAZORPAY_KEY_SECRET!
+    const keyId = process.env.RAZORPAY_KEY_ID
+    const keySecret = process.env.RAZORPAY_KEY_SECRET
+
+    if (!keyId || !keySecret) {
+      console.error('Missing Razorpay env vars:', { keyId: !!keyId, keySecret: !!keySecret })
+      return NextResponse.json({ error: 'Payment service not configured' }, { status: 500 })
+    }
+
     const credentials = Buffer.from(`${keyId}:${keySecret}`).toString('base64')
 
     const response = await fetch('https://api.razorpay.com/v1/orders', {
