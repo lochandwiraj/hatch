@@ -31,7 +31,7 @@ export default function ContactForm() {
     }
   }
 
-  const inputCls = 'w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/30 transition-all'
+  const inputCls = 'w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/60 transition-all'
   const inputStyle = { background: 'rgba(3,3,8,0.9)', border: '1px solid rgba(255,255,255,0.08)' }
 
   return (
@@ -61,12 +61,12 @@ export default function ContactForm() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-zinc-400 mb-1.5">Name</label>
-            <input type="text" required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+            <input type="text" required autoComplete="name" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
               placeholder="Your name" className={inputCls} style={inputStyle} />
           </div>
           <div>
             <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
-            <input type="email" required value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+            <input type="email" required autoComplete="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
               placeholder="yourmail@gmail.com" className={inputCls} style={inputStyle} />
           </div>
         </div>

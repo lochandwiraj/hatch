@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
@@ -103,11 +104,21 @@ function FAQItem({ q, a }: { q: string; a: React.ReactNode }) {
         <span className="text-sm font-medium text-zinc-200">{q}</span>
         <ChevronDownIcon className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
-      {open && (
-        <div className="px-5 pb-4">
-          <p className="text-sm text-zinc-400 leading-relaxed">{a}</p>
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-4">
+              <p className="text-sm text-zinc-400 leading-relaxed">{a}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

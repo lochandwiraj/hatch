@@ -246,6 +246,8 @@ export default function Header() {
               <button
                 className="md:hidden p-1.5 text-zinc-400 hover:text-white transition-colors"
                 onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileOpen}
               >
                 {mobileOpen ? <XMarkIcon className="w-5 h-5" /> : <Bars3Icon className="w-5 h-5" />}
               </button>

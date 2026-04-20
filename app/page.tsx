@@ -144,8 +144,8 @@ export default function Home() {
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-2xl mb-10">
-            Hackathons, case studies, workshops and competitions — curated from 50+ sources every week.
-            Never miss an event that could change your career.
+            Hackathons, case competitions, workshops and events — curated from 50+ sources every week.
+            Never miss an opportunity that could change your career.
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
