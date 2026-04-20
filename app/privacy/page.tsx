@@ -1,5 +1,4 @@
 import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 
 export const metadata = { title: 'Privacy Policy — <span className="font-qepho">HATCH</span>' }
 
@@ -81,7 +80,7 @@ export default function PrivacyPage() {
           </Section>
         </div>
       </main>
-      <Footer />
+
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 
 export const metadata = { title: 'Terms & Conditions — <span className="font-qepho">HATCH</span>' }
 
@@ -77,7 +76,7 @@ export default function TermsPage() {
           </Section>
         </div>
       </main>
-      <Footer />
+
     </div>
   )
 }

@@ -293,13 +293,6 @@ export default function Home() {
         </FadeUp>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="relative z-10 border-t border-white/[0.05]">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
-          <span className="font-qepho text-white text-base">HATCH</span>
-          <p className="text-sm text-zinc-600">© 2026 <span className="font-qepho">HATCH</span>. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 
 export const metadata = { title: 'About — <span className="font-qepho">HATCH</span>' }
@@ -61,7 +60,7 @@ export default function AboutPage() {
           </section>
         </div>
       </main>
-      <Footer />
+
     </div>
   )
 }

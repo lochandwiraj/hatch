@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
@@ -137,7 +136,7 @@ export default function FAQPage() {
           ))}
         </div>
       </main>
-      <Footer />
+
     </div>
   )
 }

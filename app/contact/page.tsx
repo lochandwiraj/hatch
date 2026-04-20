@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import { toast } from 'react-hot-toast'
 import { EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
 
@@ -96,7 +95,7 @@ export default function ContactPage() {
           </form>
         </div>
       </main>
-      <Footer />
+
     </div>
   )
 }
