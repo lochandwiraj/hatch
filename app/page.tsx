@@ -139,8 +139,8 @@ export default function Home() {
           </div>
 
           <h1 className="text-[clamp(2.8rem,7vw,5rem)] font-extrabold text-white leading-[1.05] tracking-tight mb-6">
-            Find your next<br />
-            <span className="text-violet-300">big opportunity.</span>
+            Hackathons & student events<br />
+            <span className="text-violet-300">in India, curated weekly.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-2xl mb-10">

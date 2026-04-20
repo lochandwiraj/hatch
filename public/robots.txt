@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /profile/
+Disallow: /subscription/
+Disallow: /calendar/
+
+Sitemap: https://hatch06.vercel.app/sitemap.xml

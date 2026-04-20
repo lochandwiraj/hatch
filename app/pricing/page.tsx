@@ -1,10 +1,13 @@
-'use client'
-
-import { useAuth } from '@/components/auth/AuthProvider'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import { CheckIcon } from '@heroicons/react/24/outline'
+import PricingCTA from './PricingCTA'
+
+export const metadata: Metadata = {
+  title: 'Pricing — Free, Explorer & Professional Plans',
+  description: 'Start free or get Explorer for ₹99/month — 7 curated hackathons & competitions weekly, priority registration, and advanced filters for Indian college students.',
+  alternates: { canonical: '/pricing' },
+}
 
 const plans = [
   {
@@ -31,17 +34,23 @@ const plans = [
   },
 ]
 
+const pricingJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'HATCH',
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Web',
+  offers: [
+    { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'INR', description: '5 curated events per week' },
+    { '@type': 'Offer', name: 'Explorer', price: '99', priceCurrency: 'INR', description: '7 curated events per week, priority registration, advanced filters' },
+    { '@type': 'Offer', name: 'Professional', price: '149', priceCurrency: 'INR', description: 'All events, early access, VIP events, career guidance' },
+  ],
+}
+
 export default function PricingPage() {
-  const { user } = useAuth()
-  const router = useRouter()
-
-  const handleGetStarted = (id: string) => {
-    if (user) router.push(id === 'free' ? '/dashboard' : '/subscription/upgrade')
-    else router.push('/auth')
-  }
-
   return (
     <div className="min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }} />
       <Header />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
@@ -79,16 +88,7 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={() => handleGetStarted(plan.id)}
-                className={`w-full text-sm py-2 rounded-lg transition-colors ${
-                  plan.popular
-                    ? 'bg-violet-600 hover:bg-violet-500 text-white'
-                    : 'bg-white/[0.05] hover:bg-white/[0.08] text-zinc-300'
-                }`}
-              >
-                {user ? (plan.id === 'free' ? 'Go to dashboard' : 'Upgrade now') : 'Get started'}
-              </button>
+              <PricingCTA planId={plan.id} popular={plan.popular} />
             </div>
           ))}
         </div>

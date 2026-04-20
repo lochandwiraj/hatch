@@ -1,7 +1,12 @@
 import Header from '@/components/layout/Header'
 import Link from 'next/link'
 
-export const metadata = { title: 'About — <span className="font-qepho">HATCH</span>' }
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'About HATCH — Student Event Discovery for India',
+  description: 'HATCH was built by two students tired of missing opportunities. We curate the best hackathons, competitions and workshops across India so you never miss out.',
+}
 
 export default function AboutPage() {
   return (

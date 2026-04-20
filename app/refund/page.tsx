@@ -1,7 +1,9 @@
 import Header from '@/components/layout/Header'
 import Link from 'next/link'
 
-export const metadata = { title: 'Refund & Cancellation Policy — <span className="font-qepho">HATCH</span>' }
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = { title: 'Refund & Cancellation Policy — HATCH' }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
