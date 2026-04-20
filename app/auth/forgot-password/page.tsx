@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'motion/react'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeftIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
@@ -15,82 +16,71 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
     try {
-      // Send OTP directly - Supabase will handle if user exists or not
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       })
-
       if (error) {
-        // Handle specific error cases
-        if (error.message.includes('User not found') || error.message.includes('not found')) {
-          toast.error('No account found with this email address')
-        } else {
-          throw error
-        }
-        setLoading(false)
+        if (error.message.includes('not found')) toast.error('No account found with this email')
+        else throw error
         return
       }
-
       toast.success('OTP sent to your email!')
-      // Store email in sessionStorage for the next step
       sessionStorage.setItem('reset_email', email)
       router.push('/auth/verify-otp')
-    } catch (error: any) {
-      console.error('Error sending OTP:', error)
-      toast.error('Failed to send OTP. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+    } catch { toast.error('Failed to send OTP. Please try again.') }
+    finally { setLoading(false) }
   }
 
   return (
-    <div data-auth-page className="h-screen w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
-      <div className="wrapper">
-        <div className="flip-card__inner" style={{ transform: 'none' }}>
-          {/* Forgot Password Form */}
-          <div className="flip-card__front" style={{ transform: 'none' }}>
-            <div className="title">Forgot Password?</div>
-            <div className="text-center mb-6">
-              <EnvelopeIcon className="h-12 w-12 mx-auto mb-4 text-var(--main-color)" />
-              <p className="text-sm text-var(--font-color-sub)">
-                Enter your email address and we'll send you an OTP to reset your password
-              </p>
-            </div>
-            
-            <form className="flip-card__form" onSubmit={handleSubmit}>
-              <input
-                className="flip-card__input"
-                name="email"
-                placeholder="Enter your registered email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full orb-drift-1"
+          style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%)' }} />
+      </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="flip-card__btn"
-              >
-                {loading ? 'Sending...' : 'Send OTP'}
-              </button>
-            </form>
+      <motion.div
+        initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
+        className="w-full max-w-md relative z-10"
+      >
+        <div className="text-center mb-8">
+          <Link href="/" className="font-qepho text-2xl text-white hover:opacity-80 transition-opacity">HATCH</Link>
+          <p className="text-sm text-zinc-500 mt-2">Reset your password</p>
+        </div>
 
-            <div className="text-center mt-4">
-              <Link 
-                href="/auth" 
-                className="inline-flex items-center text-var(--input-focus) hover:underline text-sm"
-              >
-                <ArrowLeftIcon className="h-4 w-4 mr-2" />
-                Back to Sign In
-              </Link>
+        <div className="rounded-2xl p-6" style={{ background: 'rgba(10,10,18,0.9)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
+          <div className="flex items-center justify-center w-12 h-12 rounded-2xl mx-auto mb-5"
+            style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.2)' }}>
+            <EnvelopeIcon className="w-6 h-6 text-violet-400" />
+          </div>
+          <h1 className="text-lg font-bold text-white text-center mb-1">Forgot password?</h1>
+          <p className="text-sm text-zinc-500 text-center mb-6">Enter your email and we'll send you an OTP to reset it.</p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email address</label>
+              <input type="email" required value={email}
+                onChange={e => setEmail(e.target.value)} placeholder="yourmail@gmail.com"
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/30 transition-all duration-200"
+                style={{ background: 'rgba(3,3,8,0.9)', border: '1px solid rgba(255,255,255,0.08)' }} />
             </div>
+            <motion.button type="submit" disabled={loading} whileTap={{ scale: 0.98 }}
+              className="w-full text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-50 transition-all duration-200"
+              style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)', boxShadow: '0 4px 20px rgba(124,58,237,0.3)' }}>
+              {loading ? 'Sending...' : 'Send OTP'}
+            </motion.button>
+          </form>
+
+          <div className="mt-5 text-center">
+            <Link href="/auth" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors">
+              <ArrowLeftIcon className="w-3.5 h-3.5" />
+              Back to sign in
+            </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

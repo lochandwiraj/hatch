@@ -2,288 +2,116 @@
 
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useRouter } from 'next/navigation'
-import Button from '@/components/ui/Button'
-import Card from '@/components/ui/Card'
-import Badge from '@/components/ui/Badge'
-import { CheckCircleIcon, StarIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import Header from '@/components/layout/Header'
+import { CheckIcon } from '@heroicons/react/24/outline'
+
+const plans = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: '₹0',
+    description: 'Get started for free',
+    features: ['5 curated events', 'Basic profile', 'Event browsing', 'Community access'],
+  },
+  {
+    id: 'basic_99',
+    name: 'Explorer',
+    price: '₹99',
+    description: 'For active participants',
+    features: ['7 curated events', 'Priority registration', 'Advanced filters', 'Event reminders', 'Profile showcase'],
+    popular: true,
+  },
+  {
+    id: 'premium_149',
+    name: 'Professional',
+    price: '₹149',
+    description: 'For serious builders',
+    features: ['All events', 'Early access', 'VIP events', 'Networking', 'Career guidance', 'Priority support'],
+  },
+]
 
 export default function PricingPage() {
   const { user } = useAuth()
   const router = useRouter()
 
-  const handleGetStarted = (tier: string) => {
-    if (user) {
-      if (tier === 'free') {
-        router.push('/dashboard')
-      } else {
-        router.push('/subscription/upgrade')
-      }
-    } else {
-      router.push('/auth')
-    }
+  const handleGetStarted = (id: string) => {
+    if (user) router.push(id === 'free' ? '/dashboard' : '/subscription/upgrade')
+    else router.push('/auth')
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">H</span>
-              </div>
-              <span className="text-xl font-bold gradient-text">Hatch</span>
-            </Link>
-            
-            <div className="flex items-center space-x-4">
-              {user ? (
-                <Link href="/dashboard">
-                  <Button size="sm">Go to Dashboard</Button>
-                </Link>
-              ) : (
-                <>
-                  <Link href="/auth">
-                    <Button variant="ghost" size="sm">Sign In</Button>
-                  </Link>
-                  <Link href="/auth">
-                    <Button size="sm">Get Started</Button>
-                  </Link>
-                </>
+    <div className="min-h-screen">
+      <Header />
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-semibold text-white mb-3">Simple pricing</h1>
+          <p className="text-zinc-400">Start free. Upgrade when you need more.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+          {plans.map(plan => (
+            <div
+              key={plan.id}
+              className={`relative bg-[#111111] border rounded-xl p-6 flex flex-col ${
+                plan.popular ? 'border-violet-500/40 ring-1 ring-violet-500/10' : 'border-white/[0.07]'
+              }`}
+            >
+              {plan.popular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-medium bg-violet-600 text-white px-3 py-0.5 rounded-full">
+                  Most popular
+                </span>
               )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold text-primary-800 mb-6">
-            Choose Your Plan
-          </h1>
-          <p className="text-xl text-primary-600 max-w-2xl mx-auto mb-8">
-            Start free and upgrade as you grow. Get access to premium events and exclusive features.
-          </p>
-          <div className="flex justify-center">
-            <Badge variant="primary" size="lg">
-              <StarIcon className="h-4 w-4 mr-1" />
-              No setup fees • Cancel anytime
-            </Badge>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Cards */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <Card key={index} className={`relative ${plan.popular ? 'ring-2 ring-primary-500 shadow-glow' : ''}`}>
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge variant="primary">Most Popular</Badge>
-                  </div>
-                )}
-                
-                <div className="text-center mb-8">
-                  <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${plan.iconBg}`}>
-                    <plan.icon className={`h-8 w-8 ${plan.iconColor}`} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-primary-800 mb-2">{plan.name}</h3>
-                  <div className="text-5xl font-bold text-primary-600 mb-2">
-                    {plan.price}
-                  </div>
-                  <p className="text-neutral-500">{plan.billing}</p>
-                  {plan.annualPrice && (
-                    <div className="mt-2">
-                      <p className="text-lg font-semibold text-primary-700">{plan.annualPrice}</p>
-                      <p className="text-sm text-success-600 font-medium">{plan.annualSavings}</p>
-                    </div>
-                  )}
-                  <p className="text-neutral-600 mt-2">{plan.description}</p>
+              <div className="mb-5">
+                <h2 className="text-white font-medium mb-1">{plan.name}</h2>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-3xl font-bold text-white">{plan.price}</span>
+                  {plan.id !== 'free' && <span className="text-xs text-zinc-500">/month</span>}
                 </div>
-
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start">
-                      <CheckCircleIcon className="h-5 w-5 text-success-500 mr-3 mt-0.5 flex-shrink-0" />
-                      <span className="text-neutral-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button 
-                  variant={plan.popular ? 'primary' : 'secondary'} 
-                  className="w-full"
-                  onClick={() => handleGetStarted(plan.tier)}
-                >
-                  {plan.cta}
-                </Button>
-              </Card>
-            ))}
-          </div>
+                <p className="text-xs text-zinc-500">{plan.description}</p>
+              </div>
+              <ul className="space-y-2.5 mb-6 flex-1">
+                {plan.features.map(f => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
+                    <CheckIcon className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => handleGetStarted(plan.id)}
+                className={`w-full text-sm py-2 rounded-lg transition-colors ${
+                  plan.popular
+                    ? 'bg-violet-600 hover:bg-violet-500 text-white'
+                    : 'bg-white/[0.05] hover:bg-white/[0.08] text-zinc-300'
+                }`}
+              >
+                {user ? (plan.id === 'free' ? 'Go to dashboard' : 'Upgrade now') : 'Get started'}
+              </button>
+            </div>
+          ))}
         </div>
-      </section>
 
-      {/* FAQ Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-primary-800 mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-primary-600">
-              Everything you need to know about our pricing
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-neutral-200 pb-8">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-3">
-                  {faq.question}
-                </h3>
-                <p className="text-neutral-600 leading-relaxed">
-                  {faq.answer}
-                </p>
+        {/* FAQ */}
+        <div className="bg-[#111111] border border-white/[0.07] rounded-xl p-6">
+          <h2 className="text-sm font-medium text-white mb-4">Frequently asked questions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {[
+              { q: 'How does payment work?', a: 'We use UPI payments. Your subscription is activated within 24 hours of payment confirmation.' },
+              { q: 'Can I cancel anytime?', a: 'Yes. Contact us and we will cancel your subscription. No hidden fees.' },
+              { q: 'What are curated events?', a: 'We research 50+ sources to hand-pick only the best hackathons, competitions, and workshops.' },
+              { q: 'How is the tier limit counted?', a: 'You can register for up to the limit number of events per subscription period.' },
+            ].map(item => (
+              <div key={item.q}>
+                <p className="text-sm text-white font-medium mb-1">{item.q}</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-primary text-white">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-xl mb-8 text-neutral-200">
-            Join thousands of event organizers who trust Hatch for their events
-          </p>
-          <Button 
-            variant="secondary" 
-            size="lg"
-            onClick={() => handleGetStarted('free')}
-            className="bg-white text-primary-600 hover:bg-neutral-100"
-          >
-            Start Your Free Account
-          </Button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-primary-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Hatch</h3>
-            <p className="text-neutral-300 mb-4">
-              Modern event management for the digital age
-            </p>
-            <p className="text-neutral-400 text-sm">
-              © 2024 Hatch. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      </main>
     </div>
   )
 }
-
-const pricingPlans = [
-  {
-    name: 'Free',
-    price: '₹0',
-    billing: 'Forever free',
-    description: 'Perfect for getting started',
-    tier: 'free',
-    popular: false,
-    icon: CheckCircleIcon,
-    iconBg: 'bg-success-100',
-    iconColor: 'text-success-600',
-    cta: 'Get Started Free',
-    features: [
-      '5 curated events',
-      'Create public profile',
-      'Basic profile sharing',
-      'Community access',
-      'Email notifications'
-    ]
-  },
-  {
-    name: 'Explorer',
-    price: '₹99',
-    billing: 'one-time',
-    description: 'Great for active participants',
-    tier: 'explorer_99',
-    popular: true,
-    icon: StarIcon,
-    iconBg: 'bg-primary-100',
-    iconColor: 'text-primary-600',
-    cta: 'Start Explorer Plan',
-    annualPrice: '₹999/year',
-    annualSavings: 'Save ₹189 (17% off)',
-    features: [
-      '7 curated events',
-      'Everything in Free',
-      'New events added regularly',
-      'Priority event registration',
-      'Advanced filtering',
-      'Event reminders',
-      'Profile showcase',
-      'Referral rewards'
-    ]
-  },
-  {
-    name: 'Professional',
-    price: '₹149',
-    billing: 'one-time',
-    description: 'For serious event enthusiasts',
-    tier: 'professional_149',
-    popular: false,
-    icon: StarIcon,
-    iconBg: 'bg-accent-100',
-    iconColor: 'text-accent-600',
-    cta: 'Go Professional',
-    annualPrice: '₹1,499/year',
-    annualSavings: 'Save ₹289 (17% off)',
-    features: [
-      'All hackathons & events',
-      'Everything in Explorer',
-      'Fresh hackathons regularly',
-      'Early access to events',
-      'VIP event access',
-      'Networking opportunities',
-      'Career guidance',
-      'Premium support',
-      'Custom event requests'
-    ]
-  }
-]
-
-const faqs = [
-  {
-    question: 'Can I change my plan at any time?',
-    answer: 'Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate any billing differences.'
-  },
-  {
-    question: 'What happens if I cancel my subscription?',
-    answer: 'You can cancel anytime. Your subscription will remain active until the end of your current billing period, after which you\'ll be moved to the free plan.'
-  },
-  {
-    question: 'Do you offer refunds?',
-    answer: 'We offer a 30-day money-back guarantee for all paid plans. If you\'re not satisfied, contact us within 30 days for a full refund.'
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards (Visa, MasterCard, American Express) and PayPal. All payments are processed securely through Stripe.'
-  },
-  {
-    question: 'Is there a setup fee?',
-    answer: 'No setup fees! You only pay the one-time fee. There are no hidden costs or additional charges.'
-  },
-  {
-    question: 'Can I get a discount for annual billing?',
-    answer: 'Yes! We offer a 20% discount when you choose annual billing. Contact our sales team to set up annual billing for your account.'
-  }
-]

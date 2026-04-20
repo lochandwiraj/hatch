@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
-import Link from 'next/link'
+import Header from '@/components/layout/Header'
 import EventCard from '@/components/events/EventCard'
-import Button from '@/components/ui/Button'
-import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
+import { motion } from 'motion/react'
+import { MagnifyingGlassIcon, ArrowPathIcon, BoltIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
-import { getSubscriptionTierName, getEventLimit, getEventLimitDescription } from '@/lib/utils'
-import CircleLoader from '@/components/ui/CircleLoader'
+import { getEventLimitDescription } from '@/lib/utils'
 
 interface Event {
   id: string
@@ -31,535 +30,243 @@ interface Event {
   eligibility: string | null
 }
 
-// Mock events data for now
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: 'React Conf 2024',
-    description: 'Join us for the biggest React conference of the year with industry experts sharing the latest trends and best practices.',
-    event_link: 'https://reactconf.com',
-    poster_image_url: null,
-    category: 'Conference',
-    tags: ['React', 'JavaScript', 'Frontend'],
-    event_date: '2024-03-15T10:00:00Z',
-    event_time: '10:00',
-    registration_deadline: '2024-03-10T23:59:59Z',
-    required_tier: 'free',
-    status: 'published',
-    is_early_access: false,
-    organizer: 'React Team',
-    prize_pool: null,
-    mode: 'Hybrid',
-    eligibility: 'Open to all developers'
-  },
-  {
-    id: '2',
-    title: 'AI/ML Workshop',
-    description: 'Hands-on workshop covering machine learning fundamentals and practical applications using Python and TensorFlow.',
-    event_link: 'https://aiworkshop.com',
-    poster_image_url: null,
-    category: 'Workshop',
-    tags: ['AI', 'ML', 'Python'],
-    event_date: '2024-03-20T14:00:00Z',
-    event_time: '14:00',
-    registration_deadline: '2024-03-18T23:59:59Z',
-    required_tier: 'basic_99',
-    status: 'published',
-    is_early_access: false,
-    organizer: 'AI Academy',
-    prize_pool: null,
-    mode: 'Online',
-    eligibility: 'Basic programming knowledge required'
-  },
-  {
-    id: '3',
-    title: 'Startup Pitch Competition',
-    description: 'Present your startup idea to a panel of investors and win up to $50,000 in funding.',
-    event_link: 'https://startuppitch.com',
-    poster_image_url: null,
-    category: 'Competition',
-    tags: ['Startup', 'Pitch', 'Investment'],
-    event_date: '2024-03-25T18:00:00Z',
-    event_time: '18:00',
-    registration_deadline: '2024-03-20T23:59:59Z',
-    required_tier: 'premium_149',
-    status: 'published',
-    is_early_access: true,
-    organizer: 'Startup Hub',
-    prize_pool: '$50,000',
-    mode: 'Offline',
-    eligibility: 'Early-stage startups only'
-  }
-]
+const TIER_HIERARCHY: Record<string, string[]> = {
+  free: ['free'],
+  basic_99: ['free', 'basic_99'],
+  premium_149: ['free', 'basic_99', 'premium_149'],
+}
+
+const CARD = { background: 'rgba(10,10,18,0.8)', border: '1px solid rgba(255,255,255,0.07)' }
+const INPUT_STYLE = { background: 'rgba(3,3,8,0.9)', border: '1px solid rgba(255,255,255,0.08)' }
 
 export default function EventsPage() {
-  const { profile, user } = useAuth()
+  const { profile } = useAuth()
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterTier, setFilterTier] = useState<'all' | 'free' | 'basic_99' | 'premium_149'>('all')
-  const [showFilters, setShowFilters] = useState(false)
-  const [userStats, setUserStats] = useState<any>(null)
 
+  useEffect(() => { if (profile) loadEvents() }, [profile, filterTier])
   useEffect(() => {
-    loadEvents()
-    if (profile) {
-      loadUserStats()
-    }
-  }, [profile, filterTier])
-
-  // Initialization effect
-  useEffect(() => {
-    if (profile) {
-      const timer = setTimeout(() => {
-        // Any initialization code can go here
-      }, 2000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [profile])
-
-  const loadUserStats = async () => {
-    if (!profile) return
-
-    try {
-      const { data, error } = await supabase
-        .from('user_attendance_stats')
-        .select('*')
-        .eq('id', profile.id)
-        .single()
-
-      if (error) {
-        // If the view doesn't exist yet, create a fallback stats object
-        if (error.code === '42P01') { // relation does not exist
-          console.log('Attendance system not yet set up - using fallback stats')
-          setUserStats({
-            id: profile.id,
-            username: profile.username,
-            full_name: profile.full_name,
-            subscription_tier: profile.subscription_tier,
-            events_attended: 0,
-            total_events_attended: 0,
-            event_access: getEventLimit(profile.subscription_tier)
-          })
-          return
-        }
-        throw error
-      }
-      setUserStats(data)
-    } catch (error) {
-      console.error('Error loading user stats:', error)
-      // Fallback stats
-      setUserStats({
-        id: profile.id,
-        username: profile.username,
-        full_name: profile.full_name,
-        subscription_tier: profile.subscription_tier,
-        events_attended: 0,
-        total_events_attended: 0,
-        event_access: getEventLimit(profile.subscription_tier)
-      })
-    }
-  }
-
-  // Auto-refresh events every 30 seconds to catch admin changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (profile) {
-        loadEvents()
-      }
-    }, 30000) // 30 seconds
-
+    const interval = setInterval(() => { if (profile) loadEvents() }, 30000)
     return () => clearInterval(interval)
   }, [profile])
-
-  // Add visibility change listener to refresh when tab becomes active
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && profile) {
-        loadEvents()
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [profile])
-
-  // Refresh profile data every 15 seconds to catch tier changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (profile) {
-        // This will trigger a re-render with updated tier info
-        window.location.reload()
-      }
-    }, 60000) // 1 minute - less frequent to avoid too many reloads
-
-    return () => clearInterval(interval)
+    const handle = () => { if (!document.hidden && profile) loadEvents() }
+    document.addEventListener('visibilitychange', handle)
+    return () => document.removeEventListener('visibilitychange', handle)
   }, [profile])
 
   const loadEvents = async () => {
     if (!profile) return
-
     try {
       setLoading(true)
-      
-      console.log('Loading events for user:', profile.subscription_tier)
-      
-      // Load events from database
-      let query = supabase
-        .from('events')
-        .select('*')
-        .eq('status', 'published')
-        .order('event_date', { ascending: true })
-
-      const { data, error } = await query
-
-      if (error) {
-        console.error('Database error:', error)
-        throw error
-      }
-
-      console.log('Raw events from database:', data)
-
-      // Filter events based on user's subscription tier (hierarchical access)
-      const tierHierarchy = {
-        free: ['free'],
-        basic_99: ['free', 'basic_99'], // Explorer can see Free + Explorer events
-        premium_149: ['free', 'basic_99', 'premium_149'] // Professional can see all events
-      }
-      
-      const allowedTiers = tierHierarchy[profile.subscription_tier as keyof typeof tierHierarchy] || ['free']
-      console.log('User tier:', profile.subscription_tier, 'Allowed tiers:', allowedTiers)
-      
-      let filteredEvents = (data || []).filter(event => 
-        allowedTiers.includes(event.required_tier)
-      )
-
-      console.log('Filtered events:', filteredEvents)
-
-      // Apply additional tier filter if not 'all'
-      if (filterTier !== 'all') {
-        filteredEvents = filteredEvents.filter(event => event.required_tier === filterTier)
-      }
-      
-      setEvents(filteredEvents)
-    } catch (error: any) {
-      console.error('Error loading events:', error)
-      toast.error('Failed to load events from database')
-      
-      // Fallback to mock events with tier filtering
-      const tierHierarchy = {
-        free: ['free'],
-        basic_99: ['free', 'basic_99'],
-        premium_149: ['free', 'basic_99', 'premium_149']
-      }
-      
-      const allowedTiers = tierHierarchy[profile.subscription_tier as keyof typeof tierHierarchy] || ['free']
-      
-      let filteredEvents = mockEvents.filter(event => 
-        allowedTiers.includes(event.required_tier)
-      )
-
-      if (filterTier !== 'all') {
-        filteredEvents = filteredEvents.filter(event => event.required_tier === filterTier)
-      }
-      
-      setEvents(filteredEvents)
-    } finally {
-      setLoading(false)
-    }
+      const { data, error } = await supabase.from('events').select('*').eq('status', 'published').order('event_date', { ascending: true })
+      if (error) throw error
+      const allowed = TIER_HIERARCHY[profile.subscription_tier] ?? ['free']
+      let filtered = (data ?? []).filter(e => allowed.includes(e.required_tier))
+      if (filterTier !== 'all') filtered = filtered.filter(e => e.required_tier === filterTier)
+      setEvents(filtered)
+    } catch { toast.error('Failed to load events') }
+    finally { setLoading(false) }
   }
 
   const handleSearch = async () => {
-    if (!profile || !searchQuery.trim()) {
-      loadEvents()
-      return
-    }
-
+    if (!profile || !searchQuery.trim()) { loadEvents(); return }
     try {
       setLoading(true)
-      
-      // Load events from database with search
-      let query = supabase
-        .from('events')
-        .select('*')
-        .eq('status', 'published')
-        .order('event_date', { ascending: true })
-
-      const { data, error } = await query
-
+      const { data, error } = await supabase.from('events').select('*').eq('status', 'published').order('event_date', { ascending: true })
       if (error) throw error
-
-      // Filter events based on user's subscription tier
-      const tierHierarchy = {
-        free: ['free'],
-        basic_99: ['free', 'basic_99'],
-        premium_149: ['free', 'basic_99', 'premium_149']
-      }
-      
-      const allowedTiers = tierHierarchy[profile.subscription_tier as keyof typeof tierHierarchy] || ['free']
-      
-      let filteredEvents = (data || []).filter(event => 
-        allowedTiers.includes(event.required_tier)
-      )
-
-      // Apply search filter
-      filteredEvents = filteredEvents.filter(event => 
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-
-      // Apply tier filter if not 'all'
-      if (filterTier !== 'all') {
-        filteredEvents = filteredEvents.filter(event => event.required_tier === filterTier)
-      }
-      
-      setEvents(filteredEvents)
-    } catch (error: any) {
-      console.error('Error searching events:', error)
-      toast.error('Failed to search events')
-      
-      // Fallback to mock events
-      const searchResults = mockEvents.filter(event => 
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      
-      let filteredData = searchResults
-      if (filterTier !== 'all') {
-        filteredData = searchResults.filter(event => event.required_tier === filterTier)
-      }
-      
-      setEvents(filteredData)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const clearSearch = () => {
-    setSearchQuery('')
-    loadEvents()
+      const allowed = TIER_HIERARCHY[profile.subscription_tier] ?? ['free']
+      const q = searchQuery.toLowerCase()
+      let filtered = (data ?? []).filter(e => allowed.includes(e.required_tier))
+        .filter(e => e.title.toLowerCase().includes(q) || e.description.toLowerCase().includes(q) || e.organizer.toLowerCase().includes(q) || e.category.toLowerCase().includes(q))
+      if (filterTier !== 'all') filtered = filtered.filter(e => e.required_tier === filterTier)
+      setEvents(filtered)
+    } catch { toast.error('Search failed') }
+    finally { setLoading(false) }
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#000000' }}>
-        <CircleLoader />
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        </div>
       </div>
     )
   }
 
+  const [filterCategory, setFilterCategory] = useState('all')
+
+  const categoryFilters = [
+    { value: 'all', label: 'All' },
+    { value: 'hackathon', label: 'Hackathon' },
+    { value: 'design', label: 'Design' },
+    { value: 'tech', label: 'Tech' },
+    { value: 'business', label: 'Business' },
+    { value: 'competitive', label: 'Competitive' },
+    { value: 'science', label: 'Science' },
+    { value: 'startup', label: 'Startup' },
+  ]
+
+  const tierFilters = [
+    { value: 'all', label: 'All tiers' },
+    { value: 'free', label: 'Free' },
+    { value: 'basic_99', label: 'Explorer' },
+    { value: 'premium_149', label: 'Professional' },
+  ] as const
+
+  const displayedEvents = filterCategory === 'all'
+    ? events
+    : events.filter(e => e.category.toLowerCase().includes(filterCategory))
+
   return (
-    <div className="min-h-screen funky-events-background">
-      {/* Header */}
-      <header className="shadow-sm border-b border-gray-700" style={{ backgroundColor: '#1a1a1a' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-white">
-                HATCH
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-gray-300 hover:text-cyan-400">
-                Dashboard
-              </Link>
-              {(user?.email === 'dwiraj06@gmail.com' || 
-                user?.email === 'pokkalilochan@gmail.com' ||
-                user?.email === 'dwiraj@hatch.in' || 
-                user?.email === 'lochan@hatch.in') && (
-                <>
-                  <Link href="/admin/events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Events
-                  </Link>
-                  <Link href="/admin/manage-events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Manage
-                  </Link>
-                  <Link href="/admin/manage-users" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Users
-                  </Link>
-                  <Link href="/admin/payments" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Payments
-                  </Link>
-                </>
-              )}
-              <Link href="/events" className="text-cyan-400 font-medium">
-                Events
-              </Link>
-              <Link href="/calendar" className="text-gray-300 hover:text-cyan-400">
-                Calendar
-              </Link>
-              <Link href="/subscription" className="text-gray-300 hover:text-cyan-400">
-                Subscription
-              </Link>
-              <Link href="/profile" className="text-gray-300 hover:text-cyan-400">
-                Profile
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen">
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Events</h1>
-              <p className="text-gray-400 mt-1">
-                Discover and register for events in your community
-              </p>
+        {/* Page header */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8"
+        >
+          <div>
+            <h1 className="text-3xl font-extrabold text-white tracking-tight">Events</h1>
+            <p className="text-sm text-zinc-500 mt-1">{getEventLimitDescription(profile.subscription_tier)}</p>
+          </div>
+          <motion.button onClick={loadEvents} disabled={loading} whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white px-3.5 py-2 rounded-xl transition-all duration-200 disabled:opacity-50 self-start sm:self-auto"
+            style={CARD}>
+            <ArrowPathIcon className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </motion.button>
+        </motion.div>
+
+        {/* Search bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: 0.04 }}
+          className="flex gap-2 mb-4"
+        >
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+            <input type="text" placeholder="Search events, organizers, categories..."
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+              className="w-full rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/30 transition-all duration-200"
+              style={INPUT_STYLE} />
+          </div>
+          <motion.button onClick={handleSearch} disabled={loading} whileTap={{ scale: 0.97 }}
+            className="px-4 py-2 text-sm text-white font-medium rounded-xl disabled:opacity-50 transition-all duration-200"
+            style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}>
+            Search
+          </motion.button>
+          {searchQuery && (
+            <button onClick={() => { setSearchQuery(''); loadEvents() }}
+              className="px-3.5 py-2 text-sm text-zinc-400 hover:text-white rounded-xl transition-colors"
+              style={{ background: 'rgba(255,255,255,0.04)' }}>
+              Clear
+            </button>
+          )}
+        </motion.div>
+
+        {/* Category chips — Luma-style */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1], delay: 0.08 }}
+          className="flex flex-wrap gap-2 mb-3"
+        >
+          {categoryFilters.map(f => (
+            <button key={f.value} onClick={() => setFilterCategory(f.value)}
+              className="text-xs px-3.5 py-1.5 rounded-full border font-medium transition-all duration-200"
+              style={filterCategory === f.value
+                ? { background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.25)', color: '#ffffff' }
+                : { background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.07)', color: '#71717a' }}>
+              {f.label}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Tier filter chips */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1], delay: 0.1 }}
+          className="flex flex-wrap gap-2 mb-7"
+        >
+          {tierFilters.map(f => (
+            <button key={f.value} onClick={() => setFilterTier(f.value as any)}
+              className="text-[11px] px-3 py-1 rounded-full border transition-all duration-200 font-medium"
+              style={filterTier === f.value
+                ? { background: 'rgba(124,58,237,0.18)', borderColor: 'rgba(124,58,237,0.35)', color: '#a78bfa' }
+                : { background: 'transparent', borderColor: 'rgba(255,255,255,0.06)', color: '#52525b' }}>
+              {f.label}
+            </button>
+          ))}
+          {events.length > 0 && (
+            <span className="text-[11px] text-zinc-600 self-center ml-1">
+              {displayedEvents.length} event{displayedEvents.length !== 1 ? 's' : ''}
+            </span>
+          )}
+        </motion.div>
+
+        {/* Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden animate-pulse" style={{ background: 'rgba(10,10,18,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="h-44 bg-white/[0.04]" />
+                <div className="p-4 space-y-2.5">
+                  <div className="h-3 rounded-full bg-white/[0.04] w-1/2" />
+                  <div className="h-4 rounded-full bg-white/[0.05] w-full" />
+                  <div className="h-4 rounded-full bg-white/[0.04] w-4/5" />
+                  <div className="h-3 rounded-full bg-white/[0.03] w-2/3 mt-4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : displayedEvents.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          >
+            {displayedEvents.map((event, i) => (
+              <motion.div key={event.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: i * 0.04 }}>
+                <EventCard event={event} userTier={profile.subscription_tier} />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={CARD}>
+              <BoltIcon className="w-7 h-7 text-zinc-600" />
             </div>
-            <div className="flex gap-2 mt-4 sm:mt-0">
-              <button
-                className="white-btn"
-                onClick={loadEvents}
-                disabled={loading}
-              >
-                {loading ? 'Refreshing...' : 'Refresh Events'}
+            <p className="text-white font-semibold mb-2">
+              {searchQuery ? 'No events found' : filterCategory !== 'all' ? `No ${filterCategory} events` : 'No events available'}
+            </p>
+            <p className="text-sm text-zinc-500">
+              {searchQuery ? 'Try different search terms or clear filters.' : filterCategory !== 'all' ? 'Try a different category above.' : 'New events drop weekly — check back soon.'}
+            </p>
+            {filterCategory !== 'all' && (
+              <button onClick={() => setFilterCategory('all')} className="mt-4 text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                Show all categories
               </button>
-            </div>
+            )}
           </div>
+        )}
 
-          {/* User Stats */}
-          {userStats && (
-            <div className="activity-card">
-              <div className="activity-card-header">
-                Your Event Activity
-              </div>
-              <div className="activity-stats-grid">
-                <div className="activity-stat-item">
-                  <div className="activity-stat-number">
-                    {userStats.total_events_attended || 0}
-                  </div>
-                  <div className="activity-stat-label">Events Attended</div>
-                </div>
-                <div className="activity-stat-item">
-                  <div className="activity-stat-number">
-                    {userStats.event_access === -1 ? '∞' : userStats.event_access}
-                  </div>
-                  <div className="activity-stat-label">Event Access</div>
-                </div>
-              </div>
-              <div className="activity-tier-info">
-                <div className="flex justify-between items-center text-sm">
-                  <span>Tier ({getSubscriptionTierName(userStats.subscription_tier)}):</span>
-                  <span className="font-medium">
-                    {getEventLimitDescription(userStats.subscription_tier)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Search and Filters */}
-          <div className="search-card">
-            <div className="search-card-header">
-              Search & Filters
-            </div>
-            <div className="search-card-body">
-              <div className="flex flex-col sm:flex-row gap-4">
-                {/* Search */}
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    placeholder="Search events..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    className="funky-search-input"
-                  />
-                </div>
-                
-                {/* Search Actions */}
-                <div className="search-actions">
-                  <button className="funky-button" onClick={handleSearch} disabled={loading}>
-                    Search
-                  </button>
-                  
-                  {searchQuery && (
-                    <button className="funky-button" onClick={clearSearch}>
-                      Clear
-                    </button>
-                  )}
-                  
-                  <button
-                    className="funky-button flex items-center"
-                    onClick={() => setShowFilters(!showFilters)}
-                  >
-                    <FunnelIcon className="h-4 w-4 mr-2" />
-                    Filters
-                  </button>
-                </div>
-              </div>
-
-              {/* Filters */}
-              {showFilters && (
-                <div className="filter-pills-container">
-                  <span className="text-sm font-medium mr-2" style={{ color: 'var(--text)' }}>Filter by tier:</span>
-                  {['all', 'free', 'basic_99', 'premium_149'].map((tier) => (
-                    <button
-                      key={tier}
-                      onClick={() => setFilterTier(tier as any)}
-                      className={`filter-pill ${filterTier === tier ? 'active' : ''}`}
-                    >
-                      {tier === 'all' ? 'All Events' : 
-                       tier === 'free' ? 'Free' :
-                       tier === 'basic_99' ? 'Explorer' : 'Professional'}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Events Grid */}
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-80 bg-gray-800 rounded-xl"></div>
-                </div>
-              ))}
-            </div>
-          ) : events.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  userTier={profile.subscription_tier}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MagnifyingGlassIcon className="h-12 w-12 text-gray-500" />
-              </div>
-              <h3 className="text-lg font-medium text-white mb-2">
-                {searchQuery ? 'No events found' : 'No events available'}
-              </h3>
-              <p className="text-gray-400 mb-4">
-                {searchQuery 
-                  ? 'Try adjusting your search terms or filters'
-                  : 'Check back later for new events'
-                }
-              </p>
-              {searchQuery && (
-                <button className="white-btn" onClick={clearSearch}>
-                  Clear Search
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-      </div>
+      </main>
     </div>
   )
 }

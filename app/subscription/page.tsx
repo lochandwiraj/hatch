@@ -2,303 +2,243 @@
 
 import { useAuth } from '@/components/auth/AuthProvider'
 import Link from 'next/link'
-import Button from '@/components/ui/Button'
-import RollerLoader from '@/components/ui/RollerLoader'
-import { 
-  CheckCircleIcon, 
-  StarIcon,
-  ArrowRightIcon
-} from '@heroicons/react/24/outline'
-import { getSubscriptionTierName, getSubscriptionTierPrice, getEventLimit, getEventLimitDescription } from '@/lib/utils'
+import Header from '@/components/layout/Header'
+import { motion } from 'motion/react'
+import { CheckIcon, ArrowRightIcon, SparklesIcon, BoltIcon, ChartBarIcon } from '@heroicons/react/24/outline'
+import { getSubscriptionTierName, getEventLimitDescription } from '@/lib/utils'
+
+const CARD = { background: 'rgba(10,10,18,0.8)', border: '1px solid rgba(255,255,255,0.07)' }
+
+const plans = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: '₹0',
+    description: 'Get started for free',
+    features: ['5 curated events', 'Basic profile', 'Event browsing', 'Community access'],
+    tierColor: 'text-zinc-400',
+    dotColor: 'bg-zinc-500',
+    badgeStyle: { background: 'rgba(113,113,122,0.1)', border: '1px solid rgba(113,113,122,0.2)', color: '#a1a1aa' },
+    checkColor: 'text-zinc-500',
+    popular: false,
+  },
+  {
+    id: 'basic_99',
+    name: 'Explorer',
+    price: '₹99',
+    annualPrice: '₹999/yr',
+    description: 'For active participants',
+    features: ['7 curated events', 'Priority registration', 'Advanced filters', 'Event reminders', 'Profile showcase'],
+    tierColor: 'text-sky-400',
+    dotColor: 'bg-sky-400',
+    badgeStyle: { background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.2)', color: '#38bdf8' },
+    checkColor: 'text-sky-400',
+    popular: true,
+  },
+  {
+    id: 'premium_149',
+    name: 'Professional',
+    price: '₹149',
+    annualPrice: '₹1499/yr',
+    description: 'For serious builders',
+    features: ['All events', 'Early access', 'VIP events', 'Networking', 'Career guidance', 'Priority support'],
+    tierColor: 'text-emerald-400',
+    dotColor: 'bg-emerald-400',
+    badgeStyle: { background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', color: '#34d399' },
+    checkColor: 'text-emerald-400',
+    popular: false,
+  },
+]
+
+const tierGlow: Record<string, string> = {
+  free: 'rgba(113,113,122,0.12)',
+  basic_99: 'rgba(56,189,248,0.12)',
+  premium_149: 'rgba(52,211,153,0.12)',
+}
 
 export default function SubscriptionPage() {
-  const { profile, user } = useAuth()
+  const { profile } = useAuth()
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center funky-events-background">
-        <RollerLoader />
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        </div>
       </div>
     )
   }
 
-  const plans = [
-    {
-      id: 'free',
-      name: 'Free',
-      price: '₹0',
-      annualPrice: '₹0',
-      description: 'Perfect for getting started',
-      features: [
-        '5 curated events',
-        'Basic event browsing',
-        'Community access',
-        'Email notifications'
-      ],
-      icon: StarIcon,
-      popular: false,
-      current: profile.subscription_tier === 'free'
-    },
-    {
-      id: 'basic_99',
-      name: 'Explorer',
-      price: '₹99',
-      annualPrice: '₹999',
-      description: 'For active event participants',
-      features: [
-        '7 curated events',
-        'New events added regularly',
-        'Priority event registration',
-        'Advanced filtering',
-        'Event reminders',
-        'Profile showcase',
-        'Referral rewards'
-      ],
-      icon: StarIcon,
-      popular: true,
-      current: profile.subscription_tier === 'basic_99'
-    },
-    {
-      id: 'premium_149',
-      name: 'Professional',
-      price: '₹149',
-      annualPrice: '₹1,499',
-      description: 'For serious professionals',
-      features: [
-        'All hackathons & events',
-        'Fresh hackathons regularly',
-        'Early access to events',
-        'VIP event access',
-        'Networking opportunities',
-        'Career guidance',
-        'Premium support',
-        'Custom event requests'
-      ],
-      icon: StarIcon,
-      popular: false,
-      current: profile.subscription_tier === 'premium_149'
-    }
-  ]
+  const currentTier = profile.subscription_tier
+  const currentPlan = plans.find(p => p.id === currentTier)
 
   return (
-    <div className="min-h-screen funky-events-background">
-      {/* Header */}
-      <header className="shadow-sm border-b border-gray-700" style={{ backgroundColor: '#1a1a1a' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-white">
-                HATCH
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-gray-300 hover:text-cyan-400">
-                Dashboard
-              </Link>
-              {(user?.email === 'dwiraj06@gmail.com' || 
-                user?.email === 'pokkalilochan@gmail.com' ||
-                user?.email === 'dwiraj@hatch.in' || 
-                user?.email === 'lochan@hatch.in') && (
-                <>
-                  <Link href="/admin/events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Events
-                  </Link>
-                  <Link href="/admin/manage-events" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Manage
-                  </Link>
-                  <Link href="/admin/manage-users" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Users
-                  </Link>
-                  <Link href="/admin/payments" className="bg-gray-800 text-cyan-300 hover:bg-gray-700 hover:text-cyan-200 px-3 py-2 rounded-md text-sm font-medium transition-colors border border-gray-600">
-                    Payments
-                  </Link>
-                </>
-              )}
-              <Link href="/events" className="text-gray-300 hover:text-cyan-400">
-                Events
-              </Link>
-              <Link href="/calendar" className="text-gray-300 hover:text-cyan-400">
-                Calendar
-              </Link>
-              <Link href="/subscription" className="text-cyan-400 font-medium">
-                Subscription
-              </Link>
-              <Link href="/profile" className="text-gray-300 hover:text-cyan-400">
-                Profile
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen">
+      <Header />
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          {/* Current Subscription */}
-          <div className="funky-current-subscription-card">
-            <div className="funky-current-subscription-header">
-              Current Subscription
-            </div>
-            <div className="funky-current-subscription-body">
-              <div>
-                <div className="flex items-center mb-2">
-                  <span className="text-lg font-bold text-gray-800 mr-2">
-                    {getSubscriptionTierName(profile.subscription_tier)}
-                  </span>
-                  {profile.subscription_tier !== 'free' && (
-                    <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full border border-black">
-                      Active
-                    </span>
-                  )}
-                </div>
-                <p className="text-gray-700 font-medium">
-                  You have access to {getEventLimitDescription(profile.subscription_tier)}
-                </p>
-                {profile.subscription_expires_at && (
-                  <p className="text-sm text-gray-600 mt-1 font-medium">
-                    {profile.subscription_tier !== 'free' ? 'Renews' : 'Expires'} on{' '}
-                    {new Date(profile.subscription_expires_at).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-              {profile.subscription_tier === 'free' && (
-                <Link href="/subscription/upgrade">
-                  <button className="funky-plan-button" style={{ width: 'auto', minWidth: '120px' }}>
-                    Upgrade Now
-                    <ArrowRightIcon className="ml-2 h-4 w-4 inline" />
-                  </button>
-                </Link>
-              )}
-            </div>
-          </div>
+        {/* Page header */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+          className="mb-8"
+        >
+          <h1 className="text-2xl font-extrabold text-white tracking-tight mb-1">Subscription</h1>
+          <p className="text-sm text-zinc-500">Manage your plan and billing.</p>
+        </motion.div>
 
-          {/* Pricing Plans */}
+        {/* Current plan banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: 0.05 }}
+          className="rounded-2xl p-5 mb-8 flex items-center justify-between gap-4"
+          style={{ ...CARD, boxShadow: `0 0 32px ${tierGlow[currentTier] ?? 'transparent'}` }}
+        >
           <div>
-            <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold text-white mb-4 text-shadow">Choose Your Plan</h2>
-              <p className="text-xl text-gray-300 font-medium">
-                Quality over quantity - curated events for your growth
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <div className={`w-2 h-2 rounded-full ${currentPlan?.dotColor ?? 'bg-zinc-500'}`} />
+                <p className={`font-bold text-sm ${currentPlan?.tierColor ?? 'text-zinc-400'}`}>
+                  {getSubscriptionTierName(currentTier)}
+                </p>
+              </div>
+              {currentTier !== 'free' && (
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={currentPlan?.badgeStyle}>
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-zinc-400">{getEventLimitDescription(currentTier)}</p>
+            {profile.subscription_expires_at && currentTier !== 'free' && (
+              <p className="text-xs text-zinc-600 mt-1">
+                Renews {new Date(profile.subscription_expires_at).toLocaleDateString()}
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
-              {plans.map((plan) => (
-                <div key={plan.id} className="subscription-parent">
-                  <div className={`subscription-card ${
-                    plan.popular ? 'popular' : plan.current ? 'current' : ''
-                  }`}>
-                    
-                    {/* Date Box */}
-                    <div className={`subscription-date-box ${
-                      plan.popular ? 'popular' : plan.current ? 'current' : ''
-                    }`}>
-                      <span className={`month ${
-                        plan.popular ? 'popular' : plan.current ? 'current' : ''
-                      }`}>
-                        {plan.popular ? 'HOT' : plan.current ? 'NOW' : plan.id === 'premium_149' ? 'PRO' : 'FREE'}
-                      </span>
-                      <span className={`date ${
-                        plan.popular ? 'popular' : plan.current ? 'current' : ''
-                      }`}>
-                        {plan.id === 'free' ? '0' : plan.id === 'basic_99' ? '99' : '149'}
-                      </span>
-                    </div>
-
-                    {/* Content Box */}
-                    <div className={`subscription-content-box ${
-                      plan.popular ? 'popular' : plan.current ? 'current' : ''
-                    }`}>
-                      <div className="subscription-card-title">
-                        {plan.name}
-                      </div>
-                      
-                      <div className="subscription-card-price">
-                        {plan.price}
-                      </div>
-                      
-                      <div className="subscription-card-content">
-                        <p style={{ fontSize: '13px', fontWeight: '700', marginBottom: '15px', textAlign: 'center' }}>
-                          {plan.description}
-                        </p>
-                        
-                        {plan.id !== 'free' && (
-                          <p style={{ fontSize: '11px', fontWeight: '700', marginBottom: '15px', textAlign: 'center' }}>
-                            or {plan.annualPrice}/year (17% off)
-                          </p>
-                        )}
-
-                        <ul className="subscription-feature-list">
-                          {plan.features.map((feature, index) => (
-                            <li key={index} className="subscription-feature-item">
-                              <CheckCircleIcon className="subscription-feature-icon" />
-                              <span>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-
-                        <div style={{ marginTop: 'auto' }}>
-                          {plan.current ? (
-                            <button disabled className={`subscription-see-more current`}>
-                              Current Plan
-                            </button>
-                          ) : plan.id === 'free' ? (
-                            <button disabled className="subscription-see-more">
-                              Free Forever
-                            </button>
-                          ) : (
-                            <Link href={`/subscription/upgrade?plan=${plan.id}`}>
-                              <button className={`subscription-see-more ${plan.popular ? 'popular' : ''}`}>
-                                {profile.subscription_tier === 'free' ? 'Upgrade Now' : 'Switch Plan'}
-                              </button>
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
+          {currentTier === 'free' && (
+            <Link href="/subscription/upgrade"
+              className="flex-shrink-0 flex items-center gap-1.5 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200"
+              style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}>
+              Upgrade
+              <ArrowRightIcon className="w-3.5 h-3.5" />
+            </Link>
+          )}
+        </motion.div>
 
-          {/* Benefits */}
-          <div className="funky-benefits-card">
-            <div className="funky-benefits-header">
-              Why Choose HATCH?
-            </div>
-            <div className="funky-benefits-body">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="funky-benefit-item">
-                  <div className="funky-benefit-icon">
-                    <StarIcon className="h-8 w-8 text-white" />
+        {/* Plans */}
+        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">Available plans</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+          {plans.map((plan, i) => {
+            const isCurrent = plan.id === currentTier
+            return (
+              <motion.div
+                key={plan.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: 0.1 + i * 0.07 }}
+                whileHover={!isCurrent ? { y: -3 } : {}}
+                className="relative flex flex-col rounded-2xl p-5"
+                style={plan.popular && !isCurrent
+                  ? { background: 'linear-gradient(145deg, rgba(20,12,45,0.95), rgba(15,10,35,0.95))', border: '1px solid rgba(124,58,237,0.4)', boxShadow: '0 0 32px rgba(124,58,237,0.12)' }
+                  : isCurrent
+                  ? { ...CARD, boxShadow: `0 0 20px ${tierGlow[currentTier]}` }
+                  : CARD}
+              >
+                {plan.popular && !isCurrent && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span className="text-xs font-semibold text-white px-3 py-1 rounded-full"
+                      style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}>
+                      Most popular
+                    </span>
                   </div>
-                  <h4 className="funky-benefit-title">Curated Quality</h4>
-                  <p className="funky-benefit-description">
-                    We research 50+ sources weekly to bring you only the best opportunities
-                  </p>
+                )}
+                {isCurrent && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full" style={plan.badgeStyle}>
+                      Current plan
+                    </span>
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border mb-3" style={plan.badgeStyle}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${plan.dotColor}`} />
+                    {plan.name}
+                  </div>
+                  <div className="flex items-baseline gap-1.5 mb-0.5">
+                    <span className={`text-3xl font-extrabold ${plan.tierColor}`}>{plan.price}</span>
+                    {plan.id !== 'free' && <span className="text-xs text-zinc-500">/month</span>}
+                  </div>
+                  {plan.annualPrice && <p className="text-xs text-zinc-600">or {plan.annualPrice} (save 17%)</p>}
                 </div>
-                <div className="funky-benefit-item">
-                  <div className="funky-benefit-icon">
-                    <CheckCircleIcon className="h-8 w-8 text-white" />
-                  </div>
-                  <h4 className="funky-benefit-title">Save Time</h4>
-                  <p className="funky-benefit-description">
-                    Stop scrolling through endless event lists. We do the hunting for you.
-                  </p>
+
+                <ul className="space-y-2 mb-5 flex-1">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-start gap-2 text-xs text-zinc-400">
+                      <CheckIcon className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${plan.checkColor}`} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                {isCurrent ? (
+                  <button disabled className="w-full text-sm py-2.5 rounded-xl text-zinc-600 cursor-not-allowed"
+                    style={{ background: 'rgba(255,255,255,0.04)' }}>
+                    Current plan
+                  </button>
+                ) : plan.id === 'free' ? (
+                  <button disabled className="w-full text-sm py-2.5 rounded-xl text-zinc-600 cursor-not-allowed"
+                    style={{ background: 'rgba(255,255,255,0.04)' }}>
+                    Free forever
+                  </button>
+                ) : (
+                  <Link href={`/subscription/upgrade?plan=${plan.id}`}
+                    className="block text-center text-sm font-semibold py-2.5 rounded-xl transition-all duration-200"
+                    style={plan.popular
+                      ? { background: 'linear-gradient(135deg, #7c3aed, #6366f1)', color: '#fff', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }
+                      : { background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.18)', color: '#6ee7b7' }}>
+                    {currentTier === 'free' ? 'Upgrade' : 'Switch plan'}
+                  </Link>
+                )}
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Why HATCH */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: 0.3 }}
+          className="rounded-2xl p-6"
+          style={CARD}
+        >
+          <h2 className="text-sm font-bold text-white mb-5">Why choose <span className="font-qepho">HATCH</span>?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: SparklesIcon, title: 'Curated quality', desc: 'We research 50+ sources weekly to bring you the best opportunities.', color: 'text-violet-400', bg: 'rgba(124,58,237,0.12)', border: 'rgba(124,58,237,0.2)' },
+              { icon: BoltIcon, title: 'Save time', desc: 'Stop scrolling Unstop, Devfolio, LinkedIn. We do it for you.', color: 'text-sky-400', bg: 'rgba(56,189,248,0.12)', border: 'rgba(56,189,248,0.2)' },
+              { icon: ChartBarIcon, title: 'Track progress', desc: 'Every event is on your profile. Share with recruiters as proof.', color: 'text-emerald-400', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.2)' },
+            ].map(item => (
+              <div key={item.title} className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                  style={{ background: item.bg, border: `1px solid ${item.border}` }}>
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
                 </div>
-                <div className="funky-benefit-item">
-                  <div className="funky-benefit-icon">
-                    <StarIcon className="h-8 w-8 text-white" />
-                  </div>
-                  <h4 className="funky-benefit-title">Build Portfolio</h4>
-                  <p className="funky-benefit-description">
-                    Every event you attend goes on your profile to share with recruiters
-                  </p>
+                <div>
+                  <p className="text-sm text-white font-semibold mb-1">{item.title}</p>
+                  <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+
+      </main>
     </div>
   )
 }

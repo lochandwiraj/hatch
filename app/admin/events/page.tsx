@@ -2,19 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
+import Header from '@/components/layout/Header'
 import Link from 'next/link'
-import Card from '@/components/ui/Card'
-import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
-import { 
+import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
-  EyeIcon,
+  LinkIcon,
   CalendarDaysIcon,
   TagIcon,
-  LinkIcon,
-  PhotoIcon
+  EyeIcon,
 } from '@heroicons/react/24/outline'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
@@ -42,6 +39,11 @@ interface Event {
   updated_at: string
 }
 
+const ADMIN_EMAILS = ['dwiraj06@gmail.com', 'pokkalilochan@gmail.com', 'dwiraj@HATCH.in', 'lochan@HATCH.in']
+
+const tierLabel = (t: string) => t === 'free' ? 'Free' : t === 'basic_99' ? 'Explorer' : 'Professional'
+const tierStyle = (t: string) => t === 'free' ? 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' : t === 'basic_99' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+
 export default function AdminEventsPage() {
   const { user } = useAuth()
   const [events, setEvents] = useState<Event[]>([])
@@ -50,38 +52,22 @@ export default function AdminEventsPage() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
   const [filter, setFilter] = useState<'all' | 'draft' | 'published'>('all')
 
-  // Check if user is admin
-  const isAdmin = user?.email === 'dwiraj06@gmail.com' || 
-                  user?.email === 'pokkalilochan@gmail.com' ||
-                  user?.email === 'dwiraj@HATCH.in' || 
-                  user?.email === 'lochan@HATCH.in'
+  const isAdmin = ADMIN_EMAILS.includes(user?.email || '')
 
   useEffect(() => {
-    if (isAdmin) {
-      loadEvents()
-    }
+    if (isAdmin) loadEvents()
   }, [isAdmin, filter])
 
   const loadEvents = async () => {
     try {
       setLoading(true)
-      
-      let query = supabase
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (filter !== 'all') {
-        query = query.eq('status', filter)
-      }
-
+      let query = supabase.from('events').select('*').order('created_at', { ascending: false })
+      if (filter !== 'all') query = query.eq('status', filter)
       const { data, error } = await query
-
       if (error) throw error
       setEvents(data || [])
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to load events')
-      console.error('Error loading events:', error)
     } finally {
       setLoading(false)
     }
@@ -89,397 +75,210 @@ export default function AdminEventsPage() {
 
   const deleteEvent = async (eventId: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return
-
     try {
-      const { error } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', eventId)
-
+      const { error } = await supabase.from('events').delete().eq('id', eventId)
       if (error) throw error
-
       toast.success('Event deleted successfully!')
       loadEvents()
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to delete event')
-      console.error('Error deleting event:', error)
     }
   }
 
-  const toggleEventStatus = async (eventId: string, currentStatus: string) => {
+  const toggleStatus = async (eventId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'published' ? 'draft' : 'published'
-    
     try {
-      const { error } = await supabase
-        .from('events')
-        .update({ status: newStatus })
-        .eq('id', eventId)
-
+      const { error } = await supabase.from('events').update({ status: newStatus }).eq('id', eventId)
       if (error) throw error
-
-      toast.success(`Event ${newStatus === 'published' ? 'published' : 'unpublished'} successfully!`)
+      toast.success(`Event ${newStatus === 'published' ? 'published' : 'unpublished'}!`)
       loadEvents()
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to update event status')
-      console.error('Error updating event:', error)
     }
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-4">Access Denied</h1>
-          <p className="text-neutral-600 mb-4">You don't have permission to access this page.</p>
-          <Link href="/dashboard">
-            <Button>Go to Dashboard</Button>
-          </Link>
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-center">
+            <p className="text-white font-medium mb-2">Access Denied</p>
+            <p className="text-zinc-500 text-sm mb-4">You don't have permission to access this page.</p>
+            <Link href="/dashboard" className="text-sm text-violet-400 hover:text-violet-300 transition-colors">Go to Dashboard</Link>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
-                HATCH
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600">
-                Dashboard
-              </Link>
-              <Link href="/admin/events" className="text-primary-600 font-medium">
-                Admin Events
-              </Link>
-              <Link href="/admin/manage-events" className="text-neutral-600 hover:text-primary-600">
-                Manage Events
-              </Link>
-              <Link href="/admin/payments" className="text-neutral-600 hover:text-primary-600">
-                Admin Payments
-              </Link>
-            </nav>
+    <div className="min-h-screen">
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-xl font-semibold text-white mb-1">Event Management</h1>
+            <p className="text-sm text-zinc-500">Create, edit, and manage events.</p>
           </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition-colors"
+          >
+            <PlusIcon className="w-4 h-4" />
+            Add Event
+          </button>
         </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-neutral-900">Event Management</h1>
-              <p className="text-neutral-600 mt-1">
-                Create, edit, and manage events for HATCH
-              </p>
-              <div className="mt-2 text-sm text-warning-700 bg-warning-50 border border-warning-200 rounded p-2">
-                💡 <strong>Note:</strong> New events are created as "Draft" by default. Click "Publish" to make them visible to users.
-              </div>
-              <div className="mt-2 text-sm text-info-700 bg-info-50 border border-info-200 rounded p-2">
-                🎯 <strong>Attendance System:</strong> To enable event registration and attendance tracking, 
-                run the <code>scripts/event-attendance-system.sql</code> schema in your Supabase SQL editor. 
-                <Link href="/scripts/apply-attendance-system.md" className="underline hover:text-info-800">
-                  View setup instructions
-                </Link>
-              </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {[
+            { label: 'Total', value: events.length, icon: CalendarDaysIcon },
+            { label: 'Published', value: events.filter(e => e.status === 'published').length, icon: EyeIcon },
+            { label: 'Drafts', value: events.filter(e => e.status === 'draft').length, icon: PencilIcon },
+            { label: 'Early Access', value: events.filter(e => e.is_early_access).length, icon: TagIcon },
+          ].map(stat => (
+            <div key={stat.label} className="bg-[#111111] border border-white/[0.07] rounded-xl p-4">
+              <stat.icon className="w-4 h-4 text-zinc-600 mb-2" />
+              <div className="text-2xl font-semibold text-white">{stat.value}</div>
+              <div className="text-xs text-zinc-500 mt-0.5">{stat.label}</div>
             </div>
-            <Button onClick={() => setShowAddModal(true)}>
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Add New Event
-            </Button>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="flex items-center gap-2 mb-5">
+          {(['all', 'published', 'draft'] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                filter === f ? 'bg-violet-600 text-white' : 'bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08] hover:text-zinc-300'
+              }`}
+            >
+              {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Events */}
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => <div key={i} className="h-28 bg-[#111111] rounded-xl animate-pulse" />)}
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="text-center">
-              <CalendarDaysIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.length}
-              </div>
-              <p className="text-neutral-600">Total Events</p>
-            </Card>
-            
-            <Card className="text-center">
-              <EyeIcon className="h-8 w-8 text-success-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.status === 'published').length}
-              </div>
-              <p className="text-neutral-600">Published</p>
-            </Card>
-            
-            <Card className="text-center">
-              <PencilIcon className="h-8 w-8 text-warning-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.status === 'draft').length}
-              </div>
-              <p className="text-neutral-600">Drafts</p>
-            </Card>
-            
-            <Card className="text-center">
-              <TagIcon className="h-8 w-8 text-accent-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.is_early_access).length}
-              </div>
-              <p className="text-neutral-600">Early Access</p>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <Card>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-neutral-700 mr-2">Filter by status:</span>
-              {[
-                { key: 'all', label: 'All Events' },
-                { key: 'published', label: 'Published' },
-                { key: 'draft', label: 'Drafts' }
-              ].map((option) => (
-                <button
-                  key={option.key}
-                  onClick={() => setFilter(option.key as any)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    filter === option.key
-                      ? 'bg-primary-100 text-primary-800'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </Card>
-
-          {/* Events List */}
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse h-32 bg-neutral-200 rounded-xl"></div>
-              ))}
-            </div>
-          ) : events.length > 0 ? (
-            <div className="space-y-4">
-              {events.map((event) => (
-                <Card key={event.id}>
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <h3 className="text-lg font-semibold text-neutral-900 mr-3">
-                          {event.title}
-                        </h3>
-                        <div className="flex gap-2">
-                          <Badge 
-                            variant={event.status === 'published' ? 'success' : 'warning'}
-                          >
-                            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                          </Badge>
-                          {event.is_early_access && (
-                            <Badge variant="primary">Early Access</Badge>
-                          )}
-                          <Badge variant="default">
-                            {event.required_tier === 'free' ? 'Free' : 
-                             event.required_tier === 'basic_99' ? 'Explorer' : 'Professional'}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <p className="text-neutral-600 mb-3 line-clamp-2">{event.description}</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-neutral-600">
-                        <div>
-                          <span className="font-medium">Organizer:</span> {event.organizer}
-                        </div>
-                        <div>
-                          <span className="font-medium">Category:</span> {event.category}
-                        </div>
-                        <div>
-                          <span className="font-medium">Mode:</span> {event.mode}
-                        </div>
-                        <div>
-                          <span className="font-medium">Date:</span> {formatDate(event.event_date)}
-                          {event.event_time && (
-                            <span className="ml-2 text-primary-600 font-medium">
-                              at {event.event_time}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {event.tags && event.tags.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {event.tags.map((tag, index) => (
-                            <span key={index} className="bg-neutral-100 text-neutral-700 px-2 py-1 rounded text-xs">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
+        ) : events.length > 0 ? (
+          <div className="space-y-3">
+            {events.map(event => (
+              <div key={event.id} className="bg-[#111111] border border-white/[0.07] rounded-xl p-4">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <h3 className="text-sm font-medium text-white">{event.title}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${event.status === 'published' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'}`}>
+                        {event.status}
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${tierStyle(event.required_tier)}`}>
+                        {tierLabel(event.required_tier)}
+                      </span>
+                      {event.is_early_access && (
+                        <span className="text-xs px-2 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/20">Early Access</span>
                       )}
                     </div>
-
-                    <div className="flex space-x-2 mt-4 lg:mt-0">
-                      {event.event_link && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => window.open(event.event_link, '_blank')}
-                        >
-                          <LinkIcon className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                      )}
-                      
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setEditingEvent(event)}
-                      >
-                        <PencilIcon className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      
-                      <Button
-                        variant={event.status === 'published' ? 'secondary' : 'primary'}
-                        size="sm"
-                        onClick={() => toggleEventStatus(event.id, event.status)}
-                      >
-                        {event.status === 'published' ? 'Unpublish' : '🚀 Publish Now'}
-                      </Button>
-                      
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => deleteEvent(event.id)}
-                      >
-                        <TrashIcon className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
+                    <p className="text-xs text-zinc-500 line-clamp-1 mb-2">{event.description}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
+                      <span>{event.organizer}</span>
+                      <span>{event.category}</span>
+                      <span>{event.mode}</span>
+                      <span>{formatDate(event.event_date)}</span>
                     </div>
+                    {event.tags && event.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {event.tags.map((tag, i) => (
+                          <span key={i} className="text-xs bg-white/[0.04] text-zinc-500 px-2 py-0.5 rounded">{tag}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <div className="text-center py-12">
-                <CalendarDaysIcon className="h-16 w-16 text-neutral-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-neutral-900 mb-2">
-                  No events found
-                </h3>
-                <p className="text-neutral-600 mb-4">
-                  {filter === 'all' 
-                    ? 'Get started by creating your first event'
-                    : `No ${filter} events found`
-                  }
-                </p>
-                <Button onClick={() => setShowAddModal(true)}>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add New Event
-                </Button>
+                  <div className="flex flex-wrap gap-2 shrink-0">
+                    {event.event_link && (
+                      <button onClick={() => window.open(event.event_link, '_blank')} className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">
+                        <LinkIcon className="w-3.5 h-3.5" /> View
+                      </button>
+                    )}
+                    <button onClick={() => setEditingEvent(event)} className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">
+                      <PencilIcon className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => toggleStatus(event.id, event.status)}
+                      className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors ${event.status === 'published' ? 'text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08]' : 'text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20'}`}
+                    >
+                      {event.status === 'published' ? 'Unpublish' : 'Publish'}
+                    </button>
+                    <button onClick={() => deleteEvent(event.id)} className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1.5 rounded-lg transition-colors">
+                      <TrashIcon className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
               </div>
-            </Card>
-          )}
-        </div>
-      </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-[#111111] border border-white/[0.07] rounded-xl">
+            <CalendarDaysIcon className="w-10 h-10 text-zinc-700 mx-auto mb-3" />
+            <p className="text-sm text-zinc-400 mb-1">No events found</p>
+            <p className="text-xs text-zinc-600">
+              {filter === 'all' ? 'Create your first event to get started' : `No ${filter} events`}
+            </p>
+          </div>
+        )}
 
-      {/* Add/Edit Event Modal */}
+      </main>
+
       {(showAddModal || editingEvent) && (
         <EventModal
           event={editingEvent}
-          isOpen={showAddModal || !!editingEvent}
-          onClose={() => {
-            setShowAddModal(false)
-            setEditingEvent(null)
-          }}
-          onSave={() => {
-            loadEvents()
-            setShowAddModal(false)
-            setEditingEvent(null)
-          }}
+          onClose={() => { setShowAddModal(false); setEditingEvent(null) }}
+          onSave={() => { loadEvents(); setShowAddModal(false); setEditingEvent(null) }}
         />
       )}
     </div>
   )
 }
 
-// Event Modal Component
 interface EventModalProps {
   event?: Event | null
-  isOpen: boolean
   onClose: () => void
   onSave: () => void
 }
 
-function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
+function EventModal({ event, onClose, onSave }: EventModalProps) {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    event_link: '',
-    poster_image_url: '',
-    category: '',
-    tags: '',
-    event_date: '',
-    event_time: '',
-    registration_deadline: '',
-    required_tier: 'free' as 'free' | 'basic_99' | 'premium_149',
-    status: 'draft' as 'draft' | 'published',
-    is_early_access: false,
-    organizer: '',
-    prize_pool: '',
-    mode: '',
-    eligibility: ''
+    title: event?.title || '',
+    description: event?.description || '',
+    event_link: event?.event_link || '',
+    poster_image_url: event?.poster_image_url || '',
+    category: event?.category || '',
+    tags: event?.tags?.join(', ') || '',
+    event_date: event?.event_date?.split('T')[0] || '',
+    event_time: event?.event_time || '10:00',
+    registration_deadline: event?.registration_deadline?.split('T')[0] || '',
+    required_tier: (event?.required_tier || 'free') as 'free' | 'basic_99' | 'premium_149',
+    status: (event?.status || 'draft') as 'draft' | 'published',
+    is_early_access: event?.is_early_access || false,
+    organizer: event?.organizer || '',
+    prize_pool: event?.prize_pool || '',
+    mode: event?.mode || '',
+    eligibility: event?.eligibility || '',
   })
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    if (event) {
-      setFormData({
-        title: event.title,
-        description: event.description,
-        event_link: event.event_link,
-        poster_image_url: event.poster_image_url || '',
-        category: event.category,
-        tags: event.tags?.join(', ') || '',
-        event_date: event.event_date.split('T')[0],
-        event_time: event.event_time || '10:00',
-        registration_deadline: event.registration_deadline?.split('T')[0] || '',
-        required_tier: event.required_tier,
-        status: event.status,
-        is_early_access: event.is_early_access,
-        organizer: event.organizer,
-        prize_pool: event.prize_pool || '',
-        mode: event.mode,
-        eligibility: event.eligibility || ''
-      })
-    } else {
-      // Reset form for new event
-      setFormData({
-        title: '',
-        description: '',
-        event_link: '',
-        poster_image_url: '',
-        category: '',
-        tags: '',
-        event_date: '',
-        event_time: '10:00',
-        registration_deadline: '',
-        required_tier: 'free',
-        status: 'draft',
-        is_early_access: false,
-        organizer: '',
-        prize_pool: '',
-        mode: '',
-        eligibility: ''
-      })
-    }
-  }, [event])
+  const inputCls = "w-full bg-[#080808] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-colors"
+  const labelCls = "block text-xs text-zinc-400 mb-1.5"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-
     try {
       const eventData = {
         title: formData.title,
@@ -487,282 +286,126 @@ function EventModal({ event, isOpen, onClose, onSave }: EventModalProps) {
         event_link: formData.event_link,
         poster_image_url: formData.poster_image_url || null,
         category: formData.category,
-        tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : null,
-        event_date: formData.event_date, // Keep as date string YYYY-MM-DD
-        event_time: formData.event_time || null, // Keep as time string HH:MM
-        registration_deadline: formData.registration_deadline 
-          ? new Date(formData.registration_deadline).toISOString() 
-          : null,
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : null,
+        event_date: formData.event_date,
+        event_time: formData.event_time || null,
+        registration_deadline: formData.registration_deadline ? new Date(formData.registration_deadline).toISOString() : null,
         required_tier: formData.required_tier,
         status: formData.status,
         is_early_access: formData.is_early_access,
         organizer: formData.organizer,
         prize_pool: formData.prize_pool || null,
         mode: formData.mode,
-        eligibility: formData.eligibility || null
+        eligibility: formData.eligibility || null,
       }
-
       if (event) {
-        // Update existing event
-        const { error } = await supabase
-          .from('events')
-          .update(eventData)
-          .eq('id', event.id)
-
+        const { error } = await supabase.from('events').update(eventData).eq('id', event.id)
         if (error) throw error
         toast.success('Event updated successfully!')
       } else {
-        // Create new event
-        const { error } = await supabase
-          .from('events')
-          .insert([eventData])
-
+        const { error } = await supabase.from('events').insert([eventData])
         if (error) throw error
         toast.success('Event created successfully!')
       }
-
       onSave()
-    } catch (error: any) {
+    } catch {
       toast.error(`Failed to ${event ? 'update' : 'create'} event`)
-      console.error('Error saving event:', error)
     } finally {
       setSaving(false)
     }
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111111] border border-white/[0.07] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-6">
-            {event ? 'Edit Event' : 'Add New Event'}
-          </h2>
-
+          <h2 className="text-base font-medium text-white mb-5">{event ? 'Edit Event' : 'Add New Event'}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Event Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+                <label className={labelCls}>Event Title *</label>
+                <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className={inputCls} />
               </div>
-
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Description *
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+                <label className={labelCls}>Description *</label>
+                <textarea required rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className={inputCls} />
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Organizer *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.organizer}
-                  onChange={(e) => setFormData({...formData, organizer: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+                <label className={labelCls}>Organizer *</label>
+                <input type="text" required value={formData.organizer} onChange={e => setFormData({...formData, organizer: e.target.value})} className={inputCls} />
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Category *
-                </label>
-                <select
-                  required
-                  value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
+                <label className={labelCls}>Category *</label>
+                <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className={inputCls}>
                   <option value="">Select Category</option>
-                  <option value="Hackathon">Hackathon</option>
-                  <option value="Conference">Conference</option>
-                  <option value="Workshop">Workshop</option>
-                  <option value="Competition">Competition</option>
-                  <option value="Networking">Networking</option>
-                  <option value="Career Fair">Career Fair</option>
-                  <option value="Webinar">Webinar</option>
-                  <option value="Other">Other</option>
+                  {['Hackathon','Conference','Workshop','Competition','Networking','Career Fair','Webinar','Other'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
-                    Event Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.event_date}
-                    onChange={(e) => setFormData({...formData, event_date: e.target.value})}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
-                    Event Time *
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={formData.event_time}
-                    onChange={(e) => setFormData({...formData, event_time: e.target.value})}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
-
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Registration Deadline
-                </label>
-                <input
-                  type="date"
-                  value={formData.registration_deadline}
-                  onChange={(e) => setFormData({...formData, registration_deadline: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+                <label className={labelCls}>Event Date *</label>
+                <input type="date" required value={formData.event_date} onChange={e => setFormData({...formData, event_date: e.target.value})} className={inputCls} />
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Required Tier *
-                </label>
-                <select
-                  required
-                  value={formData.required_tier}
-                  onChange={(e) => setFormData({...formData, required_tier: e.target.value as any})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
+                <label className={labelCls}>Event Time *</label>
+                <input type="time" required value={formData.event_time} onChange={e => setFormData({...formData, event_time: e.target.value})} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Registration Deadline</label>
+                <input type="date" value={formData.registration_deadline} onChange={e => setFormData({...formData, registration_deadline: e.target.value})} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Required Tier *</label>
+                <select required value={formData.required_tier} onChange={e => setFormData({...formData, required_tier: e.target.value as any})} className={inputCls}>
                   <option value="free">Free</option>
                   <option value="basic_99">Explorer (₹99)</option>
                   <option value="premium_149">Professional (₹149)</option>
                 </select>
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Mode *
-                </label>
-                <select
-                  required
-                  value={formData.mode}
-                  onChange={(e) => setFormData({...formData, mode: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
+                <label className={labelCls}>Mode *</label>
+                <select required value={formData.mode} onChange={e => setFormData({...formData, mode: e.target.value})} className={inputCls}>
                   <option value="">Select Mode</option>
                   <option value="Online">Online</option>
                   <option value="Offline">Offline</option>
                   <option value="Hybrid">Hybrid</option>
                 </select>
               </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Event Link
-                </label>
-                <input
-                  type="url"
-                  value={formData.event_link}
-                  onChange={(e) => setFormData({...formData, event_link: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="https://..."
-                />
-              </div>
-
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={formData.tags}
-                  onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="React, JavaScript, Frontend"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Prize Pool
-                </label>
-                <input
-                  type="text"
-                  value={formData.prize_pool}
-                  onChange={(e) => setFormData({...formData, prize_pool: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="₹50,000"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Eligibility
-                </label>
-                <input
-                  type="text"
-                  value={formData.eligibility}
-                  onChange={(e) => setFormData({...formData, eligibility: e.target.value})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Open to all students"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value as any})}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
+                <label className={labelCls}>Status</label>
+                <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as any})} className={inputCls}>
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>
                 </select>
               </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="early_access"
-                  checked={formData.is_early_access}
-                  onChange={(e) => setFormData({...formData, is_early_access: e.target.checked})}
-                  className="mr-2"
-                />
-                <label htmlFor="early_access" className="text-sm font-medium text-neutral-700">
-                  Early Access Event
-                </label>
+              <div className="md:col-span-2">
+                <label className={labelCls}>Event Link</label>
+                <input type="url" value={formData.event_link} onChange={e => setFormData({...formData, event_link: e.target.value})} className={inputCls} placeholder="https://..." />
+              </div>
+              <div>
+                <label className={labelCls}>Tags (comma separated)</label>
+                <input type="text" value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} className={inputCls} placeholder="React, JavaScript, Frontend" />
+              </div>
+              <div>
+                <label className={labelCls}>Prize Pool</label>
+                <input type="text" value={formData.prize_pool} onChange={e => setFormData({...formData, prize_pool: e.target.value})} className={inputCls} placeholder="₹50,000" />
+              </div>
+              <div className="md:col-span-2">
+                <label className={labelCls}>Eligibility</label>
+                <input type="text" value={formData.eligibility} onChange={e => setFormData({...formData, eligibility: e.target.value})} className={inputCls} placeholder="Open to all students" />
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="early_access" checked={formData.is_early_access} onChange={e => setFormData({...formData, is_early_access: e.target.checked})} className="accent-violet-600" />
+                <label htmlFor="early_access" className="text-xs text-zinc-400">Early Access Event</label>
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
-              <Button type="button" variant="secondary" onClick={onClose}>
+            <div className="flex justify-end gap-2 pt-2">
+              <button type="button" onClick={onClose} className="text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-4 py-2 rounded-lg transition-colors">
                 Cancel
-              </Button>
-              <Button type="submit" loading={saving}>
-                {event ? 'Update Event' : 'Create Event'}
-              </Button>
+              </button>
+              <button type="submit" disabled={saving} className="text-sm text-white bg-violet-600 hover:bg-violet-500 disabled:opacity-50 px-4 py-2 rounded-lg transition-colors">
+                {saving ? 'Saving...' : (event ? 'Update Event' : 'Create Event')}
+              </button>
             </div>
           </form>
         </div>

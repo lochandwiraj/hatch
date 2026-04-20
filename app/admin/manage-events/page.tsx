@@ -2,20 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/auth/AuthProvider'
+import Header from '@/components/layout/Header'
 import Link from 'next/link'
-import Card from '@/components/ui/Card'
-import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
-import { 
+import {
   PencilIcon,
-  EyeIcon,
+  TrashIcon,
+  LinkIcon,
   CalendarDaysIcon,
   TagIcon,
-  LinkIcon,
-  ClockIcon,
+  EyeIcon,
   UserGroupIcon,
   StarIcon,
-  TrashIcon
 } from '@heroicons/react/24/outline'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
@@ -42,54 +39,33 @@ interface Event {
   updated_at: string
 }
 
+const ADMIN_EMAILS = ['dwiraj06@gmail.com', 'pokkalilochan@gmail.com', 'dwiraj@HATCH.in', 'lochan@HATCH.in']
+const tierLabel = (t: string) => t === 'free' ? 'Free' : t === 'basic_99' ? 'Explorer' : 'Professional'
+const tierStyle = (t: string) => t === 'free' ? 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' : t === 'basic_99' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+
 export default function AdminManageEventsPage() {
   const { user } = useAuth()
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'free' | 'basic_99' | 'premium_149'>('all')
+  const [tierFilter, setTierFilter] = useState<'all' | 'free' | 'basic_99' | 'premium_149'>('all')
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all')
 
-  // Check if user is admin
-  const isAdmin = user?.email === 'dwiraj06@gmail.com' || 
-                  user?.email === 'pokkalilochan@gmail.com' ||
-                  user?.email === 'dwiraj@HATCH.in' || 
-                  user?.email === 'lochan@HATCH.in'
+  const isAdmin = ADMIN_EMAILS.includes(user?.email || '')
 
   useEffect(() => {
-    if (isAdmin) {
-      loadEvents()
-    }
-  }, [isAdmin, filter, statusFilter])
+    if (isAdmin) loadEvents()
+  }, [isAdmin, tierFilter, statusFilter])
 
   const loadEvents = async () => {
     try {
       setLoading(true)
-      
-      // Load all events from database (admin can see all)
-      let query = supabase
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      const { data, error } = await query
-
+      const { data, error } = await supabase.from('events').select('*').order('created_at', { ascending: false })
       if (error) throw error
-
-      let filteredEvents = data || []
-
-      // Apply tier filter if not 'all'
-      if (filter !== 'all') {
-        filteredEvents = filteredEvents.filter(event => event.required_tier === filter)
-      }
-
-      // Apply status filter if not 'all'
-      if (statusFilter !== 'all') {
-        filteredEvents = filteredEvents.filter(event => event.status === statusFilter)
-      }
-      
-      setEvents(filteredEvents)
-    } catch (error: any) {
-      console.error('Error loading events:', error)
+      let filtered = data || []
+      if (tierFilter !== 'all') filtered = filtered.filter(e => e.required_tier === tierFilter)
+      if (statusFilter !== 'all') filtered = filtered.filter(e => e.status === statusFilter)
+      setEvents(filtered)
+    } catch {
       toast.error('Failed to load events')
     } finally {
       setLoading(false)
@@ -98,347 +74,181 @@ export default function AdminManageEventsPage() {
 
   const deleteEvent = async (eventId: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return
-
     try {
-      const { error } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', eventId)
-
+      const { error } = await supabase.from('events').delete().eq('id', eventId)
       if (error) throw error
-
-      toast.success('Event deleted successfully!')
+      toast.success('Event deleted!')
       loadEvents()
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to delete event')
-      console.error('Error deleting event:', error)
     }
   }
 
-  const toggleEventStatus = async (eventId: string, currentStatus: string) => {
+  const toggleStatus = async (eventId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'published' ? 'draft' : 'published'
-    
     try {
-      const { error } = await supabase
-        .from('events')
-        .update({ status: newStatus })
-        .eq('id', eventId)
-
+      const { error } = await supabase.from('events').update({ status: newStatus }).eq('id', eventId)
       if (error) throw error
-
-      toast.success(`Event ${newStatus === 'published' ? 'published' : 'unpublished'} successfully!`)
+      toast.success(`Event ${newStatus === 'published' ? 'published' : 'unpublished'}!`)
       loadEvents()
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to update event status')
-      console.error('Error updating event:', error)
-    }
-  }
-
-  const getTierBadgeVariant = (tier: string) => {
-    switch (tier) {
-      case 'free': return 'success'
-      case 'basic_99': return 'primary'
-      case 'premium_149': return 'warning'
-      default: return 'default'
-    }
-  }
-
-  const getTierName = (tier: string) => {
-    switch (tier) {
-      case 'free': return 'Free'
-      case 'basic_99': return 'Explorer'
-      case 'premium_149': return 'Professional'
-      default: return tier
     }
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-4">Access Denied</h1>
-          <p className="text-neutral-600 mb-4">You don't have permission to access this page.</p>
-          <Link href="/dashboard">
-            <Button>Go to Dashboard</Button>
-          </Link>
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-center">
+            <p className="text-white font-medium mb-2">Access Denied</p>
+            <p className="text-zinc-500 text-sm mb-4">You don't have permission to access this page.</p>
+            <Link href="/dashboard" className="text-sm text-violet-400 hover:text-violet-300 transition-colors">Go to Dashboard</Link>
+          </div>
         </div>
       </div>
     )
   }
 
+  const allEvents = (() => {
+    const { data: _ } = { data: events }
+    return events
+  })()
+
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold gradient-text">
-                HATCH
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600">
-                Dashboard
-              </Link>
-              <Link href="/admin/events" className="text-neutral-600 hover:text-primary-600">
-                Admin Events
-              </Link>
-              <Link href="/admin/manage-events" className="text-primary-600 font-medium">
-                Manage Events
-              </Link>
-              <Link href="/admin/payments" className="text-neutral-600 hover:text-primary-600">
-                Admin Payments
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen">
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-xl font-semibold text-white mb-1">Manage Events</h1>
+            <p className="text-sm text-zinc-500">View, edit, and manage all events across all tiers.</p>
+          </div>
+          <Link href="/admin/events" className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition-colors">
+            Add New Event
+          </Link>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+          {[
+            { label: 'Total', value: events.length, icon: CalendarDaysIcon },
+            { label: 'Free', value: events.filter(e => e.required_tier === 'free').length, icon: TagIcon },
+            { label: 'Explorer', value: events.filter(e => e.required_tier === 'basic_99').length, icon: UserGroupIcon },
+            { label: 'Professional', value: events.filter(e => e.required_tier === 'premium_149').length, icon: StarIcon },
+            { label: 'Published', value: events.filter(e => e.status === 'published').length, icon: EyeIcon },
+          ].map(stat => (
+            <div key={stat.label} className="bg-[#111111] border border-white/[0.07] rounded-xl p-4">
+              <stat.icon className="w-4 h-4 text-zinc-600 mb-2" />
+              <div className="text-2xl font-semibold text-white">{stat.value}</div>
+              <div className="text-xs text-zinc-500 mt-0.5">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="bg-[#111111] border border-white/[0.07] rounded-xl p-4 mb-5">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-neutral-900">Admin - Manage Events</h1>
-              <p className="text-neutral-600 mt-1">
-                View, edit, and manage all events across all subscription tiers
-              </p>
-            </div>
-            <Link href="/admin/events">
-              <Button>
-                <CalendarDaysIcon className="h-4 w-4 mr-2" />
-                Add New Event
-              </Button>
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            <Card className="text-center">
-              <CalendarDaysIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.length}
-              </div>
-              <p className="text-neutral-600">Total Events</p>
-            </Card>
-            
-            <Card className="text-center">
-              <TagIcon className="h-8 w-8 text-success-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.required_tier === 'free').length}
-              </div>
-              <p className="text-neutral-600">Free Events</p>
-            </Card>
-            
-            <Card className="text-center">
-              <UserGroupIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.required_tier === 'basic_99').length}
-              </div>
-              <p className="text-neutral-600">Explorer Events</p>
-            </Card>
-            
-            <Card className="text-center">
-              <StarIcon className="h-8 w-8 text-warning-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.required_tier === 'premium_149').length}
-              </div>
-              <p className="text-neutral-600">Professional Events</p>
-            </Card>
-
-            <Card className="text-center">
-              <EyeIcon className="h-8 w-8 text-accent-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-neutral-900">
-                {events.filter(e => e.status === 'published').length}
-              </div>
-              <p className="text-neutral-600">Published</p>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <Card>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-neutral-700 mr-2">Filter by tier:</span>
-                {[
-                  { key: 'all', label: 'All Tiers' },
-                  { key: 'free', label: 'Free' },
-                  { key: 'basic_99', label: 'Explorer' },
-                  { key: 'premium_149', label: 'Professional' }
-                ].map((option) => (
-                  <button
-                    key={option.key}
-                    onClick={() => setFilter(option.key as any)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      filter === option.key
-                        ? 'bg-primary-100 text-primary-800'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <span className="text-sm font-medium text-neutral-700 mr-2">Filter by status:</span>
-                {[
-                  { key: 'all', label: 'All Status' },
-                  { key: 'published', label: 'Published' },
-                  { key: 'draft', label: 'Draft' }
-                ].map((option) => (
-                  <button
-                    key={option.key}
-                    onClick={() => setStatusFilter(option.key as any)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      statusFilter === option.key
-                        ? 'bg-primary-100 text-primary-800'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                    }`}
-                  >
-                    {option.label}
+              <p className="text-xs text-zinc-500 mb-2">Tier</p>
+              <div className="flex flex-wrap gap-1.5">
+                {(['all', 'free', 'basic_99', 'premium_149'] as const).map(f => (
+                  <button key={f} onClick={() => setTierFilter(f)} className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${tierFilter === f ? 'bg-violet-600 text-white' : 'bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08]'}`}>
+                    {f === 'all' ? 'All' : tierLabel(f)}
                   </button>
                 ))}
               </div>
             </div>
-          </Card>
-
-          {/* Events List */}
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse h-32 bg-neutral-200 rounded-xl"></div>
-              ))}
-            </div>
-          ) : events.length > 0 ? (
-            <div className="space-y-4">
-              {events.map((event) => (
-                <Card key={event.id}>
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <h3 className="text-lg font-semibold text-neutral-900 mr-3">
-                          {event.title}
-                        </h3>
-                        <div className="flex gap-2">
-                          <Badge 
-                            variant={event.status === 'published' ? 'success' : 'warning'}
-                          >
-                            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                          </Badge>
-                          <Badge variant={getTierBadgeVariant(event.required_tier)}>
-                            {getTierName(event.required_tier)}
-                          </Badge>
-                          {event.is_early_access && (
-                            <Badge variant="primary">Early Access</Badge>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <p className="text-neutral-600 mb-3 line-clamp-2">{event.description}</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-neutral-600">
-                        <div>
-                          <span className="font-medium">Organizer:</span> {event.organizer}
-                        </div>
-                        <div>
-                          <span className="font-medium">Category:</span> {event.category}
-                        </div>
-                        <div>
-                          <span className="font-medium">Mode:</span> {event.mode}
-                        </div>
-                        <div>
-                          <span className="font-medium">Date:</span> {formatDate(event.event_date)}
-                        </div>
-                      </div>
-
-                      {event.tags && event.tags.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {event.tags.map((tag, index) => (
-                            <span key={index} className="bg-neutral-100 text-neutral-700 px-2 py-1 rounded text-xs">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      {event.prize_pool && (
-                        <div className="mt-2">
-                          <span className="bg-success-100 text-success-800 px-2 py-1 rounded text-sm font-medium">
-                            💰 Prize Pool: {event.prize_pool}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex space-x-2 mt-4 lg:mt-0">
-                      {event.event_link && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => window.open(event.event_link, '_blank')}
-                        >
-                          <LinkIcon className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                      )}
-                      
-                      <Link href={`/admin/events?edit=${event.id}`}>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                        >
-                          <PencilIcon className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                      </Link>
-                      
-                      <Button
-                        variant={event.status === 'published' ? 'secondary' : 'primary'}
-                        size="sm"
-                        onClick={() => toggleEventStatus(event.id, event.status)}
-                      >
-                        {event.status === 'published' ? 'Unpublish' : 'Publish'}
-                      </Button>
-                      
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => deleteEvent(event.id)}
-                      >
-                        <TrashIcon className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <div className="text-center py-12">
-                <CalendarDaysIcon className="h-16 w-16 text-neutral-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-neutral-900 mb-2">
-                  No events found
-                </h3>
-                <p className="text-neutral-600 mb-4">
-                  {filter === 'all' && statusFilter === 'all'
-                    ? 'No events have been created yet'
-                    : `No events match the selected filters`
-                  }
-                </p>
-                <Link href="/admin/events">
-                  <Button>
-                    <CalendarDaysIcon className="h-4 w-4 mr-2" />
-                    Create First Event
-                  </Button>
-                </Link>
+            <div>
+              <p className="text-xs text-zinc-500 mb-2">Status</p>
+              <div className="flex flex-wrap gap-1.5">
+                {(['all', 'published', 'draft'] as const).map(f => (
+                  <button key={f} onClick={() => setStatusFilter(f)} className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${statusFilter === f ? 'bg-violet-600 text-white' : 'bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08]'}`}>
+                    {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+                  </button>
+                ))}
               </div>
-            </Card>
-          )}
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* Events */}
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => <div key={i} className="h-28 bg-[#111111] rounded-xl animate-pulse" />)}
+          </div>
+        ) : events.length > 0 ? (
+          <div className="space-y-3">
+            {events.map(event => (
+              <div key={event.id} className="bg-[#111111] border border-white/[0.07] rounded-xl p-4">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <h3 className="text-sm font-medium text-white">{event.title}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${event.status === 'published' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'}`}>
+                        {event.status}
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${tierStyle(event.required_tier)}`}>
+                        {tierLabel(event.required_tier)}
+                      </span>
+                      {event.is_early_access && (
+                        <span className="text-xs px-2 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/20">Early Access</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-500 line-clamp-1 mb-2">{event.description}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
+                      <span>{event.organizer}</span>
+                      <span>{event.category}</span>
+                      <span>{event.mode}</span>
+                      <span>{formatDate(event.event_date)}</span>
+                    </div>
+                    {event.tags && event.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {event.tags.map((tag, i) => (
+                          <span key={i} className="text-xs bg-white/[0.04] text-zinc-500 px-2 py-0.5 rounded">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                    {event.prize_pool && (
+                      <div className="mt-2">
+                        <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">Prize: {event.prize_pool}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 shrink-0">
+                    {event.event_link && (
+                      <button onClick={() => window.open(event.event_link, '_blank')} className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">
+                        <LinkIcon className="w-3.5 h-3.5" /> View
+                      </button>
+                    )}
+                    <Link href={`/admin/events?edit=${event.id}`} className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">
+                      <PencilIcon className="w-3.5 h-3.5" /> Edit
+                    </Link>
+                    <button
+                      onClick={() => toggleStatus(event.id, event.status)}
+                      className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors ${event.status === 'published' ? 'text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08]' : 'text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20'}`}
+                    >
+                      {event.status === 'published' ? 'Unpublish' : 'Publish'}
+                    </button>
+                    <button onClick={() => deleteEvent(event.id)} className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1.5 rounded-lg transition-colors">
+                      <TrashIcon className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-[#111111] border border-white/[0.07] rounded-xl">
+            <CalendarDaysIcon className="w-10 h-10 text-zinc-700 mx-auto mb-3" />
+            <p className="text-sm text-zinc-400 mb-1">No events found</p>
+            <p className="text-xs text-zinc-600">Try adjusting the filters</p>
+          </div>
+        )}
+
+      </main>
     </div>
   )
 }
