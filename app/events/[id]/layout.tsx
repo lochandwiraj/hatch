@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       images: [{ url: image, alt: event.title }],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: event.poster_image_url ? 'summary_large_image' : 'summary',
       title: `${event.title} — HATCH`,
       description: base,
       images: [image],

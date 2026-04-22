@@ -33,10 +33,10 @@ export const metadata: Metadata = {
     title: 'HATCH — Stop Searching. Start Discovering.',
     description: 'Discover hackathons, case competitions & workshops for Indian college students. Curated from 50+ sources weekly.',
     url: SITE_URL,
-    images: [{ url: '/HATCHsquare.png', width: 1200, height: 630, alt: 'HATCH — Student Event Discovery' }],
+    images: [{ url: '/HATCHsquare.png', width: 1024, height: 1024, alt: 'HATCH — Student Event Discovery' }],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'HATCH — Stop Searching. Start Discovering.',
     description: 'Discover hackathons, case competitions & workshops for Indian college students. Curated from 50+ sources weekly.',
     images: ['/HATCHsquare.png'],
