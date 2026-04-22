@@ -3,7 +3,11 @@ import Link from 'next/link'
 
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Delivery Policy — HATCH', alternates: { canonical: '/delivery' } }
+export const metadata: Metadata = {
+  title: 'Delivery Policy — HATCH',
+  description: 'HATCH is a digital subscription platform. Access is granted instantly upon successful payment — no shipping or wait time involved.',
+  alternates: { canonical: '/delivery' },
+}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

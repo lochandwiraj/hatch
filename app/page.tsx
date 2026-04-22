@@ -191,7 +191,7 @@ export default function Home() {
             <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Live on <span className="font-qepho">HATCH</span></p>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">What's happening</h2>
           </div>
-          <Link href="/auth" className="hidden sm:flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors">
+          <Link href="/events" className="hidden sm:flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors">
             See all events <ArrowRightIcon className="w-3.5 h-3.5" />
           </Link>
         </FadeUp>

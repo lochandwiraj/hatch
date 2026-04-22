@@ -3,7 +3,7 @@ import Header from '@/components/layout/Header'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About HATCH — Student Event Discovery for India',
+  title: 'About — Student Event Discovery for India',
   description: 'HATCH was built by two students tired of missing opportunities. We curate the best hackathons, competitions and workshops across India so you never miss out.',
   alternates: { canonical: '/about' },
 }
