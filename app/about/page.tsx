@@ -49,7 +49,7 @@ export default function AboutPage() {
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">Who we are</h2>
             <p className="text-zinc-400 leading-relaxed mb-3">
-              <span className="font-qepho">HATCH</span> was built by <span className="text-white">Dwiraj</span> and <span className="text-white">Lochan</span> — two students who spent too much time searching and not enough time participating. We missed registrations because we found out too late. We drove each other up the wall talking about how this problem had no good solution.
+              <span className="font-qepho">HATCH</span> was built by <span className="font-qepho text-white">Dwiraj</span>, <span className="font-qepho text-white">Lochan</span>, and <span className="font-qepho text-white">Sai Sugeet</span> — three students who spent too much time searching and not enough time participating. We missed registrations because we found out too late. We drove each other up the wall talking about how this problem had no good solution.
             </p>
             <p className="text-zinc-400 leading-relaxed">
               So we built one. <span className="font-qepho">HATCH</span> is shaped entirely by feedback from students like you. We're not a large company running automated aggregation — every curation decision is made by people who've been in the same situation.
