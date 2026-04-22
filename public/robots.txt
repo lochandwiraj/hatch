@@ -8,4 +8,4 @@ Disallow: /profile/
 Disallow: /subscription/
 Disallow: /calendar/
 
-Sitemap: https://hatch06.vercel.app/sitemap.xml
+Sitemap: https://www.hatchevent.in/sitemap.xml
