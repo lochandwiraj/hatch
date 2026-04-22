@@ -3,7 +3,7 @@ import Header from '@/components/layout/Header'
 import ContactForm from './ContactForm'
 
 export const metadata: Metadata = {
-  title: 'Contact HATCH',
+  title: 'Contact — Get in Touch with HATCH',
   description: 'Get in touch with the HATCH team. Payment issues, event suggestions, or general questions — we read every message and respond within 24–48 hours.',
   alternates: { canonical: '/contact' },
 }

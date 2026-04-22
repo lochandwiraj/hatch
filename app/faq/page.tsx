@@ -4,7 +4,7 @@ import Link from 'next/link'
 import FAQAccordion from './FAQAccordion'
 
 export const metadata: Metadata = {
-  title: 'FAQ — Frequently Asked Questions',
+  title: 'FAQ — Hackathons, Student Events & Subscriptions in India',
   description: 'Answers to common questions about HATCH subscriptions, payments, event listings, refunds, and account management.',
   alternates: { canonical: '/faq' },
 }

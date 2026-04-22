@@ -47,15 +47,27 @@ const pricingJsonLd = {
   ],
 }
 
+const pricingFaqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: 'How does payment work?', acceptedAnswer: { '@type': 'Answer', text: 'We use UPI payments via Razorpay. Your subscription is activated within 24 hours of payment confirmation.' } },
+    { '@type': 'Question', name: 'Can I cancel anytime?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Contact us and we will cancel your subscription. No hidden fees.' } },
+    { '@type': 'Question', name: 'What are curated events?', acceptedAnswer: { '@type': 'Answer', text: 'We research 50+ sources to hand-pick only the best hackathons, competitions, and workshops for Indian college students.' } },
+    { '@type': 'Question', name: 'How is the tier limit counted?', acceptedAnswer: { '@type': 'Answer', text: 'You can register for up to the limit number of events per subscription period (30 or 365 days).' } },
+  ],
+}
+
 export default function PricingPage() {
   return (
     <div className="min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }} />
       <Header />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-semibold text-white mb-3">Simple pricing</h1>
+          <h1 className="text-3xl font-semibold text-white mb-3">Pricing for Indian college students</h1>
           <p className="text-zinc-400">Start free. Upgrade when you need more.</p>
         </div>
 

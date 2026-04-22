@@ -54,11 +54,25 @@ const orgJsonLd = {
   address: { '@type': 'PostalAddress', streetAddress: '#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete', addressLocality: 'Bengaluru South', addressRegion: 'Karnataka', postalCode: '560018', addressCountry: 'IN' },
 }
 
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'HATCH',
+  url: SITE_URL,
+  description: 'Discover hackathons, case competitions and workshops for Indian college students.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/events?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={plusJakartaSans.variable}>
       <body className={plusJakartaSans.className}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
         <AuthProvider>
           <CompleteProfileModal />
           <AttendanceConfirmationProvider>
