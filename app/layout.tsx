@@ -6,6 +6,7 @@ import { AuthProvider } from '@/components/auth/AuthProvider'
 import AttendanceConfirmationProvider from '@/components/events/AttendanceConfirmationProvider'
 import CompleteProfileModal from '@/components/auth/CompleteProfileModal'
 import Footer from '@/components/layout/Footer'
+import Script from 'next/script'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -74,6 +75,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" href="/fonts/qephomodern-regular.otf" as="font" type="font/otf" crossOrigin="anonymous" />
       </head>
       <body className={plusJakartaSans.className}>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-R99ZV6SD91" strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-R99ZV6SD91');
+        `}</Script>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
         <AuthProvider>
