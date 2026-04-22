@@ -16,7 +16,8 @@ export default function AboutPage() {
 
         <div className="mb-12">
           <p className="text-xs text-violet-400 uppercase tracking-widest font-medium mb-3">About</p>
-          <h1 className="text-3xl font-bold text-white mb-4">We built <span className="font-qepho">HATCH</span> because we were tired of missing out.</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">We built <span className="font-qepho">HATCH</span> because we were tired of missing out.</h1>
+          <p className="text-base font-medium text-violet-400 mb-4">Student event discovery for India — hackathons, competitions &amp; workshops, curated weekly.</p>
           <p className="text-zinc-400 text-base leading-relaxed">
             Every week, hundreds of hackathons, competitions, workshops, and networking events happen across India — and most students never hear about them. They're buried across Instagram pages, WhatsApp groups, college notice boards, and random Discord servers.
           </p>
