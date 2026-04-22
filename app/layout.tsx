@@ -14,7 +14,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-jakarta',
 })
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://hatch06.vercel.app'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hatchevent.in'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

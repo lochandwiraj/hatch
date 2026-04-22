@@ -6,7 +6,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://hatch06.vercel.app'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hatchevent.in'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const { data: event } = await supabase
