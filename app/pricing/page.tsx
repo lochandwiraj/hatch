@@ -51,7 +51,7 @@ const pricingFaqJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
-    { '@type': 'Question', name: 'How does payment work?', acceptedAnswer: { '@type': 'Answer', text: 'We use UPI payments via Razorpay. Your subscription is activated within 24 hours of payment confirmation.' } },
+    { '@type': 'Question', name: 'How does payment work?', acceptedAnswer: { '@type': 'Answer', text: 'We use UPI payments via Razorpay. Your subscription activates instantly upon successful payment.' } },
     { '@type': 'Question', name: 'Can I cancel anytime?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Contact us and we will cancel your subscription. No hidden fees.' } },
     { '@type': 'Question', name: 'What are curated events?', acceptedAnswer: { '@type': 'Answer', text: 'We research 50+ sources to hand-pick only the best hackathons, competitions, and workshops for Indian college students.' } },
     { '@type': 'Question', name: 'How is the tier limit counted?', acceptedAnswer: { '@type': 'Answer', text: 'You can register for up to the limit number of events per subscription period (30 or 365 days).' } },
@@ -110,7 +110,7 @@ export default function PricingPage() {
           <h2 className="text-sm font-medium text-white mb-4">Frequently asked questions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {[
-              { q: 'How does payment work?', a: 'We use UPI payments. Your subscription is activated within 24 hours of payment confirmation.' },
+              { q: 'How does payment work?', a: 'We use UPI payments via Razorpay. Your subscription activates instantly upon successful payment.' },
               { q: 'Can I cancel anytime?', a: 'Yes. Contact us and we will cancel your subscription. No hidden fees.' },
               { q: 'What are curated events?', a: 'We research 50+ sources to hand-pick only the best hackathons, competitions, and workshops.' },
               { q: 'How is the tier limit counted?', a: 'You can register for up to the limit number of events per subscription period.' },
