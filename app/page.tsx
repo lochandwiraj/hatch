@@ -25,9 +25,9 @@ function FadeUp({ children, delay = 0, className = '' }: { children: React.React
   const isInView = useInView(ref, { once: true, margin: '-50px' })
   return (
     <motion.div ref={ref}
-      initial={{ opacity: 0, y: 28, filter: 'blur(8px)' }}
-      animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-      transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1], delay }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1], delay }}
       className={className}>
       {children}
     </motion.div>
@@ -117,20 +117,17 @@ export default function Home() {
       {/* ── Hero ── */}
       <section className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-12">
         <motion.div
-          initial={{ opacity: 0, y: 36, filter: 'blur(12px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 1, ease: [0.32, 0.72, 0, 1], delay: 0.1 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1], delay: 0.05 }}
           className="max-w-3xl"
         >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.32, 0.72, 0, 1], delay: 0.05 }}
+          <div
             className="font-qepho text-white leading-none tracking-tight mb-6"
             style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)' }}
           >
             HATCH
-          </motion.div>
+          </div>
 
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/25 mb-8"
             style={{ background: 'rgba(124,58,237,0.1)' }}>

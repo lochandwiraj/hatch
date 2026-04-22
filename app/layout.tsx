@@ -70,6 +70,9 @@ const websiteJsonLd = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={plusJakartaSans.variable}>
+      <head>
+        <link rel="preload" href="/fonts/qephomodern-regular.otf" as="font" type="font/otf" crossOrigin="anonymous" />
+      </head>
       <body className={plusJakartaSans.className}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
