@@ -37,47 +37,55 @@ export default function ContactForm() {
   return (
     <div className="grid md:grid-cols-3 gap-8">
       {/* Info */}
-      <div className="space-y-4">
-        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <EnvelopeIcon className="w-4 h-4 text-violet-400 mb-2" />
-          <p className="text-xs text-zinc-400 font-medium mb-1">Email</p>
-          <a href="mailto:hatch0258@gmail.com" className="text-sm text-zinc-300 hover:text-white transition-colors break-all">
-            hatch0258@gmail.com
-          </a>
+      <div className="space-y-3">
+        {/* Email + Phone: side by side */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <EnvelopeIcon className="w-4 h-4 text-violet-400 mb-2" />
+            <p className="text-xs text-zinc-500 font-medium mb-1">Email</p>
+            <a href="mailto:hatch0258@gmail.com" className="text-xs text-zinc-300 hover:text-white transition-colors break-all leading-relaxed">
+              hatch0258@gmail.com
+            </a>
+          </div>
+          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <PhoneIcon className="w-4 h-4 text-violet-400 mb-2" />
+            <p className="text-xs text-zinc-500 font-medium mb-1">Phone</p>
+            <a href="tel:+917892676997" className="text-xs text-zinc-300 hover:text-white transition-colors leading-relaxed">
+              +91 78926 76997
+            </a>
+          </div>
         </div>
-        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <PhoneIcon className="w-4 h-4 text-violet-400 mb-2" />
-          <p className="text-xs text-zinc-400 font-medium mb-1">Phone / WhatsApp</p>
-          <a href="tel:+917892676997" className="text-sm text-zinc-300 hover:text-white transition-colors">
-            +91 78926 76997
-          </a>
-        </div>
+
+        {/* Response time */}
         <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
           <ClockIcon className="w-4 h-4 text-violet-400 mb-2" />
-          <p className="text-xs text-zinc-400 font-medium mb-1">Response time</p>
-          <p className="text-sm text-zinc-300">24–48 hours on weekdays</p>
+          <p className="text-xs text-zinc-500 font-medium mb-1">Response time</p>
+          <p className="text-sm text-zinc-300">24–48 hrs on weekdays</p>
         </div>
+
+        {/* Address */}
         <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
           <MapPinIcon className="w-4 h-4 text-violet-400 mb-2" />
-          <p className="text-xs text-zinc-400 font-medium mb-1">Address</p>
-          <p className="text-xs text-zinc-400 leading-relaxed">#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
+          <p className="text-xs text-zinc-500 font-medium mb-1">Address</p>
+          <p className="text-xs text-zinc-400 leading-relaxed">#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru, Karnataka – 560018</p>
         </div>
-        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <p className="text-xs text-zinc-400 font-medium mb-2">For payment issues</p>
-          <p className="text-xs text-zinc-500 leading-relaxed">Include your Razorpay payment ID and we'll resolve it within 48 hours.</p>
-        </div>
+
+        {/* Payment note — plain, no card */}
+        <p className="text-xs text-zinc-600 px-1 leading-relaxed">For payment issues, include your Razorpay payment ID — resolved within 48 hours.</p>
+
+        {/* LinkedIn */}
         <a
           href="https://www.linkedin.com/company/hatch-events-india/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 rounded-xl p-4 transition-colors"
+          className="flex items-center gap-3 rounded-xl p-4 hover:bg-white/[0.04] transition-colors"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-violet-400 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-violet-400 shrink-0">
             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
           </svg>
           <div>
-            <p className="text-xs text-zinc-400 font-medium">LinkedIn</p>
+            <p className="text-xs text-zinc-500 font-medium">LinkedIn</p>
             <p className="text-sm text-zinc-300">HATCH Events India</p>
           </div>
         </a>
