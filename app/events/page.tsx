@@ -45,6 +45,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterTier, setFilterTier] = useState<'all' | 'free' | 'basic_99' | 'premium_149'>('all')
+  const [filterCategory, setFilterCategory] = useState('all')
 
   useEffect(() => { if (profile) loadEvents() }, [profile, filterTier])
   useEffect(() => {
@@ -97,8 +98,6 @@ export default function EventsPage() {
       </div>
     )
   }
-
-  const [filterCategory, setFilterCategory] = useState('all')
 
   const categoryFilters = [
     { value: 'all', label: 'All' },
