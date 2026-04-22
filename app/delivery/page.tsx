@@ -59,7 +59,7 @@ export default function DeliveryPage() {
           </Section>
 
           <Section title="6. Contact">
-            <p>For any delivery or access issues, email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>. We respond within 48 hours on weekdays.</p>
+            <p>For any delivery or access issues, email <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>. We respond within 48 hours on weekdays.</p>
           </Section>
         </div>
       </main>

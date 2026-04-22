@@ -51,7 +51,7 @@ const orgJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/HATCHsquare.png`,
   description: 'Curated hackathons, competitions and workshops for Indian college students.',
-  contactPoint: { '@type': 'ContactPoint', email: 'hatch0258@gmail.com', telephone: '+91-7892676997', contactType: 'customer support' },
+  contactPoint: { '@type': 'ContactPoint', email: 'hatch@hatchevent.in', telephone: '+91-7892676997', contactType: 'customer support' },
   address: { '@type': 'PostalAddress', streetAddress: '#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete', addressLocality: 'Bengaluru South', addressRegion: 'Karnataka', postalCode: '560018', addressCountry: 'IN' },
 }
 

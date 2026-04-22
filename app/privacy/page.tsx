@@ -58,7 +58,7 @@ export default function PrivacyPage() {
 
           <Section title="7. Your Rights">
             <p>You have the right to: access the data we hold about you, correct inaccurate information, request deletion of your account and data, and opt out of non-essential communications.</p>
-            <p>To exercise any of these rights, email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> from your registered email address.</p>
+            <p>To exercise any of these rights, email <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> from your registered email address.</p>
           </Section>
 
           <Section title="8. Security">
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="13. Contact">
-            <p>Privacy questions? Email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>.</p>
+            <p>Privacy questions? Email <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>.</p>
           </Section>
         </div>
       </main>

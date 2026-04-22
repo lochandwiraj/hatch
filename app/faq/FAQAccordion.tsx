@@ -38,7 +38,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
       },
       {
         q: 'My payment went through but subscription did not activate. What do I do?',
-        a: <>Email us at <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> with your Razorpay payment ID and we will manually activate your subscription within 48 hours or issue a full refund.</>,
+        a: <>Email us at <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> with your Razorpay payment ID and we will manually activate your subscription within 48 hours or issue a full refund.</>,
       },
       {
         q: 'Is my payment information safe?',
@@ -80,7 +80,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
       },
       {
         q: 'How do I delete my account?',
-        a: 'Email hatch0258@gmail.com from your registered email requesting deletion. We will delete your account and all associated data within 30 days.',
+        a: 'Email hatch@hatchevent.in from your registered email requesting deletion. We will delete your account and all associated data within 30 days.',
       },
       {
         q: 'I signed up with Google but need to add my college details.',

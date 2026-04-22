@@ -69,7 +69,7 @@ export default function Footer() {
             <p className="text-xs text-zinc-700">#165 Beladingalu, 5th Main, Chamrajapete, Bengaluru, Karnataka – 560018</p>
           </div>
           <div className="flex items-center gap-3 text-xs shrink-0">
-            <a href="mailto:hatch0258@gmail.com" className="text-zinc-500 hover:text-zinc-300 transition-colors">hatch0258@gmail.com</a>
+            <a href="mailto:hatch@hatchevent.in" className="text-zinc-500 hover:text-zinc-300 transition-colors">hatch@hatchevent.in</a>
             <span className="text-zinc-700">·</span>
             <a href="tel:+917892676997" className="text-zinc-500 hover:text-zinc-300 transition-colors">+91 78926 76997</a>
           </div>

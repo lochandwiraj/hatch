@@ -43,7 +43,7 @@ export default function RefundPage() {
           </Section>
 
           <Section title="3. How to Request a Refund">
-            <p>Email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> within <strong className="text-zinc-300">48 hours</strong> of the payment with the following:</p>
+            <p>Email <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> within <strong className="text-zinc-300">48 hours</strong> of the payment with the following:</p>
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li>Your registered email address</li>
               <li>Razorpay Payment ID (found in your payment confirmation)</li>
@@ -72,7 +72,7 @@ export default function RefundPage() {
           </Section>
 
           <Section title="7. Contact">
-            <p>For any refund queries, email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a>, call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>, or use our <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact page</Link>.</p>
+            <p>For any refund queries, email <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a>, call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>, or use our <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact page</Link>.</p>
           </Section>
         </div>
       </main>

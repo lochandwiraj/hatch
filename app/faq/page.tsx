@@ -20,7 +20,7 @@ const faqJsonLd = {
     { '@type': 'Question', name: 'Can I get a refund?', acceptedAnswer: { '@type': 'Answer', text: 'Refunds are available for duplicate payments or activation failures. There are no refunds for change of mind after a subscription activates.' } },
     { '@type': 'Question', name: 'How are events curated?', acceptedAnswer: { '@type': 'Answer', text: 'Every event on HATCH is manually reviewed by our team for legitimacy, relevance to students, and quality before going live.' } },
     { '@type': 'Question', name: "Why can't I see some events?", acceptedAnswer: { '@type': 'Answer', text: 'Some events are restricted to Explorer or Professional subscribers. Upgrading your subscription will give you access.' } },
-    { '@type': 'Question', name: 'How do I delete my account?', acceptedAnswer: { '@type': 'Answer', text: 'Email hatch0258@gmail.com from your registered email. We will delete your account and all associated data within 30 days.' } },
+    { '@type': 'Question', name: 'How do I delete my account?', acceptedAnswer: { '@type': 'Answer', text: 'Email hatch@hatchevent.in from your registered email. We will delete your account and all associated data within 30 days.' } },
   ],
 }
 

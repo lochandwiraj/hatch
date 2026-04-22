@@ -12,7 +12,7 @@ export default function ContactForm() {
     e.preventDefault()
     setSending(true)
     try {
-      await fetch(`https://formsubmit.co/ajax/hatch0258@gmail.com`, {
+      await fetch(`https://formsubmit.co/ajax/hatch@hatchevent.in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
@@ -25,7 +25,7 @@ export default function ContactForm() {
       toast.success('Message sent! We\'ll get back to you within 24–48 hours.')
       setForm({ name: '', email: '', message: '' })
     } catch {
-      toast.error('Failed to send. Email us directly at hatch0258@gmail.com')
+      toast.error('Failed to send. Email us directly at hatch@hatchevent.in')
     } finally {
       setSending(false)
     }
@@ -43,8 +43,8 @@ export default function ContactForm() {
           <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <EnvelopeIcon className="w-4 h-4 text-violet-400 mb-2" />
             <p className="text-xs text-zinc-500 font-medium mb-1">Email</p>
-            <a href="mailto:hatch0258@gmail.com" className="text-xs text-zinc-300 hover:text-white transition-colors break-all leading-relaxed">
-              hatch0258@gmail.com
+            <a href="mailto:hatch@hatchevent.in" className="text-xs text-zinc-300 hover:text-white transition-colors break-all leading-relaxed">
+              hatch@hatchevent.in
             </a>
           </div>
           <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
