@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     template: '%s — HATCH',
   },
   description: 'Discover hackathons, case competitions & workshops for Indian college students. Curated from 50+ sources weekly. 200+ events. Free to start.',
-  alternates: { canonical: SITE_URL },
   icons: {
     icon: '/HATCHsquare.png',
     apple: '/HATCHsquare.png',
@@ -51,7 +50,8 @@ const orgJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/HATCHsquare.png`,
   description: 'Curated hackathons, competitions and workshops for Indian college students.',
-  contactPoint: { '@type': 'ContactPoint', email: 'hatch0258@gmail.com', contactType: 'customer support' },
+  contactPoint: { '@type': 'ContactPoint', email: 'hatch0258@gmail.com', telephone: '+91-7892676997', contactType: 'customer support' },
+  address: { '@type': 'PostalAddress', streetAddress: '#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete', addressLocality: 'Bengaluru South', addressRegion: 'Karnataka', postalCode: '560018', addressCountry: 'IN' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

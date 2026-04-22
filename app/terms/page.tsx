@@ -2,7 +2,7 @@ import Header from '@/components/layout/Header'
 
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Terms & Conditions — HATCH' }
+export const metadata: Metadata = { title: 'Terms & Conditions — HATCH', alternates: { canonical: '/terms' } }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -74,7 +74,8 @@ export default function TermsPage() {
           </Section>
 
           <Section title="12. Contact">
-            <p>Questions about these Terms? Email us at <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a>.</p>
+            <p>Questions about these Terms? Email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>.</p>
+            <p className="mt-1"><strong className="text-zinc-300">Address:</strong> #165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
           </Section>
         </div>
       </main>

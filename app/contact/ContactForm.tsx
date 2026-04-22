@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon, ClockIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline'
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
@@ -37,7 +37,7 @@ export default function ContactForm() {
   return (
     <div className="grid md:grid-cols-3 gap-8">
       {/* Info */}
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
           <EnvelopeIcon className="w-4 h-4 text-violet-400 mb-2" />
           <p className="text-xs text-zinc-400 font-medium mb-1">Email</p>
@@ -46,9 +46,21 @@ export default function ContactForm() {
           </a>
         </div>
         <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <PhoneIcon className="w-4 h-4 text-violet-400 mb-2" />
+          <p className="text-xs text-zinc-400 font-medium mb-1">Phone / WhatsApp</p>
+          <a href="tel:+917892676997" className="text-sm text-zinc-300 hover:text-white transition-colors">
+            +91 78926 76997
+          </a>
+        </div>
+        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
           <ClockIcon className="w-4 h-4 text-violet-400 mb-2" />
           <p className="text-xs text-zinc-400 font-medium mb-1">Response time</p>
           <p className="text-sm text-zinc-300">24–48 hours on weekdays</p>
+        </div>
+        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <MapPinIcon className="w-4 h-4 text-violet-400 mb-2" />
+          <p className="text-xs text-zinc-400 font-medium mb-1">Address</p>
+          <p className="text-xs text-zinc-400 leading-relaxed">#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
         </div>
         <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
           <p className="text-xs text-zinc-400 font-medium mb-2">For payment issues</p>

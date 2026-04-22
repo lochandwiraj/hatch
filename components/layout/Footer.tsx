@@ -5,6 +5,7 @@ const links = {
     { label: 'Terms & Conditions', href: '/terms' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Refund Policy', href: '/refund' },
+    { label: 'Delivery Policy', href: '/delivery' },
   ],
   Company: [
     { label: 'About', href: '/about' },
@@ -50,14 +51,16 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <p className="text-xs text-zinc-600">© {new Date().getFullYear()} HATCH. All rights reserved.</p>
-          <p className="text-xs text-zinc-600">
-            Support:{' '}
-            <a href="mailto:hatch0258@gmail.com" className="text-zinc-500 hover:text-zinc-300 transition-colors">
-              hatch0258@gmail.com
-            </a>
-          </p>
+        <div className="pt-6 space-y-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          <p className="text-xs text-zinc-600">#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <p className="text-xs text-zinc-600">© {new Date().getFullYear()} HATCH. All rights reserved.</p>
+            <p className="text-xs text-zinc-600">
+              <a href="mailto:hatch0258@gmail.com" className="text-zinc-500 hover:text-zinc-300 transition-colors">hatch0258@gmail.com</a>
+              {' · '}
+              <a href="tel:+917892676997" className="text-zinc-500 hover:text-zinc-300 transition-colors">+91 78926 76997</a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

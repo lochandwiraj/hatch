@@ -2,7 +2,7 @@ import Header from '@/components/layout/Header'
 
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Privacy Policy — HATCH' }
+export const metadata: Metadata = { title: 'Privacy Policy — HATCH', alternates: { canonical: '/privacy' } }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -77,8 +77,20 @@ export default function PrivacyPage() {
             <p>We may update this policy. We will notify you by email before material changes take effect. Continued use of the platform after that date constitutes acceptance of the updated policy.</p>
           </Section>
 
-          <Section title="12. Contact">
-            <p>Privacy questions? Email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a>.</p>
+          <Section title="12. Grievance Redressal">
+            <p>In accordance with the Information Technology Act, 2000 and the IT (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, the details of the Grievance Officer are as follows:</p>
+            <div className="mt-3 rounded-xl p-4 space-y-1" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <p><strong className="text-zinc-300">Name:</strong> Dwiraj S</p>
+              <p><strong className="text-zinc-300">Designation:</strong> Founder</p>
+              <p><strong className="text-zinc-300">Email:</strong> <a href="mailto:dwiraj06@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">dwiraj06@gmail.com</a></p>
+              <p><strong className="text-zinc-300">Phone:</strong> <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a></p>
+              <p><strong className="text-zinc-300">Address:</strong> #165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
+            </div>
+            <p className="mt-2">Complaints will be acknowledged within <strong className="text-zinc-300">48 hours</strong> and resolved within <strong className="text-zinc-300">one month</strong> of receipt.</p>
+          </Section>
+
+          <Section title="13. Contact">
+            <p>Privacy questions? Email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>.</p>
           </Section>
         </div>
       </main>

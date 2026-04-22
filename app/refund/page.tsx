@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Refund & Cancellation Policy — HATCH' }
+export const metadata: Metadata = { title: 'Refund & Cancellation Policy — HATCH', alternates: { canonical: '/refund' } }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -72,7 +72,7 @@ export default function RefundPage() {
           </Section>
 
           <Section title="7. Contact">
-            <p>For any refund queries, email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a> or use our <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact page</Link>.</p>
+            <p>For any refund queries, email <a href="mailto:hatch0258@gmail.com" className="text-violet-400 hover:text-violet-300 transition-colors">hatch0258@gmail.com</a>, call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>, or use our <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact page</Link>.</p>
           </Section>
         </div>
       </main>
