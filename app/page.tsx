@@ -156,7 +156,10 @@ export default function Home() {
                 </div>
               </Link>
             </motion.div>
-            <a href="#browse" className="text-sm text-zinc-400 hover:text-white transition-colors">Browse events →</a>
+            <a href="#browse" className="text-sm text-zinc-400 hover:text-white transition-colors inline-flex items-center gap-1 group">
+            Browse events
+            <span className="group-hover:translate-x-0.5 transition-transform duration-200">→</span>
+          </a>
           </div>
         </motion.div>
 
@@ -165,17 +168,20 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1], delay: 0.4 }}
-          className="flex flex-wrap gap-x-12 gap-y-4 mt-14 pt-10 border-t border-white/[0.06]"
+          className="flex flex-wrap gap-y-4 mt-14 pt-10 border-t border-white/[0.06]"
         >
           {[
             { value: '50+', label: 'Sources scanned', color: 'text-violet-400' },
             { value: '10h+', label: 'Saved per week', color: 'text-sky-400' },
             { value: '200+', label: 'Events curated', color: 'text-emerald-400' },
             { value: 'Weekly', label: 'Fresh drops', color: 'text-rose-400' },
-          ].map(s => (
-            <div key={s.label}>
-              <div className={`text-3xl font-extrabold mb-0.5 ${s.color}`}>{s.value}</div>
-              <div className="text-sm text-zinc-500">{s.label}</div>
+          ].map((s, i) => (
+            <div key={s.label} className="flex items-stretch gap-x-12">
+              {i > 0 && <div className="w-px bg-white/[0.06] mr-0 -ml-6 hidden sm:block" />}
+              <div>
+                <div className={`text-3xl font-extrabold mb-0.5 ${s.color}`}>{s.value}</div>
+                <div className="text-sm text-zinc-500">{s.label}</div>
+              </div>
             </div>
           ))}
         </motion.div>

@@ -25,7 +25,7 @@ export default function AboutPage() {
 
         <div className="space-y-10">
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">The problem</h2>
+            <h2 className="text-lg font-semibold text-white mb-3 pl-3" style={{ borderLeft: '2px solid rgba(124,58,237,0.5)' }}>The problem</h2>
             <p className="text-zinc-400 leading-relaxed mb-3">
               A student who wants to find opportunities spends hours every week searching across ten different platforms, only to find out about an event after registration closed. The best hackathons, case competitions, and workshops go to the students who happen to be in the right group chat — not the most deserving ones.
             </p>
@@ -35,7 +35,7 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">What <span className="font-qepho">HATCH</span> does</h2>
+            <h2 className="text-lg font-semibold text-white mb-3 pl-3" style={{ borderLeft: '2px solid rgba(124,58,237,0.5)' }}>What <span className="font-qepho">HATCH</span> does</h2>
             <p className="text-zinc-400 leading-relaxed mb-3">
               <span className="font-qepho">HATCH</span> aggregates and hand-curates the best student events across India — hackathons, case competitions, cultural fests, tech workshops, career fairs, and more. We scan 50+ sources every week so you don't have to.
             </p>
@@ -48,7 +48,7 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">Who we are</h2>
+            <h2 className="text-lg font-semibold text-white mb-3 pl-3" style={{ borderLeft: '2px solid rgba(124,58,237,0.5)' }}>Who we are</h2>
             <p className="text-zinc-400 leading-relaxed mb-3">
               <span className="font-qepho">HATCH</span> was built by <span className="font-qepho text-white">Dwiraj</span>, <span className="font-qepho text-white">Lochan</span>, and <span className="font-qepho text-white">Sai Sugeet</span> — three students who spent too much time searching and not enough time participating. We missed registrations because we found out too late. We drove each other up the wall talking about how this problem had no good solution.
             </p>
@@ -58,14 +58,14 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">Our mission</h2>
+            <h2 className="text-lg font-semibold text-white mb-3 pl-3" style={{ borderLeft: '2px solid rgba(124,58,237,0.5)' }}>Our mission</h2>
             <p className="text-zinc-400 leading-relaxed">
               Help every student find the opportunity that changes their trajectory — regardless of which college they go to, which city they're in, or which WhatsApp group they happen to be in. The student at a tier-3 college in a small city deserves the same shot as the one at IIT Bombay. <span className="font-qepho">HATCH</span> exists to level that playing field.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">How curation works</h2>
+            <h2 className="text-lg font-semibold text-white mb-3 pl-3" style={{ borderLeft: '2px solid rgba(124,58,237,0.5)' }}>How curation works</h2>
             <p className="text-zinc-400 leading-relaxed mb-3">
               Each week, our team goes through Instagram pages, LinkedIn posts, college club announcements, Devfolio, Unstop, and dozens of other sources. We shortlist events that are open to college students, have clear registration details, and aren't pay-to-play.
             </p>

@@ -21,7 +21,10 @@ const links = {
 
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(5,5,10,0.95)' }}>
+    <footer className="relative" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(5,5,10,0.95)' }}>
+      {/* subtle violet top-glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[480px] h-px"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent)' }} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           {/* Brand */}

@@ -11,10 +11,12 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@napi-rs/canvas": "^0.1.99",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/supabase-js": "^2.38.4",
     "@types/three": "^0.182.0",
     "autoprefixer": "^10.0.1",
+    "canvas": "^3.2.3",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
