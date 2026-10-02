@@ -1105,6 +1105,7 @@ export type Database = {
           is_early_access: boolean | null
           mode: string | null
           organizer: string | null
+          phases: Json | null
           poster_image_url: string | null
           prize_pool: string | null
           registered_at: string | null
