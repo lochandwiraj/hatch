@@ -1,6 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Barlow_Condensed, Public_Sans, Source_Serif_4, JetBrains_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import AppToaster from '@/components/ui/AppToaster'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import AttendanceConfirmationProvider from '@/components/events/AttendanceConfirmationProvider'
@@ -11,31 +11,46 @@ import Script from 'next/script'
 
 // Qepho is NOT loaded here. It is the brand face, self-hosted in globals.css,
 // and applied only through the Hatch component. See components/brand/Hatch.tsx.
-const barlowCondensed = Barlow_Condensed({
-  subsets: ['latin'],
-  weight: ['700', '800'],
+// These four were loaded through next/font/google, which downloads them from
+// fonts.gstatic.com during the build. A Vercel deploy failed when that host was
+// unreachable — six requests timed out and next/font then threw
+// "Cannot read properties of null (reading '1')" — so a network blip anywhere
+// between the build machine and Google broke a deploy of code that was fine.
+//
+// The same files are committed under app/fonts now. next/font still fingerprints,
+// preloads and serves them exactly as before; the build just no longer reaches
+// out to fetch them. Re-download with scripts/fetch-fonts.mjs if a weight changes.
+//
+// Three of these are variable fonts, where Google serves one file per family
+// and moves an axis. They are declared with a weight RANGE for that reason:
+// listing the same file under several single weights makes every one of them
+// render as the lightest. Barlow Condensed is genuinely two static cuts.
+const barlowCondensed = localFont({
+  src: [
+    { path: './fonts/barlow-condensed-700.woff2', weight: '700', style: 'normal' },
+    { path: './fonts/barlow-condensed-800.woff2', weight: '800', style: 'normal' },
+  ],
   display: 'swap',
   variable: '--font-barlow-condensed',
 })
 
-const publicSans = Public_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const publicSans = localFont({
+  src: [{ path: './fonts/public-sans-variable.woff2', weight: '400 600', style: 'normal' }],
   display: 'swap',
   variable: '--font-public-sans',
 })
 
-const sourceSerif = Source_Serif_4({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  style: ['normal', 'italic'],
+const sourceSerif = localFont({
+  src: [
+    { path: './fonts/source-serif-4-variable.woff2', weight: '400 600', style: 'normal' },
+    { path: './fonts/source-serif-4-variable-italic.woff2', weight: '400 600', style: 'italic' },
+  ],
   display: 'swap',
   variable: '--font-source-serif',
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const jetbrainsMono = localFont({
+  src: [{ path: './fonts/jetbrains-mono-variable.woff2', weight: '400 500', style: 'normal' }],
   display: 'swap',
   variable: '--font-jetbrains-mono',
 })
