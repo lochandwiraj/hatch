@@ -8,13 +8,25 @@ import { Hatch } from '@/components/brand/Hatch'
 import { Glyph } from '@/components/ui/Glyph'
 import { AttendanceMeter } from '@/components/subscription/AttendanceMeter'
 import { normalizeUserTier, tierName } from '@/lib/tier'
+import { isAdminEmail } from '@/lib/admin'
 
-const ADMIN_EMAILS = [
-  'dwiraj06@gmail.com',
-  'pokkalilochan@gmail.com',
-  'dwiraj@hatch.in',
-  'lochan@hatch.in',
-]
+/**
+ * The bar.
+ *
+ * It used to be nine links of equal weight in one row — five for the student,
+ * four for the admin — separated by a hairline, with the current page marked by
+ * a 2px underline that read as an afterthought. At 1440 it was a crowd, and the
+ * admin links looked like main navigation rather than a second set of keys.
+ *
+ * Now the current section is marked the way the calendar marks today: a 2px
+ * signal rule along the top edge of the bar, flush to it, so the mark belongs
+ * to the bar rather than floating under a word. The admin set sits behind its
+ * own mono `admin` label and is drawn quieter, so it reads as what it is.
+ *
+ * The height stays 16 (64px). Several screens pin sticky columns to `top-24`
+ * and the toaster clears the header at 80px; growing the bar would have pushed
+ * both out of line.
+ */
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -47,7 +59,7 @@ export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
 
-  const isAdmin = Boolean(user && ADMIN_EMAILS.includes(user.email ?? ''))
+  const isAdmin = Boolean(user && isAdminEmail(user.email))
   const tier = normalizeUserTier(profile?.subscription_tier)
 
   useEffect(() => {
@@ -68,79 +80,72 @@ export default function Header() {
     }
   }, [])
 
+  // A route change should never leave a panel open over the new page.
   useEffect(() => {
-    setMobileOpen(false)
     setMenuOpen(false)
+    setMobileOpen(false)
   }, [pathname])
 
-  // The full-screen panel owns the viewport while it is open.
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [mobileOpen])
-
-  async function handleSignOut() {
+  const handleSignOut = async () => {
     setMenuOpen(false)
     setMobileOpen(false)
     router.push('/auth')
     await signOut()
   }
 
+  /** Marks the current section along the top edge, as the calendar marks today. */
+  const navItem = (href: string, label: string, quiet = false) => {
+    const active = pathname === href
+    return (
+      <Link
+        key={href}
+        href={href}
+        aria-current={active ? 'page' : undefined}
+        className={`relative flex h-16 items-center font-sans text-ui-s ${
+          active
+            ? 'text-type-primary'
+            : quiet
+              ? 'text-type-muted hover:text-type-primary'
+              : 'text-type-secondary hover:text-type-primary'
+        }`}
+      >
+        {active ? (
+          <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] bg-signal" />
+        ) : null}
+        {label}
+      </Link>
+    )
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-rule bg-ink">
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 lg:px-12">
-        <Link href={user ? '/dashboard' : '/'} className="flex items-center">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-6 px-4 lg:px-12">
+        <Link href={user ? '/dashboard' : '/'} className="flex shrink-0 items-center">
           <Hatch className="text-[22px] leading-none text-type-primary" />
         </Link>
 
         {/* Laptop navigation */}
         {user ? (
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
-            {navLinks.map(({ href, label }) => {
-              const active = pathname === href
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? 'page' : undefined}
-                  className={`border-b-2 py-1 font-sans text-ui-s ${
- active
- ? 'border-signal text-type-primary'
- : 'border-transparent text-type-secondary hover:text-type-primary'
- }`}
-                >
-                  {label}
-                </Link>
-              )
-            })}
+          <nav className="hidden min-w-0 flex-1 items-center gap-6 lg:flex" aria-label="Main">
+            <span aria-hidden className="h-6 w-px shrink-0 bg-rule" />
+
+            {navLinks.map(({ href, label }) => navItem(href, label))}
 
             {isAdmin ? (
-              <span className="flex items-center gap-6 border-l border-rule pl-6">
-                {adminLinks.map(({ href, label }) => {
-                  const active = pathname === href
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      aria-current={active ? 'page' : undefined}
-                      className={`border-b-2 py-1 font-sans text-ui-s ${
- active
- ? 'border-signal text-type-primary'
- : 'border-transparent text-type-muted hover:text-type-primary'
- }`}
-                    >
-                      {label}
-                    </Link>
-                  )
-                })}
+              <span className="flex items-center gap-4">
+                <span aria-hidden className="h-6 w-px shrink-0 bg-rule" />
+                <span data-mono className="shrink-0 text-mono text-type-muted">
+                  admin
+                </span>
+                {adminLinks.map(({ href, label }) => navItem(href, label, true))}
               </span>
             ) : null}
           </nav>
-        ) : null}
+        ) : (
+          <span className="hidden flex-1 lg:block" />
+        )}
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           {user ? (
             <>
               <AttendanceMeter
@@ -156,7 +161,7 @@ export default function Header() {
                   onClick={() => setMenuOpen((v) => !v)}
                   aria-expanded={menuOpen}
                   aria-haspopup="menu"
-                  className="flex min-h-touch items-center gap-2 border border-rule px-3 py-2 font-sans text-ui-s text-type-primary hover:border-rule-strong"
+                  className="flex min-h-touch items-center gap-2 border border-rule px-3 py-2 font-sans text-ui-s text-type-primary hover:border-signal hover:text-signal"
                 >
                   <Glyph name="user" size={16} />
                   <span>{profile?.username ?? 'Account'}</span>
@@ -166,23 +171,32 @@ export default function Header() {
                 {menuOpen ? (
                   <div
                     role="menu"
-                    className="absolute right-0 top-[calc(100%+8px)] w-64 border border-rule bg-ink-raised"
+                    className="absolute right-0 top-[calc(100%+8px)] w-64 border border-rule-strong bg-ink"
                   >
-                    <p className="border-b border-rule px-4 py-3">
-                      <span className="font-sans text-label uppercase text-type-muted">Tier</span>
-                      <br />
-                      <span className="font-sans text-ui-s text-type-primary">{tierName(tier)}</span>
-                    </p>
+                    {/* Who you are and what you are on, before the links. */}
+                    <div className="border-b border-rule px-4 py-3">
+                      <p className="font-sans text-label uppercase text-type-muted">Signed in as</p>
+                      <p data-mono className="mt-1 truncate text-mono text-type-primary">
+                        @{profile?.username ?? 'account'}
+                      </p>
+                      <p className="mt-2 flex items-baseline justify-between gap-3">
+                        <span className="font-sans text-label uppercase text-type-muted">Plan</span>
+                        <span className="font-sans text-ui-s text-type-primary">{tierName(tier)}</span>
+                      </p>
+                    </div>
+
                     {accountLinks.map(({ href, label }) => (
                       <Link
                         key={href}
                         href={href}
                         role="menuitem"
-                        className="flex min-h-touch items-center border-b border-rule px-4 py-3 font-sans text-ui-s text-type-secondary hover:text-signal"
+                        className="flex min-h-touch items-center justify-between border-b border-rule px-4 py-3 font-sans text-ui-s text-type-secondary hover:text-signal"
                       >
                         {label}
+                        <Glyph name="arrow-right" size={14} />
                       </Link>
                     ))}
+
                     <button
                       type="button"
                       role="menuitem"
@@ -217,7 +231,7 @@ export default function Header() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-expanded={mobileOpen}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            className="flex h-touch w-touch items-center justify-center border border-rule text-type-primary lg:hidden"
+            className="flex h-touch w-touch items-center justify-center border border-rule text-type-primary hover:border-signal hover:text-signal lg:hidden"
           >
             <Glyph name={mobileOpen ? 'cross' : 'filter'} size={20} />
           </button>
@@ -238,38 +252,51 @@ export default function Header() {
           ) : null}
 
           <nav aria-label="Mobile">
-            {(user ? navLinks : [{ href: '/', label: 'Home' }, { href: '/events', label: 'Events' }, { href: '/pricing', label: 'Pricing' }]).map(
-              ({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={pathname === href ? 'page' : undefined}
-                  className={`flex min-h-touch items-center justify-between border-b border-rule px-4 py-4 font-display text-title uppercase ${
- pathname === href ? 'text-signal' : 'text-type-primary'
- }`}
-                >
-                  {label}
-                  <span data-mono className="text-mono text-type-muted">
-                    {href}
-                  </span>
-                </Link>
-              )
-            )}
+            {(user
+              ? navLinks
+              : [
+                  { href: '/', label: 'Home' },
+                  { href: '/events', label: 'Events' },
+                  { href: '/pricing', label: 'Pricing' },
+                ]
+            ).map(({ href, label }, i) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={pathname === href ? 'page' : undefined}
+                className={`flex min-h-touch items-center gap-4 border-b border-rule px-4 py-4 font-display text-title uppercase ${
+                  pathname === href ? 'text-signal' : 'text-type-primary'
+                }`}
+              >
+                <span data-mono className="text-mono text-type-muted">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                {label}
+              </Link>
+            ))}
 
-            {isAdmin
-              ? adminLinks.map(({ href, label }) => (
+            {isAdmin ? (
+              <>
+                <p
+                  data-mono
+                  className="border-b border-rule bg-ink-sunken px-4 py-2 text-mono text-type-muted"
+                >
+                  admin
+                </p>
+                {adminLinks.map(({ href, label }) => (
                   <Link
                     key={href}
                     href={href}
-                    className="flex min-h-touch items-center justify-between border-b border-rule px-4 py-4 font-sans text-ui text-type-muted"
+                    aria-current={pathname === href ? 'page' : undefined}
+                    className={`flex min-h-touch items-center border-b border-rule px-4 py-4 font-sans text-ui ${
+                      pathname === href ? 'text-signal' : 'text-type-secondary'
+                    }`}
                   >
                     {label}
-                    <span data-mono className="text-mono">
-                      admin
-                    </span>
                   </Link>
-                ))
-              : null}
+                ))}
+              </>
+            ) : null}
 
             {accountLinks.slice(1).map(({ href, label }) => (
               <Link
@@ -287,14 +314,14 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="flex min-h-touch w-full items-center justify-center border border-signal px-4 py-3 font-sans text-ui text-signal active:bg-signal active:text-ink"
+                className="flex min-h-touch w-full items-center justify-center border border-signal px-4 py-3 font-sans text-ui text-signal hover:bg-signal hover:text-ink"
               >
                 Sign out
               </button>
             ) : (
               <Link
                 href="/auth"
-                className="flex min-h-touch w-full items-center justify-center border border-signal bg-signal px-4 py-3 font-sans text-ui text-ink active:bg-ink active:text-signal"
+                className="flex min-h-touch w-full items-center justify-center border border-signal bg-signal px-4 py-3 font-sans text-ui text-ink"
               >
                 Get started
               </Link>

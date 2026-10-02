@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import { Glyph } from '@/components/ui/Glyph'
 import { useAuth } from '@/components/auth/AuthProvider'
+import { ADMIN_EMAILS, isAdminEmail } from '@/lib/admin'
 
 /**
  * The shared furniture behind the four admin screens.
@@ -18,25 +19,11 @@ import { useAuth } from '@/components/auth/AuthProvider'
  * again and a fix lands in one place.
  */
 
-/**
- * Who may open an admin screen.
- *
- * Copied verbatim from the four pages rather than corrected, because changing
- * it changes who can administer a live product. Two notes for whoever owns this:
- * Header.tsx carries a different list (lowercase `dwiraj@hatch.in`), and the
- * `@HATCH.in` domain is not the live one — the product runs on hatchevent.in —
- * so only the two Gmail addresses actually grant access today.
- */
-export const ADMIN_EMAILS = [
-  'dwiraj06@gmail.com',
-  'pokkalilochan@gmail.com',
-  'dwiraj@HATCH.in',
-  'lochan@HATCH.in',
-]
+export { ADMIN_EMAILS }
 
 export function useIsAdmin(): boolean {
   const { user } = useAuth()
-  return ADMIN_EMAILS.includes(user?.email || '')
+  return isAdminEmail(user?.email)
 }
 
 /** A refusal reads like the 404: stated at the top with a way out. */
