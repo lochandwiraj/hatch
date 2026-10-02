@@ -127,6 +127,24 @@ export default function EventDetailsPage() {
     { k: 'Access', v: getSubscriptionTierName(event.required_tier), mono: false },
   ]
 
+  /**
+   * events.phases is jsonb and optional, so it is read defensively: a row that
+   * predates the column, or one someone edited by hand, must render the page
+   * rather than break it.
+   */
+  const phases = (Array.isArray(event.phases) ? event.phases : [])
+    .map((raw) => {
+      const r = (raw ?? {}) as Record<string, unknown>
+      const n = Number(r.phase)
+      return {
+        phase: Number.isInteger(n) ? n : 0,
+        start: typeof r.start === 'string' ? r.start.slice(0, 10) : '',
+        end: typeof r.end === 'string' ? r.end.slice(0, 10) : '',
+      }
+    })
+    .filter((r) => r.phase > 0 && (r.start || r.end))
+    .sort((a, b) => a.phase - b.phase)
+
   const paragraphs = (event.description ?? '')
     .split(/\n{2,}/)
     .map((p) => p.trim())
@@ -212,6 +230,33 @@ export default function EventDetailsPage() {
                 </p>
               )}
             </div>
+
+            {phases.length > 0 ? (
+              <section className="mt-12">
+                <h2 className="border-b border-rule-strong pb-2 font-display text-title uppercase text-type-primary">
+                  How it runs
+                </h2>
+                <ol className="mt-4">
+                  {phases.map((ph) => (
+                    <li
+                      key={ph.phase}
+                      className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-rule py-3"
+                    >
+                      <span data-mono className="w-16 shrink-0 text-mono text-type-muted">
+                        {String(ph.phase).padStart(2, '0')}
+                      </span>
+                      <span className="font-sans text-ui text-type-primary">
+                        Phase {ph.phase}
+                      </span>
+                      <span data-mono className="ml-auto text-mono text-type-secondary">
+                        {ph.start ? formatDateShort(ph.start) : '--'}
+                        {ph.end ? ` – ${formatDateShort(ph.end)}` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ) : null}
 
             {event.eligibility ? (
               <section className="mt-12">

@@ -356,6 +356,7 @@ export type Database = {
           is_early_access: boolean | null
           mode: string
           organizer: string
+          phases: Json | null
           poster_image_url: string | null
           prize_pool: string | null
           registration_deadline: string | null
@@ -377,6 +378,7 @@ export type Database = {
           is_early_access?: boolean | null
           mode: string
           organizer: string
+          phases?: Json | null
           poster_image_url?: string | null
           prize_pool?: string | null
           registration_deadline?: string | null
@@ -398,6 +400,7 @@ export type Database = {
           is_early_access?: boolean | null
           mode?: string
           organizer?: string
+          phases?: Json | null
           poster_image_url?: string | null
           prize_pool?: string | null
           registration_deadline?: string | null

@@ -37,6 +37,50 @@ const TIERS = [
   { value: 'premium_149', label: 'Professional (₹149)' },
 ] as const
 
+/**
+ * Phases.
+ *
+ * A hackathon is rarely one date: it runs as rounds, each with its own window.
+ * Up to five, every one optional — most events have none, and an event with
+ * phases may fill in only two. Stored on events.phases as
+ * [{phase, start, end}], with empty rows dropped on save.
+ */
+const MAX_PHASES = 5
+type Phase = { phase: number; start: string; end: string }
+
+const emptyPhases = (): Phase[] =>
+  Array.from({ length: MAX_PHASES }, (_, i) => ({ phase: i + 1, start: '', end: '' }))
+
+/** Reads whatever is on the row back into five editable slots. */
+function phasesFromEvent(value: unknown): Phase[] {
+  const base = emptyPhases()
+  if (!Array.isArray(value)) return base
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object') continue
+    const r = raw as Record<string, unknown>
+    const n = Number(r.phase)
+    if (!Number.isInteger(n) || n < 1 || n > MAX_PHASES) continue
+    base[n - 1] = {
+      phase: n,
+      start: typeof r.start === 'string' ? r.start.slice(0, 10) : '',
+      end: typeof r.end === 'string' ? r.end.slice(0, 10) : '',
+    }
+  }
+  return base
+}
+
+/**
+ * Only phases with at least one date are saved; all five empty means null.
+ * A missing date is stored as null rather than "", so the column never holds
+ * an empty string standing in for an absent one.
+ */
+function phasesForSave(rows: Phase[]) {
+  const filled = rows
+    .filter((r) => r.start || r.end)
+    .map((r) => ({ phase: r.phase, start: r.start || null, end: r.end || null }))
+  return filled.length ? filled : null
+}
+
 const field =
   'mt-2 block min-h-touch w-full border border-rule bg-ink-sunken px-3 py-2 font-sans text-ui ' +
   'text-type-primary placeholder-type-muted focus:border-rule-strong focus:outline-none'
@@ -100,6 +144,12 @@ export function EventComposer({
     mode: event?.mode || '',
     eligibility: event?.eligibility || '',
   })
+  const [phases, setPhases] = useState<Phase[]>(() => phasesFromEvent(event?.phases))
+
+  const setPhase = (index: number, key: 'start' | 'end', value: string) => {
+    setDirty(true)
+    setPhases((prev) => prev.map((r, i) => (i === index ? { ...r, [key]: value } : r)))
+  }
 
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setDirty(true)
@@ -152,6 +202,7 @@ export function EventComposer({
         prize_pool: form.prize_pool || null,
         mode: form.mode,
         eligibility: form.eligibility || null,
+        phases: phasesForSave(phases),
       }
       const { error } = event
         ? await supabase.from('events').update(payload).eq('id', event.id)
@@ -439,6 +490,57 @@ export function EventComposer({
                     className={field}
                   />
                 </label>
+              </Group>
+
+              <Group step="05" title="Phases">
+                <div className="md:col-span-2">
+                  <p className="max-w-measure font-sans text-ui-s text-type-muted">
+                    For an event that runs in rounds. Leave every row empty if it does not —
+                    most events have no phases, and nothing here is required.
+                  </p>
+
+                  <div className="mt-4 border-t border-rule">
+                    {phases.map((row, i) => {
+                      const backwards = row.start && row.end && row.end < row.start
+                      return (
+                        <div
+                          key={row.phase}
+                          className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-rule py-3"
+                        >
+                          <span data-mono className="w-16 shrink-0 text-mono text-type-muted">
+                            {String(row.phase).padStart(2, '0')}
+                          </span>
+                          <label className="flex items-center gap-2">
+                            <span className="font-sans text-label uppercase text-type-muted">From</span>
+                            <input
+                              type="date"
+                              value={row.start}
+                              onChange={(e) => setPhase(i, 'start', e.target.value)}
+                              aria-label={`Phase ${row.phase} start date`}
+                              className="min-h-touch border border-rule bg-ink-sunken px-2 py-1 font-sans text-ui-s text-type-primary focus:border-rule-strong focus:outline-none"
+                            />
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <span className="font-sans text-label uppercase text-type-muted">To</span>
+                            <input
+                              type="date"
+                              value={row.end}
+                              min={row.start || undefined}
+                              onChange={(e) => setPhase(i, 'end', e.target.value)}
+                              aria-label={`Phase ${row.phase} end date`}
+                              className={`min-h-touch border bg-ink-sunken px-2 py-1 font-sans text-ui-s text-type-primary focus:outline-none ${
+                                backwards ? 'border-signal' : 'border-rule focus:border-rule-strong'
+                              }`}
+                            />
+                          </label>
+                          {backwards ? (
+                            <span className="font-sans text-ui-s text-signal">Ends before it starts</span>
+                          ) : null}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               </Group>
             </div>
 
