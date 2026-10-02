@@ -1,9 +1,24 @@
 'use client'
 
 import { useState } from 'react'
+import { Hatch } from '@/components/brand/Hatch'
+import { Field } from '@/components/ui/Field'
+import { Button } from '@/components/ui/Button'
 import { toast } from 'react-hot-toast'
-import { EnvelopeIcon, ClockIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline'
 
+/**
+ * Contact. Operate mode: the visitor is here to send one message.
+ *
+ * The form used to carry `md:col-span-2` inside a twelve-column grid, so at lg
+ * it fell back to a single column and the inputs rendered about 110px wide
+ * while five filled cards took the rest of the page. The form is the point of
+ * this screen, so it now takes the wide column and the details sit in the same
+ * ruled, sticky aside that /about and /faq use.
+ *
+ * The cards are gone. Five boxes to carry an email address, a phone number and
+ * four words about response time is most of a screen spent on nothing; a ruled
+ * list says the same thing in a quarter of the space.
+ */
 export default function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sending, setSending] = useState(false)
@@ -12,7 +27,7 @@ export default function ContactForm() {
     e.preventDefault()
     setSending(true)
     try {
-      await fetch(`https://formsubmit.co/ajax/hatch@hatchevent.in`, {
+      const res = await fetch('https://formsubmit.co/ajax/hatch@hatchevent.in', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
@@ -22,101 +37,116 @@ export default function ContactForm() {
           _subject: `HATCH Contact from ${form.name}`,
         }),
       })
-      toast.success('Message sent! We\'ll get back to you within 24–48 hours.')
+      // A non-2xx used to fall through to the success toast, so a rejected
+      // message looked sent. Only a thrown network error was ever caught.
+      if (!res.ok) throw new Error(String(res.status))
+      toast.success("Message sent. We'll reply within 24–48 hours.")
       setForm({ name: '', email: '', message: '' })
     } catch {
-      toast.error('Failed to send. Email us directly at hatch@hatchevent.in')
+      toast.error('Could not send. Email us directly at hatch@hatchevent.in')
     } finally {
       setSending(false)
     }
   }
 
-  const inputCls = 'w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/60 transition-all'
-  const inputStyle = { background: 'rgba(3,3,8,0.9)', border: '1px solid rgba(255,255,255,0.08)' }
+  /** Matches Field's input exactly; Field itself has no multiline variant. */
+  const textarea =
+    'mt-2 block w-full resize-y border border-rule bg-ink-sunken px-3 py-2 font-sans text-ui ' +
+    'text-type-primary placeholder-type-muted focus:border-rule-strong focus:outline-none'
+
+  const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
+    <div className="border-b border-rule py-3">
+      <dt className="font-sans text-label uppercase text-type-muted">{label}</dt>
+      <dd className="mt-1 font-sans text-ui-s text-type-primary">{children}</dd>
+    </div>
+  )
 
   return (
-    <div className="grid md:grid-cols-3 gap-8">
-      {/* Info */}
-      <div className="space-y-3">
-        {/* Email + Phone: side by side */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <EnvelopeIcon className="w-4 h-4 text-violet-400 mb-2" />
-            <p className="text-xs text-zinc-500 font-medium mb-1">Email</p>
-            <a href="mailto:hatch@hatchevent.in" className="text-xs text-zinc-300 hover:text-white transition-colors break-all leading-relaxed">
+    <div className="lg:grid lg:grid-cols-12 lg:gap-6">
+      <form onSubmit={handleSubmit} className="lg:col-span-7">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Field
+            label="Name"
+            name="contact-name"
+            required
+            autoComplete="name"
+            placeholder="Your name"
+            value={form.name}
+            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+          />
+          <Field
+            label="Email"
+            name="contact-email"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="yourmail@gmail.com"
+            value={form.email}
+            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+          />
+        </div>
+
+        <div className="mt-4">
+          <label htmlFor="contact-message" className="block font-sans text-label uppercase text-type-muted">
+            Message
+            <span className="ml-1 text-signal" aria-hidden>
+              required
+            </span>
+          </label>
+          <textarea
+            id="contact-message"
+            name="contact-message"
+            required
+            rows={8}
+            value={form.message}
+            onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
+            placeholder="Describe your issue or question in detail"
+            className={textarea}
+          />
+        </div>
+
+        <p className="mt-3 max-w-measure font-sans text-ui-s text-type-muted">
+          For a payment issue, include your UPI transaction reference. Those are resolved within 48
+          hours.
+        </p>
+
+        <Button type="submit" variant="primary" size="lg" loading={sending} className="mt-6 w-full md:w-auto">
+          {sending ? 'Sending' : 'Send message'}
+        </Button>
+      </form>
+
+      {/* The details. Ruled and sticky, matching /about and /faq. */}
+      <aside className="mt-12 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:sticky lg:top-24 lg:self-start">
+        <dl className="border-t border-rule">
+          <Row label="Email">
+            <a href="mailto:hatch@hatchevent.in" className="break-all text-signal rule-underline">
               hatch@hatchevent.in
             </a>
-          </div>
-          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <PhoneIcon className="w-4 h-4 text-violet-400 mb-2" />
-            <p className="text-xs text-zinc-500 font-medium mb-1">Phone</p>
-            <a href="tel:+917892676997" className="text-xs text-zinc-300 hover:text-white transition-colors leading-relaxed">
+          </Row>
+          <Row label="Phone">
+            <a href="tel:+917892676997" className="text-signal rule-underline">
               +91 78926 76997
             </a>
-          </div>
-        </div>
-
-        {/* Response time */}
-        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <ClockIcon className="w-4 h-4 text-violet-400 mb-2" />
-          <p className="text-xs text-zinc-500 font-medium mb-1">Response time</p>
-          <p className="text-sm text-zinc-300">24–48 hrs on weekdays</p>
-        </div>
-
-        {/* Address */}
-        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <MapPinIcon className="w-4 h-4 text-violet-400 mb-2" />
-          <p className="text-xs text-zinc-500 font-medium mb-1">Address</p>
-          <p className="text-xs text-zinc-400 leading-relaxed">#165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru, Karnataka – 560018</p>
-        </div>
-
-        {/* Payment note — plain, no card */}
-        <p className="text-xs text-zinc-600 px-1 leading-relaxed">For payment issues, include your Razorpay payment ID — resolved within 48 hours.</p>
-
-        {/* LinkedIn */}
-        <a
-          href="https://www.linkedin.com/company/hatch-events-india/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 rounded-xl p-4 hover:bg-white/[0.04] transition-colors"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-violet-400 shrink-0">
-            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-          </svg>
-          <div>
-            <p className="text-xs text-zinc-500 font-medium">LinkedIn</p>
-            <p className="text-sm text-zinc-300">HATCH Events India</p>
-          </div>
-        </a>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="md:col-span-2 space-y-4">
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Name</label>
-            <input type="text" required autoComplete="name" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-              placeholder="Your name" className={inputCls} style={inputStyle} />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
-            <input type="email" required autoComplete="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-              placeholder="yourmail@gmail.com" className={inputCls} style={inputStyle} />
-          </div>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1.5">Message</label>
-          <textarea required rows={5} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
-            placeholder="Describe your issue or question in detail..."
-            className={`${inputCls} resize-none`} style={inputStyle} />
-        </div>
-        <button type="submit" disabled={sending}
-          className="w-full text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)', boxShadow: sending ? 'none' : '0 4px 16px rgba(124,58,237,0.3)' }}>
-          {sending ? 'Sending...' : 'Send message'}
-        </button>
-      </form>
+          </Row>
+          <Row label="Response time">24–48 hrs on weekdays</Row>
+          <Row label="Address">
+            <span className="text-type-secondary">
+              #165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru,
+              Karnataka – 560018
+            </span>
+          </Row>
+          <Row label="LinkedIn">
+            <a
+              href="https://www.linkedin.com/company/hatch-events-india/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-signal rule-underline"
+            >
+              <Hatch /> Events India
+            </a>
+          </Row>
+        </dl>
+      </aside>
     </div>
   )
 }

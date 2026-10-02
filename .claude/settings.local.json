@@ -48,7 +48,46 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(git commit -m 'Add env var check with logging to debug create-order 500 *)"
+      "Bash(git commit -m 'Add env var check with logging to debug create-order 500 *)",
+      "Bash(git commit -m 'Replace contact subject dropdown with text input *)",
+      "Bash(git commit -m 'Remove subject field from contact form — name, email, message only *)",
+      "Bash(git commit -m 'Fix contact form — remove remaining subject references *)",
+      "Bash(identify \"C:\\\\PD\\\\HATCH claude/public/HATCHsquare.png\")",
+      "Bash(python3 -c \"from PIL import Image; img=Image.open\\(r'C:\\\\PD\\\\HATCH claude\\\\public\\\\HATCHsquare.png'\\); print\\(img.size\\)\")",
+      "WebFetch(domain:razorpay.com)",
+      "WebFetch(domain:hatch06.vercel.app)",
+      "WebSearch",
+      "WebFetch(domain:creativenexus.in)",
+      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.next\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(pip show *)",
+      "Bash(code-review-graph install *)",
+      "Bash(python -m code_review_graph install)",
+      "Bash(python -c \"import code_review_graph; print\\(code_review_graph.__file__\\)\")",
+      "Bash(python -m code_review_graph build)",
+      "Bash(python -m code_review_graph install --platform claude-code)",
+      "WebFetch(domain:www.hatchevent.in)",
+      "WebFetch(domain:hatchevent.in)",
+      "Bash(node -e \"require\\('canvas'\\)\")",
+      "Bash(node *)",
+      "Bash(git commit *)",
+      "Bash(git log *)",
+      "WebFetch(domain:github.com)",
+      "Bash(pip --version)",
+      "Bash(pip3 --version)",
+      "Bash(pip install *)",
+      "Bash(/c/Users/dwira/AppData/Roaming/Python/Python314/Scripts/code-review-graph.exe build *)",
+      "Bash(/c/Users/dwira/AppData/Roaming/Python/Python314/Scripts/code-review-graph.exe visualize *)",
+      "Bash(start \"C:\\\\\\\\PD\\\\\\\\HATCH claude\\\\\\\\.code-review-graph\\\\\\\\graph.html\")",
+      "Bash(npx crg-dev-kit *)",
+      "Bash(curl -s http://localhost:8742)",
+      "Bash(curl *)",
+      "Bash(sed 's/<[^>]*>//g')",
+      "PowerShell([Environment]::GetEnvironmentVariable\\(\"PATH\", \"User\"\\) | Out-String)",
+      "Bash(git restore *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "code-review-graph"
+  ]
 }

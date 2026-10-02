@@ -1,15 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { Glyph } from '@/components/ui/Glyph'
 import { useAuth } from '@/components/auth/AuthProvider'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { 
-  ShareIcon, 
-  GiftIcon, 
-  ClipboardDocumentIcon,
-  CheckIcon
-} from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 
 export default function ReferralCard() {
@@ -41,27 +36,27 @@ export default function ReferralCard() {
     <div className="funky-referral-card">
       <div className="funky-referral-card-header">
         <div>
-          <div className="text-lg font-bold">Share & Earn</div>
-          <div className="text-sm opacity-90">Invite friends and get rewards</div>
+          <div className="text-body-l font-bold">Share & Earn</div>
+          <div className="text-ui opacity-90">Invite friends and get rewards</div>
         </div>
         <div className="funky-referral-icon">
-          <GiftIcon className="h-6 w-6 text-white" />
+          <Glyph name="gift" className="h-6 w-6 text-type-primary" />
         </div>
       </div>
 
       <div className="funky-referral-card-body">
         <div className="funky-info-box">
-          <h4 className="font-bold text-gray-800 mb-2">How it works:</h4>
-          <ul className="space-y-1 text-sm text-gray-700 font-medium">
-            <li>• Your friend gets 20% off their first month</li>
-            <li>• You get 1 month free when they upgrade to paid</li>
-            <li>• No limit on referrals!</li>
+          <h4 className="font-bold text-type-muted mb-2">How it works:</h4>
+          <ul className="space-y-1 text-ui text-type-muted font-medium">
+            <li>Your friend gets 20% off their first month</li>
+            <li>You get 1 month free when they upgrade to paid</li>
+            <li>No limit on referrals!</li>
           </ul>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-2">
+            <label className="block text-ui font-bold text-type-muted mb-2">
               Your Referral Link
             </label>
             <div className="flex">
@@ -76,16 +71,16 @@ export default function ReferralCard() {
                 className="funky-copy-button"
               >
                 {copied ? (
-                  <CheckIcon className="h-4 w-4" />
+                  <Glyph name="check" className="h-4 w-4" />
                 ) : (
-                  <ClipboardDocumentIcon className="h-4 w-4" />
+                  <Glyph name="clipboard" className="h-4 w-4" />
                 )}
               </button>
             </div>
           </div>
 
           <button onClick={shareViaWhatsApp} className="funky-share-button">
-            <ShareIcon className="h-4 w-4 mr-2" />
+            <Glyph name="share" className="h-4 w-4 mr-2" />
             Share on WhatsApp
           </button>
         </div>

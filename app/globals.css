@@ -1,158 +1,444 @@
+/* ==========================================================================
+   QEPHO. THE BRAND FACE. DO NOT MODIFY.
+   The word HATCH and the founder names are set in this and nothing else.
+   woff2 first (47% smaller, identical letterforms), otf retained as fallback.
+   font-display: block so the wordmark never flashes in a substitute face.
+   ========================================================================== */
 @font-face {
   font-family: 'Qepho';
-  src: url('/fonts/qephomodern-regular.otf') format('opentype');
+  src: url('/fonts/qephomodern-regular.woff2') format('woff2'),
+       url('/fonts/qephomodern-regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
   font-family: 'Qepho';
-  src: url('/fonts/qephomodern-italic.otf') format('opentype');
+  src: url('/fonts/qephomodern-italic.woff2') format('woff2'),
+       url('/fonts/qephomodern-italic.otf') format('opentype');
   font-weight: normal;
   font-style: italic;
-  font-display: swap;
+  font-display: block;
 }
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@keyframes orb-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(40px, -60px) scale(1.08); }
-  66% { transform: translate(-30px, 30px) scale(0.94); }
+/* ==========================================================================
+   TOKENS. Dark is default. No other colors anywhere in the codebase.
+   ========================================================================== */
+:root {
+  --ink: #14110e;
+  --ink-raised: #1d1915;
+  --ink-sunken: #0e0c0a;
+  --rule: #322b24;
+  --rule-strong: #4a4038;
+  --type-primary: #f0ebe1;
+  --type-secondary: #a79c8c;
+  --type-muted: #8c806e;
+
+  /* Signal set. Every member is theme-aware: no single hue clears 4.5:1
+     on both bone and ink. */
+  /* Verified against WCAG AA with a contrast checker, not by eye. The original
+     values failed on every dark surface (signal 3.61:1, verified 2.46:1,
+     deadline 3.26:1 against --ink-raised). Same hues, raised lightness.
+     This is why the signal set is theme-aware rather than one fixed value:
+     a single colour cannot clear 4.5:1 on both bone and ink. */
+  --signal: #d75a40;
+  --signal-press: #b8482f;
+  --verified: #4c8f6d;
+  --deadline: #a87918;
+  --locked: #8c806e;
+
+  /* Category inks. Five real categories plus a fallback. */
+  /* Category inks render as small uppercase labels, so they are held to the
+     3:1 UI threshold. The original five all failed on dark (networking 2.37:1,
+     other 2.13:1). Hue preserved, lightness raised. */
+  --cat-hackathon: #b8452a;
+  --cat-networking: #366a8e;
+  --cat-conference: #2c7066;
+  --cat-webinar: #8b5b1c;
+  --cat-other: #9d4a69;
+  --cat-fallback: #6e6456;
+
+  /* Motion. The only curves permitted. */
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.5, 0, 0.75, 0);
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 110ms;
+  --dur-state: 220ms;
+  --dur-enter: 420ms;
+
+  /* Page margin, per breakpoint. */
+  --page-margin: 20px;
+  --gutter: 16px;
 }
 
-@keyframes orb-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  40% { transform: translate(-50px, 40px) scale(0.96); }
-  70% { transform: translate(35px, -45px) scale(1.06); }
+:root[data-theme='light'] {
+  --ink: #efebe3;
+  --ink-raised: #e6e1d7;
+  --ink-sunken: #f5f2ec;
+  --rule: #cdc5b6;
+  --rule-strong: #a89e8c;
+  --type-primary: #14110e;
+  --type-secondary: #5c5347;
+  --type-muted: #6b6358;
+  /* The signal set darkens on bone to clear AA there too. --verified and
+     --locked are listed here because the dark values they used to inherit
+     measured 2.95:1 and 4.45:1 on bone. */
+  --signal: #b13d25;
+  --signal-press: #94331f;
+  --verified: #3b6e54;
+  --deadline: #825e13;
+  --locked: #6b6358;
+  --cat-networking: #2e5a78;
+  --cat-conference: #266058;
+  --cat-webinar: #8a5a1c;
+  --cat-other: #7a3a52;
 }
 
-@keyframes orb-drift-3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(25px, 50px) scale(1.1); }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --ink: #efebe3;
+    --ink-raised: #e6e1d7;
+    --ink-sunken: #f5f2ec;
+    --rule: #cdc5b6;
+    --rule-strong: #a89e8c;
+    --type-primary: #14110e;
+    --type-secondary: #5c5347;
+    --type-muted: #6b6358;
+    --signal: #b13d25;
+    --signal-press: #94331f;
+    --verified: #3b6e54;
+    --deadline: #825e13;
+    --locked: #6b6358;
+    --cat-networking: #2e5a78;
+    --cat-conference: #266058;
+    --cat-webinar: #8a5a1c;
+    --cat-other: #7a3a52;
+  }
 }
 
-@keyframes float-y {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@media (min-width: 768px) {
+  :root { --page-margin: 32px; --gutter: 20px; }
+}
+@media (min-width: 1024px) {
+  :root { --page-margin: 48px; --gutter: 24px; }
+}
+@media (min-width: 1440px) {
+  :root { --page-margin: 64px; }
 }
 
-@keyframes badge-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(0.85); }
-}
-
-@keyframes gradient-x {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
+/* ==========================================================================
+   BASE
+   ========================================================================== */
 @layer base {
+  *,
+  *::before,
+  *::after {
+    border-radius: 0;
+  }
+
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.07) transparent;
+    scrollbar-color: var(--rule) transparent;
   }
-  *::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.07);
-    border-radius: 3px;
-  }
-  *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.14);
-  }
+  *::-webkit-scrollbar { width: 5px; height: 5px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { background: var(--rule); }
+  *::-webkit-scrollbar-thumb:hover { background: var(--rule-strong); }
 
   ::selection {
-    background: rgba(124, 58, 237, 0.35);
-    color: #fff;
+    background: var(--signal);
+    color: #f0ebe1;
   }
 
+  /* Mandatory. Never removed, never styled away, on any element. */
   :focus-visible {
-    outline: 2px solid rgba(124, 58, 237, 0.7);
+    outline: 2px solid var(--signal);
     outline-offset: 2px;
-    border-radius: 6px;
   }
 
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 72px;
+    background-color: var(--ink);
   }
 
   body {
-    background-color: #050508;
-    color: #fafafa;
+    background-color: var(--ink);
+    color: var(--type-primary);
+    font-family: var(--font-public-sans), ui-sans-serif, system-ui, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.35;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
     text-rendering: optimizeLegibility;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-barlow-condensed), ui-sans-serif, system-ui, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    line-height: 0.96;
+  }
+
+  /* Every number in the product is tabular mono. */
+  [data-mono],
+  time,
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-    .orb-drift-1, .orb-drift-2, .orb-drift-3, .float-y, .animate-badge-pulse {
-      animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   UTILITIES
+   ========================================================================== */
+@layer utilities {
+  /* The brand face. No fallback list: the wordmark waits rather than
+     rendering in a substitute. See globals.css header and the Hatch component. */
+  .font-qepho {
+    font-family: 'Qepho';
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+  }
+
+  /* Reading measure. Never wider than 68 characters. */
+  .measure {
+    max-width: 68ch;
+  }
+  .measure-tight {
+    max-width: 62ch;
+  }
+
+  /* The column spine. Drawn at lg and up only: 4 hairlines on a phone is noise. */
+  .spine {
+    position: relative;
+  }
+  @media (min-width: 1024px) {
+    .spine::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: repeating-linear-gradient(
+        to right,
+        var(--rule) 0,
+        var(--rule) 1px,
+        transparent 1px,
+        transparent calc(100% / 12)
+      );
+      opacity: 0.06;
     }
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.02em;
-  }
-}
-
-@layer utilities {
-  .font-qepho {
-    font-family: 'Qepho', var(--font-jakarta), system-ui, sans-serif;
-  }
-
-  .orb-drift-1 {
-    animation: orb-drift-1 20s ease-in-out infinite;
-  }
-
-  .orb-drift-2 {
-    animation: orb-drift-2 26s ease-in-out infinite;
+  /* Tier-locked hatch. 45 degrees, 1px, no fill. */
+  /* Tier lock. A quiet 1px hatch at low opacity: it marks the row without
+     competing with the title. The full-strength screen made locked events
+     harder to read than the ones a visitor can actually open. */
+  .hatch-locked {
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--rule) 0,
+      var(--rule) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+    opacity: 0.45;
   }
 
-  .orb-drift-3 {
-    animation: orb-drift-3 18s ease-in-out infinite;
-  }
-
-  .float-y {
-    animation: float-y 5s ease-in-out infinite;
-  }
-
-  .animate-badge-pulse {
-    animation: badge-pulse 2.5s ease-in-out infinite;
-  }
-
-  .gradient-border-violet {
+  /* Print misregistration. The only permitted depth cue besides overlap. */
+  .offset-plate {
     position: relative;
-    background-clip: padding-box;
   }
-
-  .gradient-border-violet::before {
+  .offset-plate::after {
     content: '';
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(99, 102, 241, 0.4));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    inset: 0;
+    transform: translate(4px, 4px);
+    border: 1px solid var(--rule);
+    z-index: -1;
     pointer-events: none;
   }
 }
+
+/* react-hot-toast injects its own border-radius and box-shadow via goober,
+   on wrapper and icon elements this app never renders. Both are banned, so
+   they are overridden here rather than fought per-toast. */
+.hatch-toast,
+.hatch-toast * {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+/* The wrapper is a positioning box only. Appearance belongs to the plate
+   AppToaster renders inside it, so the library's background and border are
+   cleared rather than restyled. */
+.hatch-toast {
+  border: none !important;
+  background: transparent !important;
+  color: var(--type-primary) !important;
+  padding: 0 !important;
+}
+
+/* The toast container is fixed-position and sized by its content, so a long
+   message pushed past the viewport on a 360px screen. Constrain it, and put
+   toasts at the bottom on phones where the top-right corner is out of reach. */
+.hatch-toast {
+  /* A notification is a note, not a banner: cap it so it never spans a 1440px
+     screen, while still shrinking to fit a 360px one. */
+  width: 100% !important;
+  max-width: min(380px, calc(100vw - 32px)) !important;
+  word-break: break-word;
+}
+@media (max-width: 767px) {
+  .hatch-toast {
+    max-width: calc(100vw - 24px) !important;
+  }
+}
+
+/* Touch targets. Section 4: 44x44 minimum on touch devices, and the hit area
+   grows with padding rather than visual size, so nothing gets visually bigger.
+   An invisible centred overlay does that without touching layout.
+
+   Links sitting inside a sentence are exempt: WCAG 2.5.8 exempts inline links
+   in prose, and forcing them to 44px would wreck the line box they live in. */
+@media (pointer: coarse) {
+  a[href],
+  button,
+  [role='button'],
+  summary,
+  select,
+  input[type='checkbox'],
+  input[type='radio'] {
+    position: relative;
+  }
+
+  a[href]::after,
+  button::after,
+  [role='button']::after,
+  summary::after,
+  input[type='checkbox']::after,
+  input[type='radio']::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    min-width: 44px;
+    min-height: 44px;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+
+  p a[href]::after,
+  li a[href]::after,
+  dd a[href]::after,
+  dt a[href]::after,
+  address a[href]::after,
+  blockquote a[href]::after,
+  span a[href]::after {
+    content: none;
+  }
+}
+
+/* Behaviour 10. Hover, press and focus.
+   The only permitted pointer changes, and each has a press equivalent because
+   a phone has no hover at all. Nothing here reveals information: hover never
+   carries meaning that touch cannot reach. */
+
+/* A link gains a 1px underline drawn left to right over 140ms.
+   Drawn with a scaled pseudo-element rather than a two-stop background
+   gradient: there are no gradients in this system, and a transform is the
+   cheaper thing to animate. ::before, because ::after already carries the
+   touch-target overlay on coarse pointers. */
+a.rule-underline {
+  position: relative;
+}
+a.rule-underline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 140ms var(--ease-enter);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  a.rule-underline:hover::before {
+    transform: scaleX(1);
+  }
+}
+a.rule-underline:active::before {
+  transform: scaleX(1);
+}
+
+/* A row's left rule goes 1px to 2px and takes the accent. Press mirrors it. */
+.row-rule {
+  box-sizing: border-box;
+  border-left: 1px solid var(--rule);
+  transition: border-left-color var(--dur-micro) var(--ease-enter);
+}
+@media (hover: hover) and (pointer: fine) {
+  .row-rule:hover { border-left-width: 2px; border-left-color: var(--signal); }
+}
+.row-rule:active { border-left-width: 2px; border-left-color: var(--signal); }
+
+/* Reduced motion: every one of the above snaps rather than easing. */
+@media (prefers-reduced-motion: reduce) {
+  a.rule-underline,
+  .row-rule {
+    transition: none !important;
+  }
+}
+
+/* prefers-contrast. The third media query section 8 names, alongside
+   reduced-motion and color-scheme, and the only one that was missing.
+
+   At `more`, the hairlines and the secondary type step up: a 1px rule at
+   #322B24 is deliberately quiet, and quiet is exactly wrong for someone who
+   asked for more contrast. Hue is unchanged, so the design still reads as
+   itself. */
+@media (prefers-contrast: more) {
+  :root {
+    --rule: #5a4f44;
+    --rule-strong: #7d6f5f;
+    --type-secondary: #c9bfae;
+    --type-muted: #9b9080;
+  }
+  :root[data-theme='light'],
+  :root:not([data-theme='dark']) {
+    --rule: #8d8574;
+    --rule-strong: #6b6456;
+    --type-secondary: #3f382e;
+    --type-muted: #5c5447;
+  }
+  /* Focus is already 2px; at higher contrast it also gets a wider offset so it
+     never sits on top of a thickened rule. */
+  :focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+

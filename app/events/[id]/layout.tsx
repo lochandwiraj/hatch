@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     ? event.description.slice(0, 120).trimEnd() + '…'
     : event.description
 
-  const description = `${base} — ${event.category} by ${event.organizer}. ${event.mode} event on HATCH.`
+  const description = `${base}, ${event.category} by ${event.organizer}. ${event.mode} event on HATCH.`
     .slice(0, 160)
 
   const image = event.poster_image_url ?? `${SITE_URL}/HATCHsquare.png`
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     description,
     alternates: { canonical: `/events/${params.id}` },
     openGraph: {
-      title: `${event.title} — HATCH`,
+      title: `${event.title}, HATCH`,
       description: base,
       type: 'website',
       url: `${SITE_URL}/events/${params.id}`,
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     },
     twitter: {
       card: event.poster_image_url ? 'summary_large_image' : 'summary',
-      title: `${event.title} — HATCH`,
+      title: `${event.title}, HATCH`,
       description: base,
       images: [image],
     },

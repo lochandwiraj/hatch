@@ -1,55 +1,41 @@
 'use client'
 
-export default function FlowerLoader() {
+/**
+ * The full-page wait. Rebuilt self-contained for the same reason as the other
+ * two: its original class names were never defined.
+ *
+ * A radial set of 1px rules sweeping once, which matches the hairline language
+ * of the rest of the system rather than introducing a new shape vocabulary.
+ */
+export default function FlowerLoader({ size = 48 }: { size?: number }) {
+  const spokes = Array.from({ length: 12 })
   return (
-    <div className="loader">
-      <svg
-        id="pegtopone"
-        width="100"
-        height="100"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g>
-          <path
-            d="M50 20 C35 20, 20 35, 20 50 C20 65, 35 80, 50 80 C65 80, 80 65, 80 50 C80 35, 65 20, 50 20 Z"
-            fill="#5c3d99"
-          />
-          <circle cx="50" cy="50" r="8" fill="#ffffff" />
-        </g>
-      </svg>
-      
-      <svg
-        id="pegtoptwo"
-        width="100"
-        height="100"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g>
-          <path
-            d="M50 20 C35 20, 20 35, 20 50 C20 65, 35 80, 50 80 C65 80, 80 65, 80 50 C80 35, 65 20, 50 20 Z"
-            fill="#5c3d99"
-          />
-          <circle cx="50" cy="50" r="8" fill="#ffffff" />
-        </g>
-      </svg>
-      
-      <svg
-        id="pegtopthree"
-        width="100"
-        height="100"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g>
-          <path
-            d="M50 20 C35 20, 20 35, 20 50 C20 65, 35 80, 50 80 C65 80, 80 65, 80 50 C80 35, 65 20, 50 20 Z"
-            fill="#5c3d99"
-          />
-          <circle cx="50" cy="50" r="8" fill="#ffffff" />
-        </g>
-      </svg>
-    </div>
+    <span
+      role="status"
+      aria-label="Loading"
+      className="relative inline-block"
+      style={{ width: size, height: size }}
+    >
+      {spokes.map((_, i) => (
+        <span
+          key={i}
+          className="absolute left-1/2 top-1/2 bg-type-secondary motion-reduce:animate-none"
+          style={{
+            width: 1,
+            height: size / 2.5,
+            transform: `rotate(${i * 30}deg) translateY(-${size / 2.5}px)`,
+            transformOrigin: '50% 100%',
+            animation: `spoke-fade 1.2s linear ${i * 0.1}s infinite`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes spoke-fade {
+          0%   { opacity: 1 }
+          60%  { opacity: .12 }
+          100% { opacity: .12 }
+        }
+      `}</style>
+    </span>
   )
 }

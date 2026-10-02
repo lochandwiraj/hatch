@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
+import PricingLedger from './PricingLedger'
+import { Glyph } from '@/components/ui/Glyph'
 import Header from '@/components/layout/Header'
-import { CheckIcon } from '@heroicons/react/24/outline'
 import PricingCTA from './PricingCTA'
 
 export const metadata: Metadata = {
-  title: 'Pricing — Free, Explorer & Professional Plans',
-  description: 'Start free or get Explorer for ₹99/month — 7 curated hackathons & competitions weekly, priority registration, and advanced filters for Indian college students.',
+  title: 'Pricing, Free, Explorer & Professional Plans',
+  description: 'Start free with 5 events a month. Explorer raises it to 10 for ₹99, Professional unlocks every event for ₹149.',
   alternates: { canonical: '/pricing' },
 }
 
@@ -15,14 +16,14 @@ const plans = [
     name: 'Free',
     price: '₹0',
     description: 'Get started for free',
-    features: ['5 curated events', 'Basic profile', 'Event browsing', 'Community access'],
+    features: ['5 events per month', 'Free-tier events', '2 manually added events'],
   },
   {
     id: 'basic_99',
     name: 'Explorer',
     price: '₹99',
     description: 'For active participants',
-    features: ['7 curated events', 'Priority registration', 'Advanced filters', 'Event reminders', 'Profile showcase'],
+    features: ['10 events per month', 'Free and Explorer events', 'Unlimited manual events'],
     popular: true,
   },
   {
@@ -30,7 +31,7 @@ const plans = [
     name: 'Professional',
     price: '₹149',
     description: 'For serious builders',
-    features: ['All events', 'Early access', 'VIP events', 'Networking', 'Career guidance', 'Priority support'],
+    features: ['Highest monthly limit', 'Every event, all tiers', 'Unlimited manual events'],
   },
 ]
 
@@ -41,9 +42,9 @@ const pricingJsonLd = {
   applicationCategory: 'LifestyleApplication',
   operatingSystem: 'Web',
   offers: [
-    { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'INR', description: '5 curated events per week' },
-    { '@type': 'Offer', name: 'Explorer', price: '99', priceCurrency: 'INR', description: '7 curated events per week, priority registration, advanced filters' },
-    { '@type': 'Offer', name: 'Professional', price: '149', priceCurrency: 'INR', description: 'All events, early access, VIP events, career guidance' },
+    { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'INR', description: '5 events per month' },
+    { '@type': 'Offer', name: 'Explorer', price: '99', priceCurrency: 'INR', description: '10 events per month, Explorer-tier listings' },
+    { '@type': 'Offer', name: 'Professional', price: '149', priceCurrency: 'INR', description: 'Highest monthly limit, every event at any tier' },
   ],
 }
 
@@ -51,9 +52,9 @@ const pricingFaqJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
-    { '@type': 'Question', name: 'How does payment work?', acceptedAnswer: { '@type': 'Answer', text: 'We use UPI payments via Razorpay. Your subscription activates instantly upon successful payment.' } },
+    { '@type': 'Question', name: 'How does payment work?', acceptedAnswer: { '@type': 'Answer', text: 'Pay by UPI using the QR on the upgrade page, then upload the screenshot. A person checks it and activates your tier, usually within 48 hours.' } },
     { '@type': 'Question', name: 'Can I cancel anytime?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Contact us and we will cancel your subscription. No hidden fees.' } },
-    { '@type': 'Question', name: 'What are curated events?', acceptedAnswer: { '@type': 'Answer', text: 'We research 50+ sources to hand-pick only the best hackathons, competitions, and workshops for Indian college students.' } },
+    { '@type': 'Question', name: 'What are curated events?', acceptedAnswer: { '@type': 'Answer', text: 'Every event is found and reviewed by a person before it is published, so you only see hackathons, competitions and workshops worth your time.' } },
     { '@type': 'Question', name: 'How is the tier limit counted?', acceptedAnswer: { '@type': 'Answer', text: 'You can register for up to the limit number of events per subscription period (30 or 365 days).' } },
   ],
 }
@@ -64,60 +65,33 @@ export default function PricingPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }} />
       <Header />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="mx-auto w-full max-w-[1200px] px-4 py-12 lg:px-12">
 
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-semibold text-white mb-3">Pricing for Indian college students</h1>
-          <p className="text-zinc-400">Start free. Upgrade when you need more.</p>
+          <h1 className="text-display-m font-semibold text-type-primary mb-3">Pricing for Indian college students</h1>
+          <p className="text-type-secondary">Start free. Upgrade when you need more.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          {plans.map(plan => (
-            <div
-              key={plan.id}
-              className={`relative bg-[#111111] border rounded-xl p-6 flex flex-col ${
-                plan.popular ? 'border-violet-500/40 ring-1 ring-violet-500/10' : 'border-white/[0.07]'
-              }`}
-            >
-              {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-medium bg-violet-600 text-white px-3 py-0.5 rounded-full">
-                  Most popular
-                </span>
-              )}
-              <div className="mb-5">
-                <h2 className="text-white font-medium mb-1">{plan.name}</h2>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-3xl font-bold text-white">{plan.price}</span>
-                  {plan.id !== 'free' && <span className="text-xs text-zinc-500">/month</span>}
-                </div>
-                <p className="text-xs text-zinc-500">{plan.description}</p>
-              </div>
-              <ul className="space-y-2.5 mb-6 flex-1">
-                {plan.features.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
-                    <CheckIcon className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <PricingCTA planId={plan.id} popular={plan.popular} />
-            </div>
-          ))}
+        {/* Three pricing cards side by side is the banned shape, and the
+            wrong one: these tiers differ by a few values, so they belong in
+            one comparison table. Phone gets a snapped rail of the same rows. */}
+        <div className="mb-12">
+          <PricingLedger />
         </div>
 
         {/* FAQ */}
-        <div className="bg-[#111111] border border-white/[0.07] rounded-xl p-6">
-          <h2 className="text-sm font-medium text-white mb-4">Frequently asked questions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-ink-raised border border-rule-strong p-6">
+          <h2 className="text-ui font-medium text-type-primary mb-4">Frequently asked questions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
-              { q: 'How does payment work?', a: 'We use UPI payments via Razorpay. Your subscription activates instantly upon successful payment.' },
+              { q: 'How does payment work?', a: 'Pay by UPI using the QR on the upgrade page, then upload the screenshot. A person checks it and activates your tier, usually within 48 hours.' },
               { q: 'Can I cancel anytime?', a: 'Yes. Contact us and we will cancel your subscription. No hidden fees.' },
-              { q: 'What are curated events?', a: 'We research 50+ sources to hand-pick only the best hackathons, competitions, and workshops.' },
+              { q: 'What are curated events?', a: 'Every event is found and reviewed by a person before it is published. No scraping, no sponsored spam.' },
               { q: 'How is the tier limit counted?', a: 'You can register for up to the limit number of events per subscription period.' },
             ].map(item => (
               <div key={item.q}>
-                <p className="text-sm text-white font-medium mb-1">{item.q}</p>
-                <p className="text-xs text-zinc-500 leading-relaxed">{item.a}</p>
+                <p className="text-ui text-type-primary font-medium mb-1">{item.q}</p>
+                <p className="text-ui-s text-type-muted leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>

@@ -3,25 +3,50 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import type { Tables } from '@/lib/supabase'
 import { getUserProfile } from '@/lib/auth'
 
-interface UserProfile {
-  id: string
-  username: string
-  full_name: string
-  profile_picture_url: string | null
-  bio: string | null
-  college: string | null
-  graduation_year: number | null
-  skills: string[] | null
-  social_links: any | null
-  subscription_tier: 'free' | 'basic_99' | 'premium_149'
-  subscription_expires_at: string | null
-  profile_views_count: number
-  is_profile_public: boolean
-  custom_url: string | null
-  created_at: string
-  updated_at: string
+// Generated from the live schema. Do not hand-maintain a second copy of this:
+// the previous local interface was missing events_attended_this_month,
+// last_attendance_reset, total_events_attended and email, and it claimed
+// subscription_tier was an enum when the column is nullable text.
+type UserProfile = Tables<'user_profiles'>
+
+/**
+ * Fallback profile, used when the row cannot be read or created.
+ *
+ * This was four identical object literals. They drifted from the schema and
+ * all four broke the moment the real types landed, so there is now one.
+ * Every field the generated type requires is present and honest: the counters
+ * start at zero rather than pretending we know them.
+ */
+function fallbackProfile(user: User): UserProfile {
+  const now = new Date().toISOString()
+  return {
+    id: user.id,
+    email: user.email ?? null,
+    username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
+    full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+    profile_picture_url: null,
+    bio: null,
+    college: user.user_metadata?.college || null,
+    graduation_year: user.user_metadata?.graduation_year ?? null,
+    skills: null,
+    social_links: null,
+    subscription_tier: 'free',
+    subscription_expires_at: null,
+    profile_views_count: 0,
+    is_profile_public: true,
+    custom_url: null,
+    tier_upgraded_by: null,
+    tier_upgraded_at: null,
+    auto_downgrade_enabled: true,
+    events_attended_this_month: 0,
+    last_attendance_reset: null,
+    total_events_attended: 0,
+    created_at: now,
+    updated_at: now,
+  }
 }
 
 interface AuthContextType {
@@ -91,24 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (insertError) {
                 console.error('Direct profile creation failed:', insertError)
                 // Set a minimal profile to prevent blank page
-                setProfile({
-                  id: user.id,
-                  username: user.email?.split('@')[0] || 'user',
-                  full_name: user.email?.split('@')[0] || 'User',
-                  profile_picture_url: null,
-                  bio: null,
-                  college: '',
-                  graduation_year: new Date().getFullYear(),
-                  skills: null,
-                  social_links: null,
-                  subscription_tier: 'free',
-                  subscription_expires_at: null,
-                  profile_views_count: 0,
-                  is_profile_public: true,
-                  custom_url: null,
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString()
-                })
+                setProfile(fallbackProfile(user))
                 return
               } else {
                 console.log('Profile created successfully via direct insert')
@@ -124,68 +132,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } catch (retryError) {
               console.error('Failed to fetch profile after creation:', retryError)
               // Set minimal profile as fallback
-              setProfile({
-                id: user.id,
-                username: user.email?.split('@')[0] || 'user',
-                full_name: user.email?.split('@')[0] || 'User',
-                profile_picture_url: null,
-                bio: null,
-                college: '',
-                graduation_year: new Date().getFullYear(),
-                skills: null,
-                social_links: null,
-                subscription_tier: 'free',
-                subscription_expires_at: null,
-                profile_views_count: 0,
-                is_profile_public: true,
-                custom_url: null,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              })
+              setProfile(fallbackProfile(user))
             }
           } catch (createError) {
             console.error('Failed to create profile:', createError)
             // Set minimal profile as final fallback
-            setProfile({
-              id: user.id,
-              username: user.email?.split('@')[0] || 'user',
-              full_name: user.email?.split('@')[0] || 'User',
-              profile_picture_url: null,
-              bio: null,
-              college: '',
-              graduation_year: new Date().getFullYear(),
-              skills: null,
-              social_links: null,
-              subscription_tier: 'free',
-              subscription_expires_at: null,
-              profile_views_count: 0,
-              is_profile_public: true,
-              custom_url: null,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
+            setProfile(fallbackProfile(user))
           }
         } else {
           // Other error, set minimal profile to prevent blank page
           console.error('Profile fetch error (not missing profile):', error)
-          setProfile({
-            id: user.id,
-            username: user.email?.split('@')[0] || 'user',
-            full_name: user.email?.split('@')[0] || 'User',
-            profile_picture_url: null,
-            bio: null,
-            college: '',
-            graduation_year: new Date().getFullYear(),
-            skills: null,
-            social_links: null,
-            subscription_tier: 'free',
-            subscription_expires_at: null,
-            profile_views_count: 0,
-            is_profile_public: true,
-            custom_url: null,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
+          setProfile(fallbackProfile(user))
         }
       }
     } else {

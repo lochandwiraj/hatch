@@ -206,6 +206,7 @@ export default function AttendanceConfirmationProvider({ children }: { children:
           isOpen={showAttendanceModal}
           onClose={handleAttendanceModalClose}
           event={{
+            ...(eventNeedingConfirmation as any),
             id: eventNeedingConfirmation.event_id,
             title: eventNeedingConfirmation.title,
             description: eventNeedingConfirmation.description,
@@ -225,6 +226,7 @@ export default function AttendanceConfirmationProvider({ children }: { children:
           isOpen={showRegistrationModal}
           onClose={handleRegistrationModalClose}
           event={{
+            ...(eventNeedingConfirmation as any),
             id: registrationData.eventId,
             title: registrationData.eventTitle,
             description: '',

@@ -1,85 +1,140 @@
+import LegalPage from '@/components/layout/LegalPage'
 import Header from '@/components/layout/Header'
-
+import { Hatch } from '@/components/brand/Hatch'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Terms & Conditions — HATCH', alternates: { canonical: '/terms' } }
+export const metadata: Metadata = { title: 'Terms & Conditions, HATCH', alternates: { canonical: '/terms' } }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="mb-8">
-      <h2 className="text-base font-semibold text-white mb-3">{title}</h2>
-      <div className="text-sm text-zinc-400 leading-relaxed space-y-2">{children}</div>
-    </section>
-  )
-}
+const SECTIONS = [
+  {
+    id: 'acceptance-of-terms',
+    heading: 'Acceptance of Terms',
+    body: (
+      <>
+
+            <p>By accessing or using <Hatch /> ("the Platform"), you agree to be bound by these Terms & Conditions. If you do not agree, do not use the Platform. These terms apply to all users including free and paid subscribers.</p>
+      </>
+    ),
+  },
+  {
+    id: 'eligibility',
+    heading: 'Eligibility',
+    body: (
+      <>
+
+            <p>You must be at least 18 years old to use <Hatch />. By registering, you confirm that the information you provide is accurate and that you are a student or individual interested in student events.</p>
+      </>
+    ),
+  },
+  {
+    id: 'accounts',
+    heading: 'Accounts',
+    body: (
+      <>
+
+            <p>You may only create one account per person. You are responsible for maintaining the confidentiality of your login credentials. Sharing accounts is prohibited and may result in suspension. You must notify us immediately if you suspect unauthorised access.</p>
+      </>
+    ),
+  },
+  {
+    id: 'subscription-plans',
+    heading: 'Subscription Plans',
+    body: (
+      <>
+
+            <p><Hatch /> offers three tiers: Free, Explorer (₹99/month or ₹999/year), and Professional (₹149/month or ₹1499/year). Subscriptions activate immediately upon successful payment and expire after the duration shown at the time of purchase.</p>
+            <p>After expiry, your account automatically downgrades to the Free tier. Paid features are no longer accessible until you renew. Annual plans last 365 days from activation.</p>
+      </>
+    ),
+  },
+  {
+    id: 'payments',
+    heading: 'Payments',
+    body: (
+      <>
+
+            <p>All payments are made in INR by UPI transfer directly to us. There is no payment gateway and no card processing. <Hatch /> does not store your payment credentials. All prices are inclusive of applicable taxes where required.</p>
+      </>
+    ),
+  },
+  {
+    id: 'event-access',
+    heading: 'Event Access',
+    body: (
+      <>
+
+            <p>Access to specific events is determined by your active subscription tier at the time of registration. If your subscription expires before an event, you may lose access. <Hatch /> curates events but is not the organiser and is not responsible for event cancellations, changes, or outcomes.</p>
+      </>
+    ),
+  },
+  {
+    id: 'prohibited-conduct',
+    heading: 'Prohibited Conduct',
+    body: (
+      <>
+
+            <p>You agree not to: create fake accounts, scrape or copy platform content, share login credentials, attempt to manipulate subscription status, or use the platform for any unlawful purpose. Violations may result in immediate account termination without refund.</p>
+      </>
+    ),
+  },
+  {
+    id: 'intellectual-property',
+    heading: 'Intellectual Property',
+    body: (
+      <>
+
+            <p>All platform content including design, copy, and curation is owned by <Hatch />. You retain ownership of your profile content. You grant <Hatch /> a non-exclusive licence to display your profile information on the platform.</p>
+      </>
+    ),
+  },
+  {
+    id: 'limitation-of-liability',
+    heading: 'Limitation of Liability',
+    body: (
+      <>
+
+            <p><Hatch /> is a discovery and curation platform. We are not responsible for the quality, accuracy, cancellation, or outcome of third-party events listed on the platform. Our total liability to you shall not exceed the amount you paid in the last 30 days.</p>
+      </>
+    ),
+  },
+  {
+    id: 'changes-to-terms',
+    heading: 'Changes to Terms',
+    body: (
+      <>
+
+            <p>We may update these terms at any time. We will notify registered users by email at least 7 days before material changes take effect. Continued use after that period constitutes acceptance.</p>
+      </>
+    ),
+  },
+  {
+    id: 'governing-law',
+    heading: 'Governing Law',
+    body: (
+      <>
+
+            <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Bengaluru, Karnataka.</p>
+      </>
+    ),
+  },
+  {
+    id: 'contact',
+    heading: 'Contact',
+    body: (
+      <>
+
+            <p>Questions about these Terms? Email <a href="mailto:hatch@hatchevent.in" className="text-signal hover:text-signal">hatch@hatchevent.in</a> or call <a href="tel:+917892676997" className="text-signal hover:text-signal">+91 78926 76997</a>.</p>
+            <p className="mt-1"><strong className="text-type-primary">Address:</strong> #165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
+      </>
+    ),
+  },
+]
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <Header />
-      <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="mb-10">
-          <p className="text-xs text-violet-400 uppercase tracking-widest font-medium mb-3">Legal</p>
-          <h1 className="text-3xl font-bold text-white mb-3">Terms & Conditions</h1>
-          <p className="text-sm text-zinc-500">Last updated: April 2025</p>
-        </div>
-
-        <div
-          className="rounded-2xl p-8"
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <Section title="1. Acceptance of Terms">
-            <p>By accessing or using <span className="font-qepho">HATCH</span> ("the Platform"), you agree to be bound by these Terms & Conditions. If you do not agree, do not use the Platform. These terms apply to all users including free and paid subscribers.</p>
-          </Section>
-
-          <Section title="2. Eligibility">
-            <p>You must be at least 18 years old to use <span className="font-qepho">HATCH</span>. By registering, you confirm that the information you provide is accurate and that you are a student or individual interested in student events.</p>
-          </Section>
-
-          <Section title="3. Accounts">
-            <p>You may only create one account per person. You are responsible for maintaining the confidentiality of your login credentials. Sharing accounts is prohibited and may result in suspension. You must notify us immediately if you suspect unauthorised access.</p>
-          </Section>
-
-          <Section title="4. Subscription Plans">
-            <p><span className="font-qepho">HATCH</span> offers three tiers: Free, Explorer (₹99/month or ₹999/year), and Professional (₹149/month or ₹1499/year). Subscriptions activate immediately upon successful payment and expire after the duration shown at the time of purchase.</p>
-            <p>After expiry, your account automatically downgrades to the Free tier. Paid features are no longer accessible until you renew. Annual plans last 365 days from activation.</p>
-          </Section>
-
-          <Section title="5. Payments">
-            <p>All payments are processed in INR via Razorpay. By making a payment, you agree to Razorpay's terms of service. <span className="font-qepho">HATCH</span> does not store your payment credentials. All prices are inclusive of applicable taxes where required.</p>
-          </Section>
-
-          <Section title="6. Event Access">
-            <p>Access to specific events is determined by your active subscription tier at the time of registration. If your subscription expires before an event, you may lose access. <span className="font-qepho">HATCH</span> curates events but is not the organiser and is not responsible for event cancellations, changes, or outcomes.</p>
-          </Section>
-
-          <Section title="7. Prohibited Conduct">
-            <p>You agree not to: create fake accounts, scrape or copy platform content, share login credentials, attempt to manipulate subscription status, or use the platform for any unlawful purpose. Violations may result in immediate account termination without refund.</p>
-          </Section>
-
-          <Section title="8. Intellectual Property">
-            <p>All platform content including design, copy, and curation is owned by <span className="font-qepho">HATCH</span>. You retain ownership of your profile content. You grant <span className="font-qepho">HATCH</span> a non-exclusive licence to display your profile information on the platform.</p>
-          </Section>
-
-          <Section title="9. Limitation of Liability">
-            <p><span className="font-qepho">HATCH</span> is a discovery and curation platform. We are not responsible for the quality, accuracy, cancellation, or outcome of third-party events listed on the platform. Our total liability to you shall not exceed the amount you paid in the last 30 days.</p>
-          </Section>
-
-          <Section title="10. Changes to Terms">
-            <p>We may update these terms at any time. We will notify registered users by email at least 7 days before material changes take effect. Continued use after that period constitutes acceptance.</p>
-          </Section>
-
-          <Section title="11. Governing Law">
-            <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Bengaluru, Karnataka.</p>
-          </Section>
-
-          <Section title="12. Contact">
-            <p>Questions about these Terms? Email <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> or call <a href="tel:+917892676997" className="text-violet-400 hover:text-violet-300 transition-colors">+91 78926 76997</a>.</p>
-            <p className="mt-1"><strong className="text-zinc-300">Address:</strong> #165 Beladingalu, 5th Main 5th Cross, Madhwa Sangha Cross, Chamrajapete, Bengaluru South, Bengaluru, Karnataka – 560018</p>
-          </Section>
-        </div>
-      </main>
-
-    </div>
+      <LegalPage title='Terms & Conditions' updated='April 2025' sections={SECTIONS} />
+    </>
   )
 }

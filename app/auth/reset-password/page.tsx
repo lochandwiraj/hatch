@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Hatch } from '@/components/brand/Hatch'
+import { Glyph } from '@/components/ui/Glyph'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
-import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
-
 const requirements = [
   { label: 'At least 8 characters', test: (p: string) => p.length >= 8 },
   { label: 'One uppercase letter', test: (p: string) => /[A-Z]/.test(p) },
@@ -26,9 +26,9 @@ const validatePassword = (password: string) => {
 
 const getStrength = (p: string) => {
   const score = requirements.filter(r => r.test(p)).length
-  if (score <= 2) return { label: 'Weak', color: 'bg-red-500', width: 'w-1/3' }
-  if (score <= 3) return { label: 'Fair', color: 'bg-yellow-500', width: 'w-2/3' }
-  return { label: 'Strong', color: 'bg-emerald-500', width: 'w-full' }
+  if (score <= 2) return { label: 'Weak', color: 'bg-signal', width: 'w-1/3' }
+  if (score <= 3) return { label: 'Fair', color: 'bg-deadline', width: 'w-2/3' }
+  return { label: 'Strong', color: 'bg-verified', width: 'w-full' }
 }
 
 export default function ResetPasswordPage() {
@@ -79,16 +79,16 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="font-qepho text-2xl text-white hover:opacity-80 transition-opacity">HATCH</Link>
-          <p className="text-sm text-zinc-500 mt-2">Create a new password</p>
+          <Link href="/" className="text-title text-type-primary hover:opacity-80 transition-opacity"><Hatch /></Link>
+          <p className="text-ui text-type-muted mt-2">Create a new password</p>
         </div>
-        <div className="bg-[#111111] border border-white/[0.07] rounded-2xl p-6">
-          <h1 className="text-base font-medium text-white mb-1">Reset password</h1>
-          <p className="text-sm text-zinc-500 mb-5">Choose a strong password for your account.</p>
+        <div className="bg-ink-raised border border-rule-strong p-6">
+          <h1 className="text-body font-medium text-type-primary mb-1">Reset password</h1>
+          <p className="text-ui text-type-muted mb-6">Choose a strong password for your account.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs text-zinc-400 mb-1.5">New password</label>
+              <label className="block text-ui-s text-type-secondary mb-2">New password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -96,32 +96,32 @@ export default function ResetPasswordPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="New password"
-                  className="w-full bg-[#080808] border border-white/[0.07] rounded-lg px-3 py-2.5 pr-10 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-colors"
+                  className="w-full bg-ink-raised border border-rule-strong px-3 py-3 pr-12 text-ui text-type-primary placeholder-type-muted focus:outline-none focus:border-signal focus:border focus:border-signal"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-type-muted hover:text-type-primary"
                 >
-                  {showPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                  {showPassword ? <Glyph name="eye-off" className="w-4 h-4" /> : <Glyph name="eye" className="w-4 h-4" />}
                 </button>
               </div>
 
               {strength && (
                 <div className="mt-2">
                   <div className="flex justify-between mb-1">
-                    <span className="text-xs text-zinc-600">Strength</span>
-                    <span className="text-xs text-zinc-500">{strength.label}</span>
+                    <span className="text-ui-s text-type-muted">Strength</span>
+                    <span className="text-ui-s text-type-muted">{strength.label}</span>
                   </div>
-                  <div className="h-1 bg-white/[0.05] rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${strength.color} ${strength.width}`} />
+                  <div className="h-1 bg-ink-raised overflow-hidden">
+                    <div className={`h-full  ${strength.color} ${strength.width}`} />
                   </div>
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-xs text-zinc-400 mb-1.5">Confirm password</label>
+              <label className="block text-ui-s text-type-secondary mb-2">Confirm password</label>
               <div className="relative">
                 <input
                   type={showConfirm ? 'text' : 'password'}
@@ -129,28 +129,28 @@ export default function ResetPasswordPage() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder="Confirm password"
-                  className="w-full bg-[#080808] border border-white/[0.07] rounded-lg px-3 py-2.5 pr-10 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-colors"
+                  className="w-full bg-ink-raised border border-rule-strong px-3 py-3 pr-12 text-ui text-type-primary placeholder-type-muted focus:outline-none focus:border-signal focus:border focus:border-signal"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-type-muted hover:text-type-primary"
                 >
-                  {showConfirm ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                  {showConfirm ? <Glyph name="eye-off" className="w-4 h-4" /> : <Glyph name="eye" className="w-4 h-4" />}
                 </button>
               </div>
               {confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-red-400 mt-1">Passwords do not match</p>
+                <p className="text-ui-s text-signal mt-1">Passwords do not match</p>
               )}
             </div>
 
             {password && (
-              <div className="bg-[#161616] border border-white/[0.05] rounded-lg p-3">
-                <p className="text-xs text-zinc-500 mb-2">Requirements</p>
+              <div className="bg-ink-raised border border-rule-strong p-3">
+                <p className="text-ui-s text-type-muted mb-2">Requirements</p>
                 <ul className="space-y-1">
                   {requirements.map(req => (
-                    <li key={req.label} className={`flex items-center gap-1.5 text-xs transition-colors ${req.test(password) ? 'text-emerald-400' : 'text-zinc-600'}`}>
-                      <span>{req.test(password) ? '✓' : '·'}</span>
+                    <li key={req.label} className={`flex items-center gap-2 text-ui-s  ${req.test(password) ? 'text-verified' : 'text-type-muted'}`}>
+                      <span>{req.test(password) ? '■' : '□'}</span>
                       {req.label}
                     </li>
                   ))}
@@ -161,15 +161,15 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={!canSubmit}
-              className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 rounded-lg transition-colors"
+              className="w-full bg-signal hover:bg-signal disabled:opacity-50 disabled:cursor-not-allowed text-ink text-ui font-medium py-3"
             >
               {loading ? 'Updating...' : 'Update password'}
             </button>
           </form>
 
           <div className="mt-4 text-center">
-            <Link href="/auth" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors">
-              <ArrowLeftIcon className="w-3.5 h-3.5" />
+            <Link href="/auth" className="inline-flex items-center gap-2 text-ui text-type-secondary hover:text-type-primary">
+              <Glyph name="arrow-left" className="w-4 h-4" />
               Back to sign in
             </Link>
           </div>

@@ -1,29 +1,61 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
+import { Barlow_Condensed, Public_Sans, Source_Serif_4, JetBrains_Mono } from 'next/font/google'
+import AppToaster from '@/components/ui/AppToaster'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import AttendanceConfirmationProvider from '@/components/events/AttendanceConfirmationProvider'
 import CompleteProfileModal from '@/components/auth/CompleteProfileModal'
 import Footer from '@/components/layout/Footer'
+import OfflineBanner from '@/components/ui/OfflineBanner'
 import Script from 'next/script'
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+// Qepho is NOT loaded here. It is the brand face, self-hosted in globals.css,
+// and applied only through the Hatch component. See components/brand/Hatch.tsx.
+const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['700', '800'],
   display: 'swap',
-  variable: '--font-jakarta',
+  variable: '--font-barlow-condensed',
 })
+
+const publicSans = Public_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-public-sans',
+})
+
+const sourceSerif = Source_Serif_4({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-source-serif',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
+})
+
+const fontVars = [
+  barlowCondensed.variable,
+  publicSans.variable,
+  sourceSerif.variable,
+  jetbrainsMono.variable,
+].join(' ')
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hatchevent.in'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'HATCH — Stop Searching. Start Discovering.',
-    template: '%s — HATCH',
+    default: 'HATCH, Stop Searching. Start Discovering.',
+    template: '%s, HATCH',
   },
-  description: 'Discover hackathons, case competitions & workshops for Indian college students. Curated from 50+ sources weekly. 200+ events. Free to start.',
+  description: 'Discover hackathons, case competitions and workshops for Indian college students. Every event is reviewed by a person before it goes live. Free to start.',
   icons: {
     icon: '/HATCHsquare.png',
     apple: '/HATCHsquare.png',
@@ -31,15 +63,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'HATCH',
-    title: 'HATCH — Stop Searching. Start Discovering.',
-    description: 'Discover hackathons, case competitions & workshops for Indian college students. Curated from 50+ sources weekly.',
+    title: 'HATCH, Stop Searching. Start Discovering.',
+    description: 'Discover hackathons, case competitions and workshops for Indian college students. Every event is reviewed by a person before it goes live.',
     url: SITE_URL,
-    images: [{ url: '/HATCHsquare.png', width: 1024, height: 1024, alt: 'HATCH — Student Event Discovery' }],
+    images: [{ url: '/HATCHsquare.png', width: 1024, height: 1024, alt: 'HATCH, Student Event Discovery' }],
   },
   twitter: {
     card: 'summary',
-    title: 'HATCH — Stop Searching. Start Discovering.',
-    description: 'Discover hackathons, case competitions & workshops for Indian college students. Curated from 50+ sources weekly.',
+    title: 'HATCH, Stop Searching. Start Discovering.',
+    description: 'Discover hackathons, case competitions and workshops for Indian college students. Every event is reviewed by a person before it goes live.',
     images: ['/HATCHsquare.png'],
   },
 }
@@ -70,11 +102,11 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
+    <html lang="en" className={fontVars}>
       <head>
-        <link rel="preload" href="/fonts/qephomodern-regular.otf" as="font" type="font/otf" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/qephomodern-regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
-      <body className={plusJakartaSans.className}>
+      <body>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-R99ZV6SD91" strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">{`
           window.dataLayer = window.dataLayer || [];
@@ -84,28 +116,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}</Script>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+        <OfflineBanner />
         <AuthProvider>
           <CompleteProfileModal />
           <AttendanceConfirmationProvider>
             {children}
             <Footer />
           </AttendanceConfirmationProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: 'rgba(13, 13, 20, 0.95)',
-                color: '#fafafa',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '0.75rem',
-                fontSize: '0.875rem',
-                backdropFilter: 'blur(12px)',
-                fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
-              },
-              success: { iconTheme: { primary: '#8b5cf6', secondary: '#fafafa' } },
-            }}
-          />
+          <AppToaster />
         </AuthProvider>
       </body>
     </html>

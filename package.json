@@ -6,36 +6,36 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:wordmark": "node scripts/check-wordmark.mjs",
+    "check:design": "node scripts/check-design-system.mjs",
+    "check": "npm run check:wordmark && npm run check:design && npm run check:contrast && npx tsc --noEmit",
+    "check:contrast": "node scripts/check-contrast.mjs"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@headlessui/react": "^1.7.17",
-    "@heroicons/react": "^2.0.18",
     "@napi-rs/canvas": "^0.1.99",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/supabase-js": "^2.38.4",
-    "@types/three": "^0.182.0",
     "autoprefixer": "^10.0.1",
     "canvas": "^3.2.3",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
     "dotenv": "^17.2.3",
+    "gsap": "^3.15.0",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
-    "motion": "^12.38.0",
     "next": "^14.2.35",
     "node-fetch": "^3.3.2",
     "postcss": "^8",
-    "postprocessing": "^6.38.2",
-    "razorpay": "^2.9.6",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^3.3.0",
-    "three": "^0.182.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -46,6 +46,7 @@
     "@types/uuid": "^9.0.7",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "playwright": "^1.63.0",
     "typescript": "^5"
   }
 }

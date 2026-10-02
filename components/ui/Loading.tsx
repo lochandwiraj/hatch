@@ -1,9 +1,20 @@
-import RollerLoader from './RollerLoader'
+import FlowerLoader from './FlowerLoader'
 
-export default function Loading() {
+/**
+ * Full-screen wait, used by ProtectedRoute while auth resolves.
+ * Behaviour 9: states what is happening, never a skeleton.
+ */
+export default function Loading({ label = 'Checking your session' }: { label?: string }) {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#000000' }}>
-      <RollerLoader />
+    <div
+      className="flex min-h-screen flex-col items-center justify-center gap-4 bg-ink"
+      role="status"
+      aria-live="polite"
+    >
+      <FlowerLoader />
+      <p data-mono className="text-mono text-type-secondary">
+        {label}
+      </p>
     </div>
   )
 }

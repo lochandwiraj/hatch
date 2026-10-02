@@ -8,33 +8,33 @@ declare module 'jspdf' {
 }
 
 interface AttendedEvent {
-  event_title: string
-  event_date: string
+  event_title: string | null
+  event_date: string | null
   event_time: string | null
-  organizer: string
-  category: string
-  mode: string
-  attended_at: string
-  required_tier?: string
+  organizer: string | null
+  category: string | null
+  mode: string | null
+  attended_at: string | null
+  required_tier?: string | null
 }
 
 interface UserProfile {
-  full_name: string
-  username: string
-  email: string
-  college: string
-  graduation_year: string
-  subscription_tier: string
-  created_at: string
+  full_name: string | null
+  username: string | null
+  email: string | null
+  college: string | null
+  graduation_year: string | null
+  subscription_tier: string | null
+  created_at: string | null
 }
 
-const tierName = (tier: string) => {
+const tierName = (tier: string | null) => {
   if (tier === 'basic_99') return 'Explorer'
   if (tier === 'premium_149') return 'Professional'
   return 'Free'
 }
 
-const filterByTier = (events: AttendedEvent[], tier: string) =>
+const filterByTier = (events: AttendedEvent[], tier: string | null) =>
   events.filter(e => {
     const t = e.required_tier || 'free'
     if (tier === 'premium_149') return true
@@ -42,7 +42,7 @@ const filterByTier = (events: AttendedEvent[], tier: string) =>
     return t === 'free'
   })
 
-// ── Palette (all grayscale — professional) ──
+// ── Palette (all grayscale - professional) ──
 const BLACK  = [15, 15, 15]   as [number,number,number]
 const DARK   = [55, 55, 55]   as [number,number,number]
 const MID    = [110, 110, 110] as [number,number,number]
@@ -71,7 +71,7 @@ export const generateAttendanceReport = async (
       const b64 = btoa(binary)
       doc.addFileToVFS('Qepho.ttf', b64)
       doc.addFont('Qepho.ttf', 'Qepho', 'normal')
-      // Quick sanity check — jsPDF will throw if the font is unusable
+      // Quick sanity check - jsPDF will throw if the font is unusable
       doc.setFont('Qepho', 'normal')
       qephoLoaded = true
     }
@@ -79,13 +79,20 @@ export const generateAttendanceReport = async (
     qephoLoaded = false
   }
 
-  const setHatchFont = (size: number) => {
+  /**
+   * The wordmark in the PDF.
+   *
+   * Qepho is the brand face and nothing else may render the word HATCH, so
+   * this never falls back to Helvetica the way it used to. If the font did not
+   * embed, the wordmark is simply omitted and the rest of the report prints:
+   * an absent wordmark is correct, a substituted one is not.
+   */
+  const hatchMark = (size: number, x: number, yy: number, color: readonly [number, number, number]) => {
+    if (!qephoLoaded) return
     doc.setFontSize(size)
-    if (qephoLoaded) {
-      doc.setFont('Qepho', 'normal')
-    } else {
-      doc.setFont('helvetica', 'bold')
-    }
+    doc.setFont('Qepho', 'normal')
+    doc.setTextColor(...(color as [number, number, number]))
+    doc.text('HATCH', x, yy)
   }
   const W = 210
   const L = 20  // left margin
@@ -115,9 +122,7 @@ export const generateAttendanceReport = async (
   // HEADER
   // ══════════════════════════════════════════
   y = 22
-  setHatchFont(26)
-  doc.setTextColor(...BLACK)
-  doc.text('HATCH', L, y)
+  hatchMark(26, L, y, BLACK)
 
   txt(
     new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
@@ -135,7 +140,7 @@ export const generateAttendanceReport = async (
   // ══════════════════════════════════════════
   y += 12
 
-  // Left column — profile details
+  // Left column - profile details
   const col2 = 120 // x start of right column
 
   txt('Profile', L, y, 7.5, 'bold', MID)
@@ -144,13 +149,15 @@ export const generateAttendanceReport = async (
   y += 6
 
   const profileRows: [string, string][] = [
-    ['Name',            profile.full_name || '—'],
-    ['Username',        `@${profile.username}`],
-    ['Email',           profile.email],
-    ['College',         profile.college || '—'],
-    ['Graduation',      profile.graduation_year || '—'],
+    ['Name',            profile.full_name || 'Not set'],
+    ['Username',        profile.username ? `@${profile.username}` : 'Not set'],
+    ['Email',           profile.email ?? 'Not set'],
+    ['College',         profile.college || 'Not set'],
+    ['Graduation',      profile.graduation_year || 'Not set'],
     ['Plan',            tierName(profile.subscription_tier)],
-    ['Member since',    new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })],
+    ['Member since',    profile.created_at
+      ? new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+      : 'Not set'],
   ]
 
   const statRows: [string, string][] = [
@@ -166,7 +173,7 @@ export const generateAttendanceReport = async (
     y += rowH
   })
 
-  // Right column — stat numbers (bigger, with label below)
+  // Right column - stat numbers (bigger, with label below)
   let sy = y - (profileRows.length * rowH) // reset to same start
   statRows.forEach(([label, value]) => {
     txt(value, col2 + 25, sy + 5, 20, 'bold', BLACK, 'center')
@@ -196,11 +203,13 @@ export const generateAttendanceReport = async (
 
     const tableData = events.map((e, i) => [
       (i + 1).toString(),
-      e.event_title,
-      new Date(e.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-      e.organizer,
-      e.category,
-      e.mode,
+      e.event_title ?? '',
+      e.event_date
+        ? new Date(e.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '',
+      e.organizer ?? '',
+      e.category ?? '',
+      e.mode ?? '',
     ])
 
     doc.autoTable({
@@ -254,16 +263,14 @@ export const generateAttendanceReport = async (
   }
 
   // ══════════════════════════════════════════
-  // FOOTER — every page
+  // FOOTER - every page
   // ══════════════════════════════════════════
   const pages = doc.getNumberOfPages()
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i)
     rule(284, 0.3, RULE)
-    setHatchFont(7.5)
-    doc.setTextColor(...MID)
-    doc.text('HATCH', L, 289)
-    txt('hatch.in', L + 14, 289, 7.5, 'normal', LIGHT)
+    hatchMark(7.5, L, 289, MID)
+    txt('hatchevent.in', L + 14, 289, 7.5, 'normal', LIGHT)
     txt(`Page ${i} of ${pages}`, R, 289, 7.5, 'normal', LIGHT, 'right')
   }
 

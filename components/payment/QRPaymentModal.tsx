@@ -1,17 +1,29 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { Overlay } from '@/components/ui/Overlay'
+import { Glyph } from '@/components/ui/Glyph'
 import { useAuth } from '@/components/auth/AuthProvider'
-import {
-  XMarkIcon,
-  PhotoIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  ExclamationTriangleIcon,
-  ArrowLeftIcon,
-} from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
+
+/**
+ * Paying for a plan: pay, confirm, done.
+ *
+ * It used to be two steps that ended in a toast. The moment the insert
+ * succeeded the panel closed, so the one screen a student most needs to keep —
+ * what they sent, under which reference, and when someone will look at it —
+ * existed for four seconds in the corner of the page. There is a third step now,
+ * and it states the record.
+ *
+ * Fixed on the way through: the "Choose file" control was signal text on a
+ * signal fill, so the only way to attach the screenshot was an invisible button;
+ * three ternaries chose between identical values; and the primary action on both
+ * steps was drawn in ink-raised, the same grey as a disabled control.
+ *
+ * The money path itself is untouched: the same format check, the same
+ * validate_transaction_id call before anything is uploaded, the same insert.
+ */
 
 interface QRPaymentModalProps {
   isOpen: boolean
@@ -25,43 +37,74 @@ const validateTxn = (id: string) => {
   if (!id || id.length < 10) return 'At least 10 characters'
   if (id.length > 20) return 'Less than 20 characters'
   if (!/^[A-Za-z0-9\-]+$/.test(id)) return 'Letters, numbers, and hyphens only'
-  if (id.length > 1 && !/^[A-Za-z0-9].*[A-Za-z0-9]$/.test(id)) return 'Must start and end with a letter or number'
+  if (id.length > 1 && !/^[A-Za-z0-9].*[A-Za-z0-9]$/.test(id))
+    return 'Must start and end with a letter or number'
   return null
 }
 
-export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount, billingCycle = 'monthly' }: QRPaymentModalProps) {
+const STEPS = [
+  { key: 'payment', n: '01', label: 'Pay' },
+  { key: 'submission', n: '02', label: 'Confirm' },
+  { key: 'done', n: '03', label: 'Done' },
+] as const
+
+type Step = (typeof STEPS)[number]['key']
+
+const field =
+  'mt-2 block min-h-touch w-full border border-rule bg-ink-sunken px-3 py-2 font-sans text-ui ' +
+  'text-type-primary placeholder-type-muted focus:border-rule-strong focus:outline-none'
+
+function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
+  return (
+    <span className="block font-sans text-label uppercase text-type-muted">
+      {children}
+      {required ? (
+        <span className="ml-1 text-signal" aria-hidden>
+          required
+        </span>
+      ) : null}
+    </span>
+  )
+}
+
+export default function QRPaymentModal({
+  isOpen,
+  onClose,
+  selectedTier,
+  amount,
+  billingCycle = 'monthly',
+}: QRPaymentModalProps) {
   const { user, profile } = useAuth()
-  const [currentQR, setCurrentQR] = useState('/dwiraj.jpeg')
-  const [timeLeft, setTimeLeft] = useState(30)
-  const [step, setStep] = useState<'payment' | 'submission'>('payment')
+  // A single, fixed payee. No rotation: the QR must not change while
+  // someone is part way through paying it.
+  const QR_SRC = '/dwiraj.jpeg'
+  const QR_NAME = 'Dwiraj'
+
+  const [step, setStep] = useState<Step>('payment')
   const [txnId, setTxnId] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('UPI')
   const [screenshot, setScreenshot] = useState<File | null>(null)
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [receipt, setReceipt] = useState<{ ref: string; method: string } | null>(null)
 
-  useEffect(() => {
-    if (!isOpen) return
-    const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          setCurrentQR(q => q === '/dwiraj.jpeg' ? '/lochan.jpeg' : '/dwiraj.jpeg')
-          return 30
-        }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [isOpen])
+  const planName = selectedTier === 'basic_99' ? 'Explorer' : 'Professional'
+  const term = billingCycle === 'annual' ? '365 days' : '30 days'
 
   const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) { toast.error('Please upload an image file'); return }
-    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be under 5MB')
+      return
+    }
     setScreenshot(file)
     const reader = new FileReader()
-    reader.onload = e => setScreenshotPreview(e.target?.result as string)
+    reader.onload = (ev) => setScreenshotPreview(ev.target?.result as string)
     reader.readAsDataURL(file)
   }
 
@@ -70,19 +113,46 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount, 
     const fileName = `payment-screenshots/${user?.id}/${Date.now()}.${ext}`
     const { error } = await supabase.storage.from('payment-screenshots').upload(fileName, file)
     if (error) throw error
-    const { data: { publicUrl } } = supabase.storage.from('payment-screenshots').getPublicUrl(fileName)
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('payment-screenshots').getPublicUrl(fileName)
     return publicUrl
   }
 
   const handleSubmit = async () => {
-    if (!txnId.trim()) { toast.error('Please enter your transaction ID'); return }
+    if (!txnId.trim()) {
+      toast.error('Please enter your transaction ID')
+      return
+    }
     const err = validateTxn(txnId.trim())
-    if (err) { toast.error(err); return }
-    if (!screenshot) { toast.error('Please upload a payment screenshot'); return }
-    if (!profile) { toast.error('Profile not found. Please refresh.'); return }
+    if (err) {
+      toast.error(err)
+      return
+    }
+    if (!screenshot) {
+      toast.error('Please upload a payment screenshot')
+      return
+    }
+    if (!profile) {
+      toast.error('Profile not found. Please refresh.')
+      return
+    }
 
     setSubmitting(true)
     try {
+      // The client-side format check is a convenience. The database owns the
+      // real rule, including whether this reference has been used before, so
+      // ask it before taking a screenshot upload and a row insert.
+      const { data: txnOk, error: txnError } = await supabase.rpc('validate_transaction_id', {
+        txn_id: txnId.trim(),
+      })
+      if (txnError) throw txnError
+      if (txnOk === false) {
+        toast.error('That transaction reference is not valid or has already been used')
+        setSubmitting(false)
+        return
+      }
+
       const screenshotUrl = await uploadScreenshot(screenshot)
       const { error } = await supabase.from('payment_submissions').insert({
         user_id: user?.id,
@@ -98,12 +168,14 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount, 
         status: 'pending',
       })
       if (error) {
-        if (error.message.includes('Transaction ID already exists')) toast.error('This transaction ID was already submitted.')
+        if (error.message.includes('Transaction ID already exists'))
+          toast.error('This transaction ID was already submitted.')
         else toast.error(`Submission failed: ${error.message}`)
         return
       }
-      toast.success('Payment submitted! We will verify within 24–48 hours.')
-      handleClose()
+      // The record, not a four-second toast.
+      setReceipt({ ref: txnId.trim(), method: paymentMethod })
+      setStep('done')
     } catch {
       toast.error('Failed to submit payment. Please try again.')
     } finally {
@@ -111,238 +183,341 @@ export default function QRPaymentModal({ isOpen, onClose, selectedTier, amount, 
     }
   }
 
+  const reset = () => {
+    setStep('payment')
+    setTxnId('')
+    setPaymentMethod('UPI')
+    setScreenshot(null)
+    setScreenshotPreview(null)
+    setReceipt(null)
+  }
+
   const handleClose = () => {
-    setStep('payment'); setTxnId(''); setPaymentMethod('UPI')
-    setScreenshot(null); setScreenshotPreview(null); onClose()
+    reset()
+    onClose()
   }
 
   if (!isOpen) return null
 
   const txnError = txnId ? validateTxn(txnId) : null
-  const canSubmit = txnId && !txnError && screenshot && !submitting
-
-  const inputCls = "w-full bg-[#080808] border rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none transition-all duration-200"
+  const canSubmit = Boolean(txnId) && !txnError && Boolean(screenshot) && !submitting
+  const stepIndex = STEPS.findIndex((s) => s.key === step)
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)' }}
+    <Overlay
+      open={isOpen}
+      // Closing mid-payment loses a typed reference, so the only ways out are
+      // the explicit controls below.
+      onClose={step === 'done' ? handleClose : () => {}}
+      align="bottom"
+      className="w-full lg:max-w-[520px]"
     >
-      <div
-        className="w-full max-w-md max-h-[90vh] overflow-y-auto"
-        style={{
-          background: '#111111',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: '20px',
-          boxShadow: '0 32px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)',
-          animation: 'modalIn 0.2s cubic-bezier(0.32,0.72,0,1)',
-        }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/[0.06] sticky top-0 bg-[#111111] z-10" style={{ borderRadius: '20px 20px 0 0' }}>
-          <div className="flex items-center gap-2">
-            {step === 'submission' && (
-              <button onClick={() => setStep('payment')} className="w-7 h-7 flex items-center justify-center rounded-full text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all duration-200">
-                <ArrowLeftIcon className="w-3.5 h-3.5" />
+      <div className="flex max-h-[92vh] w-full flex-col border border-rule-strong bg-ink">
+        {/* Where you are. Three steps, stated rather than implied. */}
+        <header className="shrink-0 border-b border-rule px-4 py-3 lg:px-6">
+          <div className="flex items-center justify-between gap-4">
+            <ol className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {STEPS.map((s, i) => {
+                const active = s.key === step
+                const done = i < stepIndex
+                return (
+                  <li key={s.key} className="flex items-baseline gap-2">
+                    <span
+                      data-mono
+                      className={`text-mono ${active ? 'text-signal' : done ? 'text-verified' : 'text-type-muted'}`}
+                    >
+                      {s.n}
+                    </span>
+                    <span
+                      className={`font-sans text-ui-s ${
+                        active ? 'text-type-primary' : 'text-type-muted'
+                      }`}
+                    >
+                      {s.label}
+                    </span>
+                  </li>
+                )
+              })}
+            </ol>
+            {step !== 'done' ? (
+              <button
+                type="button"
+                onClick={handleClose}
+                aria-label="Cancel payment"
+                className="-m-1 shrink-0 p-1 text-type-muted hover:text-type-primary active:text-type-primary"
+              >
+                <Glyph name="cross" size={14} />
               </button>
-            )}
-            <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium">
-              {step === 'payment' ? 'Complete Payment' : 'Submit Details'}
-            </p>
+            ) : null}
           </div>
-          <button onClick={handleClose} className="w-7 h-7 flex items-center justify-center rounded-full text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all duration-200">
-            <XMarkIcon className="w-4 h-4" />
-          </button>
-        </div>
+        </header>
 
-        <div className="p-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 lg:px-6">
+          {/* ---------------------------------------------------- 01 PAY --- */}
           {step === 'payment' ? (
-            <div className="space-y-4">
-              {/* Summary row */}
-              <div className="flex items-center justify-between">
+            <div>
+              <dl className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-rule-strong pb-4">
                 <div>
-                  <p className="text-base font-semibold text-white">{selectedTier === 'basic_99' ? 'Explorer' : 'Professional'}</p>
-                  <p className="text-xs text-zinc-500">{billingCycle === 'annual' ? '365 days' : '30 days'} · @{profile?.username}</p>
+                  <dt className="font-sans text-label uppercase text-type-muted">Plan</dt>
+                  <dd className="mt-1 font-display text-title uppercase text-type-primary">{planName}</dd>
+                  <dd className="font-sans text-ui-s text-type-muted">
+                    {term} · @{profile?.username}
+                  </dd>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-white">₹{amount}</p>
-                  <p className="text-xs text-zinc-600">via UPI</p>
+                  <dt className="font-sans text-label uppercase text-type-muted">Pay exactly</dt>
+                  <dd data-mono className="mt-1 text-mono-l text-type-primary">
+                    ₹{amount}
+                  </dd>
+                  <dd className="font-sans text-ui-s text-type-muted">via UPI</dd>
                 </div>
+              </dl>
+
+              {/* The QR needs a light plate to scan reliably on a dark theme. */}
+              <div className="mt-6 flex flex-col items-center">
+                <div className="p-3" style={{ background: 'var(--type-primary)' }}>
+                  <img
+                    src={QR_SRC}
+                    alt={`UPI QR code for ${QR_NAME}`}
+                    className="h-48 w-48 object-contain"
+                  />
+                </div>
+                <p className="mt-3 font-sans text-ui-s text-type-secondary">
+                  Pay to <span className="text-type-primary">{QR_NAME}</span>
+                </p>
               </div>
 
-              {/* QR code */}
-              <div
-                className="rounded-2xl p-5 text-center"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
-              >
-                <div
-                  className="inline-block p-2 rounded-xl mb-3"
-                  style={{ background: '#ffffff' }}
-                >
-                  <img src={currentQR} alt="Payment QR Code" className="w-40 h-40 object-contain" />
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <p className="text-xs text-zinc-400">
-                    Switching to {currentQR.includes('dwiraj') ? 'Lochan' : 'Dwiraj'} in <span className="text-white font-medium">{timeLeft}s</span>
-                  </p>
-                </div>
-                <p className="text-xs text-zinc-600 mt-1">Pay to: {currentQR.includes('dwiraj') ? 'Dwiraj' : 'Lochan'}</p>
-              </div>
-
-              {/* Instructions */}
-              <div
-                className="rounded-xl p-4 space-y-2"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
-              >
-                <p className="text-xs font-medium text-zinc-400 mb-2">Steps</p>
+              <ol className="mt-6 border-t border-rule">
                 {[
-                  'Open GPay, PhonePe, or Paytm',
-                  `Scan QR and pay exactly ₹${amount}`,
+                  'Open GPay, PhonePe or Paytm',
+                  `Scan this code and pay exactly ₹${amount}`,
                   'Screenshot the confirmation',
-                  'Note your transaction ID',
-                ].map((step, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
-                    <span className="w-4 h-4 rounded-full bg-white/[0.06] flex items-center justify-center text-[9px] text-zinc-500 shrink-0 mt-0.5">{i + 1}</span>
-                    <span className="text-xs text-zinc-500">{step}</span>
-                  </div>
+                  'Copy the transaction reference',
+                ].map((text, i) => (
+                  <li key={i} className="flex items-baseline gap-3 border-b border-rule py-2">
+                    <span data-mono className="shrink-0 text-mono text-type-muted">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="font-sans text-ui-s text-type-secondary">{text}</span>
+                  </li>
                 ))}
-              </div>
+              </ol>
 
-              {/* Warning */}
-              <div className="flex items-start gap-2.5 px-1">
-                <ClockIcon className="w-3.5 h-3.5 text-zinc-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-zinc-600">Verification takes 24–48 hours. Keep your transaction ID and screenshot safe.</p>
-              </div>
-
-              <button
-                onClick={() => setStep('submission')}
-                className="w-full text-sm font-medium text-white py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98]"
-                style={{ background: 'linear-gradient(135deg, #4f46e5, #6366f1)', boxShadow: '0 4px 16px rgba(79,70,229,0.3)' }}
-              >
-                I've completed payment
-              </button>
-              <button onClick={handleClose} className="w-full text-sm text-zinc-600 hover:text-zinc-400 py-1.5 transition-colors duration-200">
-                Cancel
-              </button>
+              <p className="mt-4 font-sans text-ui-s text-type-muted">
+                Verification takes 24–48 hours. Keep the reference and the screenshot until then.
+              </p>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {/* User info */}
-              <div
-                className="rounded-xl p-3"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
-              >
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-600">Submitting for</span>
-                  <span className="text-zinc-300">@{profile?.username} · ₹{amount}</span>
-                </div>
-              </div>
+          ) : null}
 
-              {/* Transaction ID */}
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1.5">Transaction ID *</label>
+          {/* ------------------------------------------------ 02 CONFIRM --- */}
+          {step === 'submission' ? (
+            <div>
+              <dl className="flex items-baseline justify-between gap-4 border-b border-rule-strong pb-3">
+                <dt className="font-sans text-label uppercase text-type-muted">Submitting for</dt>
+                <dd className="font-sans text-ui-s text-type-primary">
+                  @{profile?.username} ·{' '}
+                  <span data-mono className="text-mono">
+                    ₹{amount}
+                  </span>
+                </dd>
+              </dl>
+
+              <label className="mt-6 block">
+                <Label required>Transaction reference</Label>
                 <input
                   type="text"
                   value={txnId}
-                  onChange={e => setTxnId(e.target.value)}
-                  placeholder="Enter transaction / UPI reference"
-                  className={inputCls}
-                  style={{
-                    borderColor: txnId && txnError ? 'rgba(239,68,68,0.4)' : txnId && !txnError ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.07)',
-                  }}
+                  onChange={(e) => setTxnId(e.target.value)}
+                  placeholder="The reference your UPI app shows"
+                  aria-invalid={Boolean(txnError)}
+                  className={`${field} ${txnError ? 'border-signal' : ''}`}
                 />
-                {txnId && (
-                  <div className="flex items-center gap-1.5 mt-1.5">
-                    {txnError ? (
-                      <><ExclamationTriangleIcon className="w-3 h-3 text-red-400" /><p className="text-xs text-red-400">{txnError}</p></>
-                    ) : (
-                      <><CheckCircleIcon className="w-3 h-3 text-emerald-400" /><p className="text-xs text-emerald-400">Valid format</p></>
-                    )}
-                  </div>
-                )}
-              </div>
+                {txnId ? (
+                  <span className="mt-2 flex items-center gap-2">
+                    <Glyph
+                      name={txnError ? 'warning' : 'check'}
+                      size={14}
+                      className={txnError ? 'text-signal' : 'text-verified'}
+                    />
+                    <span className={`font-sans text-ui-s ${txnError ? 'text-signal' : 'text-verified'}`}>
+                      {txnError ?? 'Format looks right'}
+                    </span>
+                  </span>
+                ) : null}
+              </label>
 
-              {/* Payment method */}
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1.5">Payment method</label>
+              <label className="mt-6 block">
+                <Label>Paid by</Label>
                 <select
                   value={paymentMethod}
-                  onChange={e => setPaymentMethod(e.target.value)}
-                  className={inputCls}
-                  style={{ borderColor: 'rgba(255,255,255,0.07)' }}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className={field}
                 >
                   <option value="UPI">UPI (GPay, PhonePe, Paytm)</option>
                   <option value="Net Banking">Net Banking</option>
                   <option value="Debit Card">Debit Card</option>
                   <option value="Credit Card">Credit Card</option>
                 </select>
-              </div>
+              </label>
 
-              {/* Screenshot upload */}
-              <div>
-                <label className="block text-xs text-zinc-400 mb-1.5">Payment screenshot *</label>
-                <div
-                  className="rounded-xl p-4 text-center transition-all duration-200"
-                  style={{ background: 'rgba(255,255,255,0.02)', border: `1px dashed ${screenshot ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.1)'}` }}
-                >
+              <div className="mt-6">
+                <Label required>Payment screenshot</Label>
+                <div className="mt-2 border border-rule p-4">
                   {screenshotPreview ? (
-                    <div>
-                      <img src={screenshotPreview} alt="Screenshot" className="max-w-full h-24 object-contain mx-auto rounded-lg mb-2" />
-                      <div className="flex items-center justify-center gap-1.5 mb-2">
-                        <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-400" />
-                        <p className="text-xs text-emerald-400">Screenshot uploaded</p>
+                    <div className="flex items-start gap-4">
+                      <img
+                        src={screenshotPreview}
+                        alt="Your payment confirmation"
+                        className="h-24 w-24 border border-rule object-contain"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="flex items-center gap-2 font-sans text-ui-s text-verified">
+                          <Glyph name="check" size={14} />
+                          Attached
+                        </p>
+                        <p className="mt-1 truncate font-sans text-ui-s text-type-muted">
+                          {screenshot?.name}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setScreenshot(null)
+                            setScreenshotPreview(null)
+                          }}
+                          className="mt-2 inline-flex min-h-touch items-center border border-rule px-3 py-1 font-sans text-ui-s text-type-secondary hover:border-signal hover:text-signal"
+                        >
+                          Replace
+                        </button>
                       </div>
-                      <button
-                        onClick={() => { setScreenshot(null); setScreenshotPreview(null) }}
-                        className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
-                      >
-                        Remove
-                      </button>
                     </div>
                   ) : (
-                    <div>
-                      <PhotoIcon className="w-8 h-8 text-zinc-700 mx-auto mb-2" />
-                      <p className="text-xs text-zinc-500 mb-3">Upload your payment confirmation</p>
-                      <input type="file" accept="image/*" onChange={handleScreenshotChange} className="hidden" id="screenshot-upload" />
+                    <div className="flex flex-col items-start gap-2">
+                      <p className="font-sans text-ui-s text-type-secondary">
+                        Attach the confirmation from your UPI app.
+                      </p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleScreenshotChange}
+                        className="sr-only"
+                        id="screenshot-upload"
+                      />
+                      {/* Was signal text on a signal fill: an invisible control
+                          on the only step that needs a file. */}
                       <label
                         htmlFor="screenshot-upload"
-                        className="text-xs text-violet-400 hover:text-violet-300 cursor-pointer px-4 py-1.5 rounded-lg transition-colors"
-                        style={{ border: '1px solid rgba(124,58,237,0.3)', background: 'rgba(124,58,237,0.08)' }}
+                        className="inline-flex min-h-touch cursor-pointer items-center gap-2 border border-signal bg-signal px-4 py-2 font-sans text-ui-s font-medium text-ink hover:bg-ink hover:text-signal active:bg-ink active:text-signal"
                       >
+                        <Glyph name="upload" size={14} />
                         Choose file
                       </label>
-                      <p className="text-xs text-zinc-700 mt-2">Max 5MB · JPG, PNG</p>
+                      <p data-mono className="text-mono text-type-muted">max 5MB · jpg, png</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Note */}
-              <div className="flex items-start gap-2">
-                <ClockIcon className="w-3.5 h-3.5 text-zinc-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-zinc-600">Verification within 24–48 hours. You'll receive email confirmation once approved.</p>
-              </div>
+              <p className="mt-4 font-sans text-ui-s text-type-muted">
+                We check it by hand within 24–48 hours and email you when the plan is live.
+              </p>
+            </div>
+          ) : null}
 
+          {/* --------------------------------------------------- 03 DONE --- */}
+          {step === 'done' ? (
+            <div>
+              <p className="flex items-center gap-2 font-sans text-ui-s text-verified">
+                <Glyph name="check" size={14} />
+                Submitted
+              </p>
+              <h2 className="mt-2 font-display text-display-m text-type-primary">We have it</h2>
+              <p className="mt-2 max-w-measure font-serif text-body text-type-secondary">
+                Your payment is queued for review. Nothing else is needed from you — we will email{' '}
+                {user?.email} once the plan is live on your account.
+              </p>
+
+              <dl className="mt-6 border-t border-rule">
+                {[
+                  { k: 'Plan', v: `${planName} · ${term}` },
+                  { k: 'Amount', v: `₹${amount}`, mono: true },
+                  { k: 'Reference', v: receipt?.ref ?? '--', mono: true },
+                  { k: 'Paid by', v: receipt?.method ?? '--' },
+                  { k: 'Reviewed within', v: '24–48 hours' },
+                ].map(({ k, v, mono }) => (
+                  <div key={k} className="flex items-baseline justify-between gap-4 border-b border-rule py-3">
+                    <dt className="font-sans text-label uppercase text-type-muted">{k}</dt>
+                    <dd
+                      className={`break-all text-right ${mono ? 'text-mono' : 'font-sans text-ui-s'} text-type-primary`}
+                      {...(mono ? { 'data-mono': true } : {})}
+                    >
+                      {v}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <p className="mt-4 font-sans text-ui-s text-type-muted">
+                Keep the reference until the plan appears. If it has not within 48 hours, send that
+                reference to hatch@hatchevent.in.
+              </p>
+            </div>
+          ) : null}
+        </div>
+
+        {/* Actions, pinned, so the next move is never scrolled away. */}
+        <footer className="shrink-0 border-t border-rule px-4 py-3 lg:px-6">
+          {step === 'payment' ? (
+            <div className="flex flex-col gap-2 lg:flex-row-reverse">
               <button
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                className="w-full text-sm font-medium text-white py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: 'linear-gradient(135deg, #4f46e5, #6366f1)', boxShadow: canSubmit ? '0 4px 16px rgba(79,70,229,0.3)' : 'none' }}
+                type="button"
+                onClick={() => setStep('submission')}
+                className="inline-flex min-h-touch flex-1 items-center justify-center border border-signal bg-signal px-4 py-3 font-sans text-ui font-medium text-ink hover:bg-ink hover:text-signal active:bg-ink active:text-signal"
               >
-                {submitting ? 'Submitting...' : 'Submit payment'}
+                I have paid
+              </button>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="inline-flex min-h-touch items-center justify-center border border-rule-strong px-4 py-3 font-sans text-ui text-type-primary hover:border-signal hover:text-signal lg:flex-none"
+              >
+                Cancel
               </button>
             </div>
-          )}
-        </div>
-      </div>
+          ) : null}
 
-      <style jsx global>{`
-        @keyframes modalIn {
-          from { opacity: 0; transform: scale(0.96) translateY(8px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
-    </div>
+          {step === 'submission' ? (
+            <div className="flex flex-col gap-2 lg:flex-row-reverse">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                className="inline-flex min-h-touch flex-1 items-center justify-center border border-signal bg-signal px-4 py-3 font-sans text-ui font-medium text-ink hover:bg-ink hover:text-signal active:bg-ink active:text-signal disabled:opacity-40 disabled:pointer-events-none"
+              >
+                {submitting ? 'Submitting' : 'Submit payment'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep('payment')}
+                disabled={submitting}
+                className="inline-flex min-h-touch items-center justify-center gap-2 border border-rule-strong px-4 py-3 font-sans text-ui text-type-primary hover:border-signal hover:text-signal disabled:opacity-40 lg:flex-none"
+              >
+                <Glyph name="arrow-left" size={14} />
+                Back
+              </button>
+            </div>
+          ) : null}
+
+          {step === 'done' ? (
+            <button
+              type="button"
+              onClick={handleClose}
+              className="inline-flex min-h-touch w-full items-center justify-center border border-signal bg-signal px-4 py-3 font-sans text-ui font-medium text-ink hover:bg-ink hover:text-signal active:bg-ink active:text-signal"
+            >
+              Done
+            </button>
+          ) : null}
+        </footer>
+      </div>
+    </Overlay>
   )
 }

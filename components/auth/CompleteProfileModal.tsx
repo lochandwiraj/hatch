@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { Overlay } from '@/components/ui/Overlay'
+import { Hatch } from '@/components/brand/Hatch'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
@@ -10,11 +12,15 @@ export default function CompleteProfileModal() {
   const [college, setCollege] = useState('')
   const [graduationYear, setGraduationYear] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  // The modal had no open state and no way out, so Escape had nothing to do.
+  // It can now be dismissed for the session; it returns on the next load until
+  // the profile is actually completed.
+  const [dismissed, setDismissed] = useState(false)
 
   const currentYear = new Date().getFullYear()
 
   // Show only when logged in and college is missing (Google sign-up users)
-  if (!user || !profile || profile.college) return null
+  if (!user || !profile || profile.college || dismissed) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,35 +49,31 @@ export default function CompleteProfileModal() {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(16px)' }}
-    >
+    <Overlay open onClose={() => setDismissed(true)} align="bottom" className="w-full lg:max-w-md">
       <div
-        className="w-full max-w-sm rounded-2xl p-6"
+        className="w-full max-w-sm p-6"
         style={{
-          background: '#111111',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 32px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
-        }}
+          background: 'var(--ink-raised)',
+          border: '1px solid var(--rule)',
+          }}
       >
         <div className="mb-6">
-          <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4" style={{ border: '1px solid rgba(124,58,237,0.2)' }}>
-            <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-12 h-12 flex items-center justify-center mb-4" style={{ border: '1px solid var(--signal)' }}>
+            <svg className="w-6 h-6 text-signal" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
           </div>
-          <p className="text-xs text-violet-400 uppercase tracking-widest font-medium mb-1.5">One last step</p>
-          <h2 className="text-lg font-semibold text-white">Complete your profile</h2>
-          <p className="text-sm text-zinc-500 mt-1">
-            We need a couple more details to personalise your HATCH experience.
+          <p className="text-ui-s text-signal uppercase tracking-widest font-medium mb-2">One last step</p>
+          <h2 className="text-body-l font-semibold text-type-primary">Complete your profile</h2>
+          <p className="text-ui text-type-muted mt-1">
+            We need a couple more details to personalise your <Hatch /> experience.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-              College / University <span className="text-red-400">*</span>
+            <label className="block text-ui-s font-medium text-type-secondary mb-2">
+              College / University <span className="text-signal">*</span>
             </label>
             <input
               type="text"
@@ -80,14 +82,14 @@ export default function CompleteProfileModal() {
               placeholder="Your college name"
               required
               autoFocus
-              className="w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/30 transition-all"
-              style={{ background: 'rgba(3,3,8,0.9)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="w-full px-4 py-3 text-ui text-type-primary placeholder-type-muted focus:outline-none focus:border focus:border-signal"
+              style={{ background: 'var(--ink-raised)', border: '1px solid var(--rule)' }}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-              Graduation Year <span className="text-red-400">*</span>
+            <label className="block text-ui-s font-medium text-type-secondary mb-2">
+              Graduation Year <span className="text-signal">*</span>
             </label>
             <input
               type="number"
@@ -98,28 +100,27 @@ export default function CompleteProfileModal() {
               max={currentYear + 10}
               required
               onKeyDown={e => { if (!/[0-9]|Backspace|Tab|ArrowLeft|ArrowRight|Delete/.test(e.key)) e.preventDefault() }}
-              className="w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-violet-500/30 transition-all"
-              style={{ background: 'rgba(3,3,8,0.9)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="w-full px-4 py-3 text-ui text-type-primary placeholder-type-muted focus:outline-none focus:border focus:border-signal"
+              style={{ background: 'var(--ink-raised)', border: '1px solid var(--rule)' }}
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-full text-type-primary text-ui font-semibold py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              background: 'linear-gradient(135deg, #7c3aed, #6366f1)',
-              boxShadow: submitting ? 'none' : '0 4px 16px rgba(124,58,237,0.3)',
-            }}
+              background: 'var(--ink-raised)',
+              }}
           >
             {submitting ? 'Saving...' : 'Complete profile'}
           </button>
         </form>
 
-        <p className="text-xs text-zinc-600 text-center mt-4">
-          Signed in as <span className="text-zinc-500">{user.email}</span>
+        <p className="text-ui-s text-type-muted text-center mt-4">
+          Signed in as <span className="text-type-muted">{user.email}</span>
         </p>
       </div>
-    </div>
+        </Overlay>
   )
 }

@@ -1,29 +1,44 @@
-import { ReactNode } from 'react'
-import Button from './Button'
+import Link from 'next/link'
+import { Glyph, type GlyphName } from './Glyph'
 
-interface EmptyStateProps {
-  icon: ReactNode
+/**
+ * Empty state.
+ *
+ * This database is mostly empty on purpose: 0 rows in event_attendance,
+ * payment_submissions, external_events and more. Empty is the common case
+ * here, not an edge case, so a blank region counts as a bug. Every list,
+ * table and panel routes through this.
+ *
+ * No apology, no illustration, no emoji. State the fact, offer the way out.
+ */
+export function EmptyState({
+  glyph = 'search',
+  title,
+  detail,
+  action,
+}: {
+  glyph?: GlyphName
   title: string
-  description: string
-  action?: {
-    label: string
-    onClick: () => void
-  }
-}
-
-export default function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+  detail?: string
+  action?: { label: string; href: string }
+}) {
   return (
-    <div className="text-center py-12">
-      <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        {icon}
-      </div>
-      <h3 className="text-lg font-medium text-neutral-900 mb-2">{title}</h3>
-      <p className="text-neutral-600 mb-6 max-w-sm mx-auto">{description}</p>
-      {action && (
-        <Button onClick={action.onClick} variant="outline">
+    <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2 border-b border-rule py-6">
+      <Glyph name={glyph} size={16} className="text-type-muted" />
+      <p className="font-display text-title uppercase text-type-primary">{title}</p>
+      {detail ? (
+        <p className="max-w-measure font-serif text-ui-s text-type-secondary">{detail}</p>
+      ) : null}
+      {action ? (
+        <Link
+          href={action.href}
+          className="ml-auto inline-flex min-h-touch items-center border border-rule-strong px-4 py-2 font-sans text-ui-s text-type-primary hover:border-signal hover:text-signal active:border-signal active:text-signal"
+        >
           {action.label}
-        </Button>
-      )}
+        </Link>
+      ) : null}
     </div>
   )
 }
+
+export default EmptyState

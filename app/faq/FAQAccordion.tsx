@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { useState, useRef } from 'react'
+import { Hatch } from '@/components/brand/Hatch'
+import { Glyph } from '@/components/ui/Glyph'
 import Link from 'next/link'
 
-const H = () => <span className="font-qepho">HATCH</span>
+const H = () => <Hatch />
 
 const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
   {
@@ -13,7 +13,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
     items: [
       {
         q: "What's the difference between Explorer and Professional?",
-        a: 'Explorer (₹99/month) gives you access to 7 curated events per week, priority registration, and advanced filtering. Professional (₹149/month) gives you access to all events including VIP and early access events, networking opportunities, career guidance, and priority support.',
+        a: 'Explorer (₹99/month) raises your monthly limit to 10 events and unlocks Explorer-tier listings. Professional (₹149/month) gives the highest monthly limit and access to every event, whatever tier it requires.',
       },
       {
         q: 'Can I upgrade mid-month?',
@@ -25,7 +25,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
       },
       {
         q: 'Is annual billing worth it?',
-        a: 'Yes — you save ₹189 on Explorer and ₹289 on Professional compared to paying monthly for 12 months. Annual plans also mean you never worry about renewal for a full year.',
+        a: 'Yes, you save ₹189 on Explorer and ₹289 on Professional compared to paying monthly for 12 months. Annual plans also mean you never worry about renewal for a full year.',
       },
     ],
   },
@@ -34,19 +34,19 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
     items: [
       {
         q: 'What payment methods are accepted?',
-        a: 'We accept all major payment methods via Razorpay — UPI (GPay, PhonePe, Paytm), debit cards, credit cards, and net banking.',
+        a: 'Payment is by UPI. Scan the QR, pay the exact amount, then upload the screenshot with your transaction reference.',
       },
       {
         q: 'My payment went through but subscription did not activate. What do I do?',
-        a: <>Email us at <a href="mailto:hatch@hatchevent.in" className="text-violet-400 hover:text-violet-300 transition-colors">hatch@hatchevent.in</a> with your Razorpay payment ID and we will manually activate your subscription within 48 hours or issue a full refund.</>,
+        a: <>Email us at <a href="mailto:hatch@hatchevent.in" className="text-signal hover:text-signal">hatch@hatchevent.in</a> with your UPI transaction reference and we will manually activate your subscription within 48 hours or issue a full refund.</>,
       },
       {
         q: 'Is my payment information safe?',
-        a: <>Yes. All payments are processed by Razorpay — <H /> never sees or stores your card or UPI details. Razorpay is PCI-DSS compliant and RBI regulated.</>,
+        a: <>Payment goes by UPI straight to us, so there is no gateway in between and no card details anywhere. <Hatch /> keeps only your transaction reference and the screenshot you upload.</>,
       },
       {
         q: 'Can I get a refund?',
-        a: <>Refunds are available for duplicate payments or activation failures. There are no refunds for change of mind after a subscription activates. See our full <Link href="/refund" className="text-violet-400 hover:text-violet-300 transition-colors">Refund Policy</Link> for details.</>,
+        a: <>Refunds are available for duplicate payments or activation failures. There are no refunds for change of mind after a subscription activates. See our full <Link href="/refund" className="text-signal hover:text-signal">Refund Policy</Link> for details.</>,
       },
     ],
   },
@@ -59,7 +59,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
       },
       {
         q: 'Can I suggest an event?',
-        a: <>Absolutely. Use the <Link href="/contact" className="text-violet-400 hover:text-violet-300 transition-colors">Contact page</Link> and select &quot;Event suggestion&quot; — we review every submission and add events that meet our quality bar.</>,
+        a: <>Absolutely. Use the <Link href="/contact" className="text-signal hover:text-signal">Contact page</Link> and select &quot;Event suggestion&quot;, we review every submission and add events that meet our quality bar.</>,
       },
       {
         q: "Why can't I see some events?",
@@ -67,7 +67,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
       },
       {
         q: 'What if I miss an event I registered for?',
-        a: <><H /> sends reminders before events. If you miss it, that is between you and the event organiser — <H /> is a discovery platform and does not manage event attendance directly.</>,
+        a: <><H /> sends reminders before events. If you miss it, that is between you and the event organiser, <H /> is a discovery platform and does not manage event attendance directly.</>,
       },
     ],
   },
@@ -76,7 +76,7 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
     items: [
       {
         q: 'Can I have multiple accounts?',
-        a: <>No. One account per person. Multiple accounts violate our <Link href="/terms" className="text-violet-400 hover:text-violet-300 transition-colors">Terms & Conditions</Link> and may result in all accounts being suspended.</>,
+        a: <>No. One account per person. Multiple accounts violate our <Link href="/terms" className="text-signal hover:text-signal">Terms & Conditions</Link> and may result in all accounts being suspended.</>,
       },
       {
         q: 'How do I delete my account?',
@@ -90,47 +90,82 @@ const faqs: { group: string; items: { q: string; a: React.ReactNode }[] }[] = [
   },
 ]
 
-function FAQItem({ q, a }: { q: string; a: React.ReactNode }) {
-  const [open, setOpen] = useState(false)
+function FAQItem({
+  q,
+  a,
+  open,
+  onToggle,
+}: {
+  q: string
+  a: React.ReactNode
+  open: boolean
+  onToggle: () => void
+}) {
+  const panel = useRef<HTMLDivElement>(null)
+
+  // Height plus clip-path over 280ms. Height has to be measured because auto
+  // does not animate; the reveal itself is clip-path, which is a permitted
+  // property. Reduced motion is handled by the global transition override.
+  const h = open ? panel.current?.scrollHeight ?? 0 : 0
+
   return (
-    <div
-      className="rounded-xl overflow-hidden transition-all duration-200"
-      style={{ border: '1px solid rgba(255,255,255,0.06)', background: open ? 'rgba(124,58,237,0.04)' : 'rgba(255,255,255,0.02)' }}
-    >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+    <div className="border-b border-rule">
+      <h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="flex min-h-touch w-full items-center justify-between gap-4 py-4 text-left"
+        >
+          <span className="font-sans text-ui text-type-primary">{q}</span>
+          <Glyph
+            name="chevron"
+            size={16}
+            className={`shrink-0 text-type-muted ${open ? 'rotate-180' : ''}`}
+          />
+        </button>
+      </h3>
+
+      <div
+        ref={panel}
+        className="overflow-hidden"
+        style={{
+          height: open ? h : 0,
+          clipPath: open ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)',
+          transition: 'height 280ms var(--ease-enter), clip-path 280ms var(--ease-enter)',
+        }}
+        aria-hidden={!open}
       >
-        <span className="text-sm font-medium text-zinc-200">{q}</span>
-        <ChevronDownIcon className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-4">
-              <p className="text-sm text-zinc-400 leading-relaxed">{a}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <p className="max-w-tight pb-4 font-serif text-body text-type-secondary">{a}</p>
+      </div>
     </div>
   )
 }
 
+
 export default function FAQAccordion() {
+  // One open at a time. The key is group plus index, because the index alone
+  // repeats across groups and would open two answers at once.
+  const [openKey, setOpenKey] = useState<string | null>(null)
+
   return (
-    <div className="space-y-10">
-      {faqs.map(group => (
+    <div className="space-y-12">
+      {faqs.map((group) => (
         <div key={group.group}>
-          <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3">{group.group}</h2>
-          <div className="space-y-2">
-            {group.items.map((item, i) => <FAQItem key={i} q={item.q} a={item.a} />)}
+          <h2 className="mb-3 font-sans text-label uppercase text-type-muted">{group.group}</h2>
+          <div className="border-t border-rule">
+            {group.items.map((item, i) => {
+              const key = `${group.group}:${i}`
+              return (
+                <FAQItem
+                  key={key}
+                  q={item.q}
+                  a={item.a}
+                  open={openKey === key}
+                  onToggle={() => setOpenKey(openKey === key ? null : key)}
+                />
+              )
+            })}
           </div>
         </div>
       ))}

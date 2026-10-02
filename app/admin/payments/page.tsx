@@ -1,44 +1,29 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { EmptyState } from '@/components/ui/EmptyState'
+import type { Tables } from '@/lib/supabase'
+import { Overlay } from '@/components/ui/Overlay'
 import { useAuth } from '@/components/auth/AuthProvider'
-import Header from '@/components/layout/Header'
-import Link from 'next/link'
-import {
-  CreditCardIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  ClockIcon,
-  PhotoIcon,
-  CurrencyRupeeIcon,
-  MagnifyingGlassIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'react-hot-toast'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatDateShort } from '@/lib/utils'
 import { runPaymentCleanup, checkOldPayments } from '@/lib/cleanup'
+import {
+  AdminShell,
+  AdminGhost,
+  AdminLoading,
+  AdminSearch,
+  FilterChips,
+  SortBar,
+  RecordRow,
+  RowAction,
+  useIsAdmin,
+  sortRecords,
+} from '@/components/admin/AdminUI'
 
-interface PaymentSubmission {
-  id: string
-  user_id: string
-  username: string
-  full_name: string
-  email: string
-  transaction_id: string
-  payment_screenshot_url: string
-  requested_tier: 'basic_99' | 'premium_149'
-  amount_paid: number
-  payment_method: string
-  status: 'pending' | 'approved' | 'rejected'
-  admin_notes: string | null
-  reviewed_by: string | null
-  reviewed_at: string | null
-  created_at: string
-  updated_at: string
-}
+type PaymentSubmission = Tables<'payment_submissions'>
 
-const ADMIN_EMAILS = ['dwiraj06@gmail.com', 'pokkalilochan@gmail.com', 'dwiraj@HATCH.in', 'lochan@HATCH.in']
 const tierName = (t: string) => t === 'basic_99' ? 'Explorer' : 'Professional'
 const getSubDuration = (tier: string, amount: number) => {
   if (tier === 'basic_99') return amount >= 999 ? '365 days (1 year)' : '30 days'
@@ -46,9 +31,11 @@ const getSubDuration = (tier: string, amount: number) => {
   return '30 days'
 }
 
-const statusStyle = (s: string) => s === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : s === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+const statusStyle = (s: string | null) => s === 'approved' ? 'text-verified border-verified' : s === 'rejected' ? 'text-signal border-signal' : 'text-deadline border-deadline'
 
 export default function AdminPaymentsPage() {
+  const [sortKey, setSortKey] = useState<string>('created_at')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const { user } = useAuth()
   const [payments, setPayments] = useState<PaymentSubmission[]>([])
   const [loading, setLoading] = useState(true)
@@ -60,7 +47,7 @@ export default function AdminPaymentsPage() {
   const [cleanupProcessing, setCleanupProcessing] = useState(false)
   const [oldPaymentsCount, setOldPaymentsCount] = useState(0)
 
-  const isAdmin = ADMIN_EMAILS.includes(user?.email || '')
+  const isAdmin = useIsAdmin()
 
   useEffect(() => {
     if (isAdmin) { loadPayments(); checkOldPaymentsCount() }
@@ -99,10 +86,10 @@ export default function AdminPaymentsPage() {
       let filtered = data || []
       if (searchQuery.trim()) {
         filtered = filtered.filter(p =>
-          p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.transaction_id.toLowerCase().includes(searchQuery.toLowerCase())
+          (p.username ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (p.full_name ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (p.email ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (p.transaction_id ?? '').toLowerCase().includes(searchQuery.toLowerCase())
         )
       }
       setPayments(filtered)
@@ -127,17 +114,17 @@ export default function AdminPaymentsPage() {
 
       if (action === 'approve') {
         let durationDays = 30
-        if (selectedPayment.requested_tier === 'basic_99') durationDays = selectedPayment.amount_paid >= 999 ? 365 : 30
-        else if (selectedPayment.requested_tier === 'premium_149') durationDays = selectedPayment.amount_paid >= 1499 ? 365 : 30
+        if ((selectedPayment.requested_tier ?? '') === 'basic_99') durationDays = (selectedPayment.amount_paid ?? 0) >= 999 ? 365 : 30
+        else if ((selectedPayment.requested_tier ?? '') === 'premium_149') durationDays = (selectedPayment.amount_paid ?? 0) >= 1499 ? 365 : 30
 
         const { error: tierError } = await supabase.rpc('admin_upgrade_user_tier', {
-          target_user_id: selectedPayment.user_id,
-          new_tier: selectedPayment.requested_tier,
-          admin_user_id: user?.id,
+          target_user_id: selectedPayment.user_id ?? '',
+          new_tier: (selectedPayment.requested_tier ?? ''),
+          admin_user_id: user?.id ?? '',
           duration_days: durationDays,
         })
         if (tierError) toast.error('Payment approved but failed to upgrade tier. Please upgrade manually.')
-        else toast.success(`Payment approved! User upgraded to ${tierName(selectedPayment.requested_tier)} for ${durationDays === 365 ? '365 days' : '30 days'}.`)
+        else toast.success(`Payment approved! User upgraded to ${tierName((selectedPayment.requested_tier ?? ''))} for ${durationDays === 365 ? '365 days' : '30 days'}.`)
       } else {
         toast.success('Payment rejected.')
       }
@@ -151,15 +138,15 @@ export default function AdminPaymentsPage() {
   }
 
   const handleDelete = async (payment: PaymentSubmission) => {
-    const msg = payment.status === 'approved'
+    const msg = (payment.status ?? '') === 'approved'
       ? 'This payment is APPROVED. Deleting will reject it and may affect user tier. Continue?'
       : 'Delete this payment submission? This cannot be undone.'
     if (!confirm(msg)) return
     setProcessing(true)
     try {
-      if (payment.status === 'approved') {
-        await supabase.from('payment_submissions').update({ status: 'rejected', admin_notes: (payment.admin_notes || '') + '\n[DELETED BY ADMIN]', reviewed_by: user?.id, reviewed_at: new Date().toISOString() }).eq('id', payment.id)
-        await supabase.rpc('admin_upgrade_user_tier', { target_user_id: payment.user_id, new_tier: 'free', admin_user_id: user?.id, duration_days: 0 })
+      if ((payment.status ?? '') === 'approved') {
+        await supabase.from('payment_submissions').update({ status: 'rejected', admin_notes: ((payment.admin_notes ?? '') || '') + '\n[DELETED BY ADMIN]', reviewed_by: user?.id, reviewed_at: new Date().toISOString() }).eq('id', payment.id)
+        await supabase.rpc('admin_upgrade_user_tier', { target_user_id: payment.user_id ?? '', new_tier: 'free', admin_user_id: user?.id ?? '', duration_days: 0 })
         toast.success('Payment rejected and user downgraded to Free.')
       } else {
         await supabase.from('payment_submissions').delete().eq('id', payment.id)
@@ -173,245 +160,246 @@ export default function AdminPaymentsPage() {
     }
   }
 
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen">
-        <Header />
-        <div className="flex items-center justify-center h-[60vh]">
-          <div className="text-center">
-            <p className="text-white font-medium mb-2">Access Denied</p>
-            <p className="text-zinc-500 text-sm mb-4">You don't have permission to access this page.</p>
-            <Link href="/dashboard" className="text-sm text-violet-400 hover:text-violet-300 transition-colors">Go to Dashboard</Link>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const stats = {
     total: payments.length,
-    pending: payments.filter(p => p.status === 'pending').length,
-    approved: payments.filter(p => p.status === 'approved').length,
-    rejected: payments.filter(p => p.status === 'rejected').length,
-    totalAmount: payments.filter(p => p.status === 'approved').reduce((sum, p) => sum + p.amount_paid, 0),
+    pending: payments.filter(p => (p.status ?? '') === 'pending').length,
+    approved: payments.filter(p => (p.status ?? '') === 'approved').length,
+    rejected: payments.filter(p => (p.status ?? '') === 'rejected').length,
+    totalAmount: payments.filter(p => (p.status ?? '') === 'approved').reduce((sum, p) => sum + (p.amount_paid ?? 0), 0),
   }
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-semibold text-white mb-1">Payment Management</h1>
-            <p className="text-sm text-zinc-500">Review and approve user payment submissions.</p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={loadPayments} disabled={loading} className="text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-50 px-3.5 py-2 rounded-lg transition-colors">
-              {loading ? 'Refreshing...' : 'Refresh'}
-            </button>
-            {oldPaymentsCount > 0 && (
-              <button onClick={handleCleanup} disabled={cleanupProcessing} className="text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-50 px-3.5 py-2 rounded-lg transition-colors">
-                {cleanupProcessing ? 'Cleaning...' : `Cleanup Old (${oldPaymentsCount})`}
-              </button>
-            )}
-            <button
+    <>
+      <AdminShell
+        label="admin · payments"
+        title="Payments"
+        lede="Review UPI submissions and upgrade the account when one checks out."
+        actions={
+          <>
+            <AdminGhost onClick={loadPayments} disabled={loading}>
+              {loading ? 'Refreshing' : 'Refresh'}
+            </AdminGhost>
+            {oldPaymentsCount > 0 ? (
+              <AdminGhost onClick={handleCleanup} disabled={cleanupProcessing}>
+                {cleanupProcessing ? 'Cleaning' : `Clean up old (${oldPaymentsCount})`}
+              </AdminGhost>
+            ) : null}
+            <AdminGhost
               onClick={async () => {
                 try {
                   const { data, error } = await supabase.storage.from('payment-screenshots').list()
                   if (error) throw error
-                  toast.success(`Storage accessible! Found ${data?.length || 0} files`)
+                  toast.success(`Storage reachable. ${data?.length || 0} file(s).`)
                 } catch (err: any) {
                   toast.error('Storage test failed: ' + err.message)
                 }
               }}
-              className="text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-3.5 py-2 rounded-lg transition-colors"
             >
-              Test Storage
-            </button>
+              Test storage
+            </AdminGhost>
+          </>
+        }
+        stats={[
+          { label: 'Total', value: stats.total },
+          { label: 'Pending', value: stats.pending },
+          { label: 'Approved', value: stats.approved },
+          { label: 'Rejected', value: stats.rejected },
+          { label: 'Revenue', value: `₹${stats.totalAmount}` },
+        ]}
+      >
+        <div className="space-y-3 border-b border-rule pb-3">
+          <AdminSearch
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search by name, username, email or transaction ID"
+          />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <FilterChips
+              legend="Status"
+              options={[
+                { value: 'all', label: 'All' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'approved', label: 'Approved' },
+                { value: 'rejected', label: 'Rejected' },
+              ] as const}
+              value={filter}
+              onChange={setFilter}
+            />
+            <SortBar
+              options={[
+                { key: 'created_at', label: 'Submitted' },
+                { key: 'amount_paid', label: 'Amount' },
+                { key: 'status', label: 'Status' },
+              ]}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onChange={(k, d) => {
+                setSortKey(k)
+                setSortDir(d)
+              }}
+            />
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-          {[
-            { label: 'Total', value: stats.total, icon: CreditCardIcon },
-            { label: 'Pending', value: stats.pending, icon: ClockIcon },
-            { label: 'Approved', value: stats.approved, icon: CheckCircleIcon },
-            { label: 'Rejected', value: stats.rejected, icon: XCircleIcon },
-            { label: 'Revenue', value: `₹${stats.totalAmount}`, icon: CurrencyRupeeIcon },
-          ].map(stat => (
-            <div key={stat.label} className="bg-[#111111] border border-white/[0.07] rounded-xl p-4">
-              <stat.icon className="w-4 h-4 text-zinc-600 mb-2" />
-              <div className="text-2xl font-semibold text-white">{stat.value}</div>
-              <div className="text-xs text-zinc-500 mt-0.5">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Search + Filters */}
-        <div className="bg-[#111111] border border-white/[0.07] rounded-xl p-4 mb-5 space-y-4">
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input
-                type="text"
-                placeholder="Search by username, name, email, or transaction ID..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && loadPayments()}
-                className="w-full bg-[#080808] border border-white/[0.07] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-colors"
-              />
-            </div>
-            <button onClick={loadPayments} disabled={loading} className="text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-50 px-3.5 py-2 rounded-lg transition-colors">Search</button>
-            {searchQuery && <button onClick={() => { setSearchQuery(''); loadPayments() }} className="text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-3 py-2 rounded-lg transition-colors">Clear</button>}
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {(['all', 'pending', 'approved', 'rejected'] as const).map(f => (
-              <button key={f} onClick={() => setFilter(f)} className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${filter === f ? 'bg-violet-600 text-white' : 'bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08]'}`}>
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Payments */}
         {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map(i => <div key={i} className="h-28 bg-[#111111] rounded-xl animate-pulse" />)}
-          </div>
-        ) : payments.length > 0 ? (
-          <div className="space-y-3">
-            {payments.map(payment => (
-              <div key={payment.id} className="bg-[#111111] border border-white/[0.07] rounded-xl p-4">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className="w-9 h-9 bg-violet-600/20 rounded-full flex items-center justify-center shrink-0">
-                      <span className="text-sm font-semibold text-violet-400">{payment.full_name.charAt(0).toUpperCase()}</span>
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-0.5">
-                        <p className="text-sm font-medium text-white">{payment.full_name}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full border ${statusStyle(payment.status)}`}>
-                          {payment.status}
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-500">@{payment.username} · {payment.email}</p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 mt-1.5">
-                        <span>Txn: {payment.transaction_id}</span>
-                        <span>{tierName(payment.requested_tier)}</span>
-                        <span>₹{payment.amount_paid}</span>
-                        <span>{getSubDuration(payment.requested_tier, payment.amount_paid)}</span>
-                        <span>{payment.payment_method}</span>
-                        <span>{formatDate(payment.created_at)}</span>
-                      </div>
-                      {payment.admin_notes && (
-                        <p className="text-xs text-zinc-500 mt-1.5 bg-white/[0.03] rounded px-2 py-1">Notes: {payment.admin_notes}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 shrink-0">
-                    {payment.payment_screenshot_url && (
-                      <button onClick={() => window.open(payment.payment_screenshot_url, '_blank')} className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">
-                        <PhotoIcon className="w-3.5 h-3.5" /> Screenshot
-                      </button>
-                    )}
-                    {payment.status === 'pending' ? (
-                      <button onClick={() => { setSelectedPayment(payment); setReviewNotes(payment.admin_notes || '') }} className="text-xs text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1.5 rounded-lg transition-colors">
-                        Review
-                      </button>
-                    ) : (
-                      <button onClick={() => { setSelectedPayment(payment); setReviewNotes(payment.admin_notes || '') }} className="text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">
-                        Details
-                      </button>
-                    )}
-                    <button onClick={() => handleDelete(payment)} disabled={processing} className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 disabled:opacity-50 px-2.5 py-1.5 rounded-lg transition-colors">
-                      <TrashIcon className="w-3.5 h-3.5" /> Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <AdminLoading what="payments" />
+        ) : payments.length === 0 ? (
+          <EmptyState
+            glyph="card"
+            title="No payment submissions found"
+            detail={
+              searchQuery
+                ? 'Try adjusting search or filters'
+                : filter === 'all'
+                  ? 'No submissions yet'
+                  : `No ${filter} payments`
+            }
+          />
         ) : (
-          <div className="text-center py-16 bg-[#111111] border border-white/[0.07] rounded-xl">
-            <CreditCardIcon className="w-10 h-10 text-zinc-700 mx-auto mb-3" />
-            <p className="text-sm text-zinc-400 mb-1">No payment submissions found</p>
-            <p className="text-xs text-zinc-600">{searchQuery ? 'Try adjusting search or filters' : filter === 'all' ? 'No submissions yet' : `No ${filter} payments`}</p>
-          </div>
+          <ul>
+            {(sortRecords(payments as unknown as Record<string, unknown>[], sortKey, sortDir) as unknown as PaymentSubmission[]).map((payment) => (
+              <RecordRow
+                key={payment.id}
+                title={payment.full_name ?? ''}
+                badges={
+                  <span className={`border px-2 py-px font-sans text-label uppercase ${statusStyle(payment.status ?? '')}`}>
+                    {payment.status ?? ''}
+                  </span>
+                }
+                meta={
+                  <>
+                    <p className="break-words font-sans text-ui-s text-type-secondary">
+                      @{payment.username ?? ''} · {payment.email ?? ''}
+                    </p>
+                    {/* The figures an approval turns on, in mono so they can be
+                        compared down the column rather than read one by one. */}
+                    <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+                      {[
+                        { k: 'Amount', v: `₹${payment.amount_paid ?? 0}` },
+                        { k: 'Plan', v: tierName(payment.requested_tier ?? '') },
+                        { k: 'For', v: getSubDuration(payment.requested_tier ?? '', payment.amount_paid ?? 0) },
+                        { k: 'Txn', v: payment.transaction_id ?? '--' },
+                        { k: 'Via', v: payment.payment_method ?? '--' },
+                        { k: 'Sent', v: formatDateShort(payment.created_at) },
+                      ].map(({ k, v }) => (
+                        <div key={k} className="flex items-baseline gap-2">
+                          <dt className="font-sans text-label uppercase text-type-muted">{k}</dt>
+                          <dd data-mono className="text-mono text-type-primary">
+                            {v}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {payment.admin_notes ? (
+                      <p className="mt-2 border-l-2 border-rule pl-2 font-sans text-ui-s text-type-muted">
+                        {payment.admin_notes}
+                      </p>
+                    ) : null}
+                  </>
+                }
+                actions={
+                  <>
+                    {payment.payment_screenshot_url ? (
+                      <RowAction glyph="photo" onClick={() => window.open(payment.payment_screenshot_url ?? '', '_blank')}>
+                        Screenshot
+                      </RowAction>
+                    ) : null}
+                    <RowAction
+                      onClick={() => {
+                        setSelectedPayment(payment)
+                        setReviewNotes(payment.admin_notes ?? '')
+                      }}
+                    >
+                      {payment.status === 'pending' ? 'Review' : 'Details'}
+                    </RowAction>
+                    <RowAction danger glyph="trash" disabled={processing} onClick={() => handleDelete(payment)}>
+                      Delete
+                    </RowAction>
+                  </>
+                }
+              />
+            ))}
+          </ul>
         )}
+      </AdminShell>
 
-      </main>
-
-      {/* Review Modal */}
+      {/* Review. Routed through Overlay so Escape, the scrim, focus trapping
+          and focus restore all work; it had none of them. */}
       {selectedPayment && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#111111] border border-white/[0.07] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <Overlay
+          open
+          onClose={() => {
+            setSelectedPayment(null)
+            setReviewNotes('')
+          }}
+          className="w-full max-w-2xl"
+        >
+          <div className="max-h-[90vh] overflow-y-auto border border-rule-strong bg-ink">
             <div className="p-6">
-              <h2 className="text-base font-medium text-white mb-5">
-                {selectedPayment.status === 'pending' ? 'Review Payment' : 'Payment Details'}
+              <h2 className="text-body font-medium text-type-primary mb-6">
+                {(selectedPayment.status ?? '') === 'pending' ? 'Review Payment' : 'Payment Details'}
               </h2>
 
-              <div className="bg-[#161616] border border-white/[0.05] rounded-xl p-4 mb-4">
-                <p className="text-xs text-zinc-500 mb-2">User Information</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <div className="bg-ink-raised border border-rule-strong p-4 mb-4">
+                <p className="text-ui-s text-type-muted mb-2">User Information</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-ui">
                   {[
-                    { label: 'Name', value: selectedPayment.full_name },
-                    { label: 'Username', value: `@${selectedPayment.username}` },
-                    { label: 'Email', value: selectedPayment.email },
-                    { label: 'Tier', value: tierName(selectedPayment.requested_tier) },
-                    { label: 'Amount', value: `₹${selectedPayment.amount_paid}` },
-                    { label: 'Duration', value: getSubDuration(selectedPayment.requested_tier, selectedPayment.amount_paid) },
-                    { label: 'Method', value: selectedPayment.payment_method },
-                    { label: 'Transaction ID', value: selectedPayment.transaction_id },
+                    { label: 'Name', value: (selectedPayment.full_name ?? '') },
+                    { label: 'Username', value: `@${(selectedPayment.username ?? '')}` },
+                    { label: 'Email', value: (selectedPayment.email ?? '') },
+                    { label: 'Tier', value: tierName((selectedPayment.requested_tier ?? '')) },
+                    { label: 'Amount', value: `₹${(selectedPayment.amount_paid ?? 0)}` },
+                    { label: 'Duration', value: getSubDuration((selectedPayment.requested_tier ?? ''), (selectedPayment.amount_paid ?? 0)) },
+                    { label: 'Method', value: (selectedPayment.payment_method ?? '') },
+                    { label: 'Transaction ID', value: (selectedPayment.transaction_id ?? '') },
                     { label: 'Submitted', value: formatDate(selectedPayment.created_at) },
                   ].map(item => (
                     <div key={item.label}>
-                      <span className="text-zinc-500">{item.label}:</span>
-                      <span className="text-zinc-300 ml-1">{item.value}</span>
+                      <span className="text-type-muted">{item.label}:</span>
+                      <span className="text-type-primary ml-1">{item.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {selectedPayment.payment_screenshot_url && (
+              {(selectedPayment.payment_screenshot_url ?? '') && (
                 <div className="mb-4">
-                  <p className="text-xs text-zinc-500 mb-2">Payment Screenshot</p>
-                  <div className="bg-[#161616] border border-white/[0.05] rounded-xl p-4 text-center">
+                  <p className="text-ui-s text-type-muted mb-2">Payment Screenshot</p>
+                  <div className="bg-ink-raised border border-rule-strong p-4 text-center">
                     <img
-                      src={selectedPayment.payment_screenshot_url}
+                      src={(selectedPayment.payment_screenshot_url ?? '')}
                       alt="Payment Screenshot"
-                      className="max-w-full h-64 object-contain mx-auto rounded-lg"
+                      className="max-w-full h-64 object-contain mx-auto"
                     />
                     <div className="flex justify-center gap-2 mt-3">
-                      <button onClick={() => window.open(selectedPayment.payment_screenshot_url, '_blank')} className="text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">View Full Size</button>
-                      <button onClick={() => { navigator.clipboard.writeText(selectedPayment.payment_screenshot_url); toast.success('URL copied!') }} className="text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1.5 rounded-lg transition-colors">Copy URL</button>
+                      <button onClick={() => window.open((selectedPayment.payment_screenshot_url ?? ''), '_blank')} className="text-ui-s text-type-secondary hover:text-type-primary bg-ink-raised hover:bg-ink-raised px-3 py-2">View Full Size</button>
+                      <button onClick={() => { navigator.clipboard.writeText((selectedPayment.payment_screenshot_url ?? '')); toast.success('URL copied!') }} className="text-ui-s text-type-secondary hover:text-type-primary bg-ink-raised hover:bg-ink-raised px-3 py-2">Copy URL</button>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="mb-5">
-                <label className="block text-xs text-zinc-400 mb-1.5">Admin Notes (optional)</label>
+              <div className="mb-6">
+                <label className="block text-ui-s text-type-secondary mb-2">Admin Notes (optional)</label>
                 <textarea
                   value={reviewNotes}
                   onChange={e => setReviewNotes(e.target.value)}
                   placeholder="Add notes about this payment review..."
                   rows={3}
-                  className="w-full bg-[#080808] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-colors"
+                  className="w-full bg-ink-raised border border-rule-strong px-3 py-2 text-ui text-type-primary placeholder-type-muted focus:outline-none focus:border-signal focus:border focus:border-signal"
                 />
               </div>
 
               <div className="flex gap-2">
-                <button onClick={() => { setSelectedPayment(null); setReviewNotes('') }} className="flex-1 text-sm text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] py-2.5 rounded-lg transition-colors">
+                <button onClick={() => { setSelectedPayment(null); setReviewNotes('') }} className="flex-1 text-ui text-type-secondary hover:text-type-primary bg-ink-raised hover:bg-ink-raised py-3">
                   Close
                 </button>
-                {selectedPayment.status === 'pending' && (
+                {(selectedPayment.status ?? '') === 'pending' && (
                   <>
-                    <button onClick={() => handleReview(selectedPayment.id, 'reject')} disabled={processing} className="flex-1 text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 disabled:opacity-50 py-2.5 rounded-lg transition-colors">
+                    <button onClick={() => handleReview(selectedPayment.id, 'reject')} disabled={processing} className="flex-1 text-ui text-signal border border-rule hover:border-signal disabled:opacity-50 py-3">
                       {processing ? 'Processing...' : 'Reject'}
                     </button>
-                    <button onClick={() => handleReview(selectedPayment.id, 'approve')} disabled={processing} className="flex-1 text-sm text-white bg-violet-600 hover:bg-violet-500 disabled:opacity-50 py-2.5 rounded-lg transition-colors">
+                    <button onClick={() => handleReview(selectedPayment.id, 'approve')} disabled={processing} className="flex-1 text-ui text-ink bg-signal hover:bg-signal disabled:opacity-50 py-3">
                       {processing ? 'Processing...' : 'Approve & Upgrade'}
                     </button>
                   </>
@@ -419,8 +407,9 @@ export default function AdminPaymentsPage() {
               </div>
             </div>
           </div>
-        </div>
+        </Overlay>
       )}
-    </div>
+    </>
   )
 }
+

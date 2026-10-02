@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Hatch } from '@/components/brand/Hatch'
+import { Glyph } from '@/components/ui/Glyph'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
-import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-
 export default function VerifyOTPPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
@@ -107,17 +107,17 @@ export default function VerifyOTPPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="font-qepho text-2xl text-white hover:opacity-80 transition-opacity">HATCH</Link>
-          <p className="text-sm text-zinc-500 mt-2">Verify your identity</p>
+          <Link href="/" className="text-title text-type-primary hover:opacity-80 transition-opacity"><Hatch /></Link>
+          <p className="text-ui text-type-muted mt-2">Verify your identity</p>
         </div>
-        <div className="bg-[#111111] border border-white/[0.07] rounded-2xl p-6">
-          <h1 className="text-base font-medium text-white mb-1">Enter OTP</h1>
-          <p className="text-sm text-zinc-500 mb-1">
+        <div className="bg-ink-raised border border-rule-strong p-6">
+          <h1 className="text-body font-medium text-type-primary mb-1">Enter OTP</h1>
+          <p className="text-ui text-type-muted mb-1">
             We sent a 6-digit code to
           </p>
-          <p className="text-sm font-medium text-white mb-5">{email}</p>
+          <p className="text-ui font-medium text-type-primary mb-6">{email}</p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex justify-center gap-2">
               {otp.map((digit, index) => (
                 <input
@@ -130,7 +130,7 @@ export default function VerifyOTPPage() {
                   value={digit}
                   onChange={e => handleOtpChange(index, e.target.value)}
                   onKeyDown={e => handleKeyDown(index, e)}
-                  className="w-11 h-11 text-center text-lg font-semibold bg-[#080808] border border-white/[0.07] rounded-lg text-white focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-colors"
+                  className="w-12 h-12 text-center text-body-l font-semibold bg-ink-raised border border-rule-strong text-type-primary focus:outline-none focus:border-signal focus:border focus:border-signal"
                 />
               ))}
             </div>
@@ -138,7 +138,7 @@ export default function VerifyOTPPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-medium py-2.5 rounded-lg transition-colors"
+              className="w-full bg-signal hover:bg-signal disabled:opacity-50 text-ink text-ui font-medium py-3"
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
@@ -146,19 +146,19 @@ export default function VerifyOTPPage() {
 
           <div className="mt-4 space-y-2 text-center">
             {countdown > 0 ? (
-              <p className="text-xs text-zinc-500">Resend OTP in {countdown}s</p>
+              <p className="text-ui-s text-type-muted">Resend OTP in {countdown}s</p>
             ) : (
               <button
                 onClick={handleResendOTP}
                 disabled={resendLoading}
-                className="text-xs text-violet-400 hover:text-violet-300 transition-colors disabled:opacity-50"
+                className="text-ui-s text-signal hover:text-signal disabled:opacity-50"
               >
                 {resendLoading ? 'Sending...' : 'Resend OTP'}
               </button>
             )}
             <div>
-              <Link href="/auth/forgot-password" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors">
-                <ArrowLeftIcon className="w-3.5 h-3.5" />
+              <Link href="/auth/forgot-password" className="inline-flex items-center gap-2 text-ui text-type-secondary hover:text-type-primary">
+                <Glyph name="arrow-left" className="w-4 h-4" />
                 Change email
               </Link>
             </div>
