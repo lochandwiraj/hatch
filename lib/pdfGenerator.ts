@@ -1,9 +1,10 @@
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: (options: any) => jsPDF
+    /** Set by jspdf-autotable after each table. */
+    lastAutoTable?: { finalY: number }
   }
 }
 
@@ -35,21 +36,47 @@ const tierName = (tier: string | null) => {
 }
 
 const filterByTier = (events: AttendedEvent[], tier: string | null) =>
-  events.filter(e => {
+  events.filter((e) => {
     const t = e.required_tier || 'free'
     if (tier === 'premium_149') return true
     if (tier === 'basic_99') return t === 'free' || t === 'basic_99'
     return t === 'free'
   })
 
-// ── Palette (all grayscale - professional) ──
-const BLACK  = [15, 15, 15]   as [number,number,number]
-const DARK   = [55, 55, 55]   as [number,number,number]
-const MID    = [110, 110, 110] as [number,number,number]
-const LIGHT  = [180, 180, 180] as [number,number,number]
-const RULE   = [220, 220, 220] as [number,number,number]
-const ROW_BG = [248, 248, 248] as [number,number,number]
-const WHITE  = [255, 255, 255] as [number,number,number]
+/**
+ * The attendance record, in the product's own language.
+ *
+ * It used to be a grey Helvetica document: zebra-striped table, a filled header
+ * band, numbers set in the same face as everything else. It read like a
+ * spreadsheet export from a different product.
+ *
+ * It now uses the light palette and the real faces. Barlow Condensed sets the
+ * headings, Public Sans the prose, JetBrains Mono every figure and date, and
+ * Qepho the wordmark and nothing else. Structure is rules, not fills, and
+ * hierarchy comes from case, size and colour rather than weight — the same
+ * decisions the screens make.
+ *
+ * Variable TTFs embed at their default instance, so Public Sans and JetBrains
+ * Mono are Regular throughout and the single bold cut is Barlow Condensed.
+ */
+
+// The light theme, which is the one that belongs on paper.
+const INK = [20, 17, 14] as [number, number, number] // --ink
+const PAPER = [239, 235, 227] as [number, number, number] // --ink (light surface)
+const SUNKEN = [245, 242, 236] as [number, number, number] // --ink-sunken
+const PRIMARY = [20, 17, 14] as [number, number, number] // --type-primary
+const SECONDARY = [92, 83, 71] as [number, number, number] // --type-secondary
+const MUTED = [107, 99, 88] as [number, number, number] // --type-muted
+const RULE = [205, 197, 182] as [number, number, number] // --rule
+const RULE_STRONG = [168, 158, 140] as [number, number, number] // --rule-strong
+const SIGNAL = [177, 61, 37] as [number, number, number] // --signal
+
+const PAGE_W = 210
+const PAGE_H = 297
+const L = 18
+const R = 192
+
+type Face = 'display' | 'sans' | 'mono' | 'brand'
 
 export const generateAttendanceReport = async (
   profile: UserProfile,
@@ -59,220 +86,270 @@ export const generateAttendanceReport = async (
   const events = filterByTier(attendedEvents, profile.subscription_tier)
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
 
-  // Load and register Qepho font (TTF preferred; OTF may not render in jsPDF)
-  let qephoLoaded = false
-  try {
-    const res = await fetch('/fonts/qephomodern-regular.ttf')
-    if (res.ok) {
-      const buf = await res.arrayBuffer()
-      const bytes = new Uint8Array(buf)
+  /** Embeds one TTF. Returns false rather than throwing, so a missing file
+   *  costs a typeface and not the whole report. */
+  const embed = async (url: string, vfs: string, name: string) => {
+    try {
+      const res = await fetch(url)
+      if (!res.ok) return false
+      const bytes = new Uint8Array(await res.arrayBuffer())
+      // Chunked and index-based: a 180KB font blows the argument limit of
+      // String.fromCharCode, and spreading a Uint8Array needs downlevelIteration.
       let binary = ''
-      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i])
-      const b64 = btoa(binary)
-      doc.addFileToVFS('Qepho.ttf', b64)
-      doc.addFont('Qepho.ttf', 'Qepho', 'normal')
-      // Quick sanity check - jsPDF will throw if the font is unusable
-      doc.setFont('Qepho', 'normal')
-      qephoLoaded = true
+      const CHUNK = 8192
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        const end = Math.min(i + CHUNK, bytes.length)
+        const parts: string[] = []
+        for (let j = i; j < end; j++) parts.push(String.fromCharCode(bytes[j]))
+        binary += parts.join('')
+      }
+      doc.addFileToVFS(vfs, btoa(binary))
+      doc.addFont(vfs, name, 'normal')
+      doc.setFont(name, 'normal')
+      return true
+    } catch {
+      return false
     }
-  } catch {
-    qephoLoaded = false
   }
 
-  /**
-   * The wordmark in the PDF.
-   *
-   * Qepho is the brand face and nothing else may render the word HATCH, so
-   * this never falls back to Helvetica the way it used to. If the font did not
-   * embed, the wordmark is simply omitted and the rest of the report prints:
-   * an absent wordmark is correct, a substituted one is not.
-   */
-  const hatchMark = (size: number, x: number, yy: number, color: readonly [number, number, number]) => {
-    if (!qephoLoaded) return
+  const has = {
+    brand: await embed('/fonts/qephomodern-regular.ttf', 'Qepho.ttf', 'Qepho'),
+    display: await embed('/fonts/barlow-condensed-bold.ttf', 'BarlowCondensed.ttf', 'BarlowCondensed'),
+    sans: await embed('/fonts/public-sans.ttf', 'PublicSans.ttf', 'PublicSans'),
+    mono: await embed('/fonts/jetbrains-mono.ttf', 'JetBrainsMono.ttf', 'JetBrainsMono'),
+  }
+
+  /** Falls back to a built-in of the same character, never to the wrong one. */
+  const face = (f: Face) => {
+    if (f === 'brand') return has.brand ? 'Qepho' : null
+    if (f === 'display') return has.display ? 'BarlowCondensed' : 'helvetica'
+    if (f === 'mono') return has.mono ? 'JetBrainsMono' : 'courier'
+    return has.sans ? 'PublicSans' : 'helvetica'
+  }
+
+  const txt = (
+    text: string,
+    x: number,
+    y: number,
+    opts: {
+      face?: Face
+      size?: number
+      color?: [number, number, number]
+      align?: 'left' | 'right' | 'center'
+      spacing?: number
+    } = {}
+  ) => {
+    const { face: f = 'sans', size = 9, color = PRIMARY, align = 'left', spacing = 0 } = opts
+    const resolved = face(f)
+    if (!resolved) return
+    doc.setFont(resolved, 'normal')
     doc.setFontSize(size)
-    doc.setFont('Qepho', 'normal')
-    doc.setTextColor(...(color as [number, number, number]))
-    doc.text('HATCH', x, yy)
+    doc.setTextColor(...color)
+    if (spacing) doc.setCharSpace(spacing)
+    doc.text(text, x, y, { align })
+    if (spacing) doc.setCharSpace(0)
   }
-  const W = 210
-  const L = 20  // left margin
-  const R = 190 // right margin
-  let y = 0
 
-  // ── Helper: horizontal rule ──
-  const rule = (yy: number, weight = 0.3, color = RULE) => {
+  /** The wordmark. Qepho or nothing: a substituted wordmark is worse than none. */
+  const wordmark = (size: number, x: number, y: number, color: [number, number, number]) => {
+    if (!has.brand) return
+    txt('HATCH', x, y, { face: 'brand', size, color })
+  }
+
+  const rule = (y: number, weight = 0.25, color = RULE, from = L, to = R) => {
     doc.setDrawColor(...color)
     doc.setLineWidth(weight)
-    doc.line(L, yy, R, yy)
+    doc.line(from, y, to, y)
   }
 
-  // ── Helper: set text style ──
-  const txt = (
-    text: string, x: number, yy: number,
-    size: number, weight: 'normal' | 'bold', color: [number,number,number],
-    align: 'left' | 'right' | 'center' = 'left'
-  ) => {
-    doc.setFontSize(size)
-    doc.setFont('helvetica', weight)
-    doc.setTextColor(...color)
-    doc.text(text, x, yy, { align })
+  /** A small uppercase label, the way every screen sets one. */
+  const label = (text: string, x: number, y: number, align: 'left' | 'right' = 'left') =>
+    txt(text.toUpperCase(), x, y, { face: 'sans', size: 6.5, color: MUTED, align, spacing: 0.4 })
+
+  // Bone paper on every page, so the document reads as the product.
+  const paintPage = () => {
+    doc.setFillColor(...PAPER)
+    doc.rect(0, 0, PAGE_W, PAGE_H, 'F')
   }
+  // Page 1 is painted before anything is drawn on it. Later pages are painted
+  // by autoTable's willDrawPage below, and only once: a fill is opaque and has
+  // no z-order, so repainting a page that already has content erases it.
+  const painted = new Set<number>([1])
+  const paintIfNew = () => {
+    const n = doc.getCurrentPageInfo().pageNumber
+    if (painted.has(n)) return
+    painted.add(n)
+    paintPage()
+  }
+  paintPage()
 
-  // ══════════════════════════════════════════
-  // HEADER
-  // ══════════════════════════════════════════
-  y = 22
-  hatchMark(26, L, y, BLACK)
-
+  // ─────────────────────────────────────────── masthead ───
+  let y = 20
+  wordmark(22, L, y, INK)
   txt(
-    new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
-    R, y, 8, 'normal', MID, 'right'
+    new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(),
+    R,
+    y,
+    { face: 'mono', size: 8, color: MUTED, align: 'right' }
   )
 
+  y += 9
+  txt('ATTENDANCE RECORD', L, y, { face: 'display', size: 22, color: PRIMARY })
+
   y += 5
-  txt('Event Attendance Report', L, y, 10, 'normal', MID)
+  txt(
+    `Events ${profile.full_name || profile.username || 'this student'} attended through HATCH, verified against our records.`,
+    L,
+    y,
+    { face: 'sans', size: 8.5, color: SECONDARY }
+  )
 
-  y += 7
-  rule(y, 0.6, BLACK)
+  y += 4
+  rule(y, 0.6, SIGNAL)
 
-  // ══════════════════════════════════════════
-  // PROFILE + STATS (two-column)
-  // ══════════════════════════════════════════
+  // ─────────────────────────────────────────── the figures ───
   y += 12
+  const statCols = [
+    { k: 'Registered', v: String(stats.total_registered) },
+    { k: 'Attended', v: String(stats.total_attended) },
+    { k: 'Attendance rate', v: `${stats.attendance_rate}%` },
+    { k: 'Plan', v: tierName(profile.subscription_tier) },
+  ]
+  const colW = (R - L) / statCols.length
+  statCols.forEach((s, i) => {
+    const x = L + i * colW
+    label(s.k, x, y)
+    txt(s.v, x, y + 9, { face: 'mono', size: 18, color: PRIMARY })
+    if (i > 0) {
+      doc.setDrawColor(...RULE)
+      doc.setLineWidth(0.25)
+      doc.line(x - 4, y - 4, x - 4, y + 12)
+    }
+  })
+  y += 17
+  rule(y, 0.25, RULE)
 
-  // Left column - profile details
-  const col2 = 120 // x start of right column
+  // ─────────────────────────────────────────── the person ───
+  y += 10
+  txt('STUDENT', L, y, { face: 'display', size: 12, color: PRIMARY })
+  y += 3
+  rule(y, 0.5, RULE_STRONG)
+  y += 7
 
-  txt('Profile', L, y, 7.5, 'bold', MID)
-  txt('Summary', col2, y, 7.5, 'bold', MID)
+  const rows: [string, string, Face][] = [
+    ['Name', profile.full_name || 'Not set', 'sans'],
+    ['Username', profile.username ? `@${profile.username}` : 'Not set', 'mono'],
+    ['Email', profile.email || 'Not set', 'mono'],
+    ['College', profile.college || 'Not set', 'sans'],
+    ['Graduation', profile.graduation_year || 'Not set', 'mono'],
+    [
+      'Member since',
+      profile.created_at
+        ? new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase()
+        : 'Not set',
+      'mono',
+    ],
+  ]
+  rows.forEach(([k, v, f]) => {
+    label(k, L, y)
+    txt(v, R, y, { face: f, size: 9, color: PRIMARY, align: 'right' })
+    y += 3
+    rule(y, 0.2, RULE)
+    y += 6
+  })
 
+  // ─────────────────────────────────────────── the events ───
+  y += 5
+  txt('EVENTS ATTENDED', L, y, { face: 'display', size: 12, color: PRIMARY })
+  txt(
+    `${events.length} ${events.length === 1 ? 'event' : 'events'}`,
+    R,
+    y,
+    { face: 'mono', size: 9, color: MUTED, align: 'right' }
+  )
+  y += 3
+  rule(y, 0.5, RULE_STRONG)
   y += 6
 
-  const profileRows: [string, string][] = [
-    ['Name',            profile.full_name || 'Not set'],
-    ['Username',        profile.username ? `@${profile.username}` : 'Not set'],
-    ['Email',           profile.email ?? 'Not set'],
-    ['College',         profile.college || 'Not set'],
-    ['Graduation',      profile.graduation_year || 'Not set'],
-    ['Plan',            tierName(profile.subscription_tier)],
-    ['Member since',    profile.created_at
-      ? new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
-      : 'Not set'],
-  ]
-
-  const statRows: [string, string][] = [
-    ['Registered',      stats.total_registered.toString()],
-    ['Attended',        stats.total_attended.toString()],
-    ['Attendance rate', `${stats.attendance_rate}%`],
-  ]
-
-  const rowH = 6.5
-  profileRows.forEach(([label, value]) => {
-    txt(label, L, y, 8, 'normal', MID)
-    txt(value, L + 30, y, 8, 'normal', DARK)
-    y += rowH
-  })
-
-  // Right column - stat numbers (bigger, with label below)
-  let sy = y - (profileRows.length * rowH) // reset to same start
-  statRows.forEach(([label, value]) => {
-    txt(value, col2 + 25, sy + 5, 20, 'bold', BLACK, 'center')
-    txt(label.toUpperCase(), col2 + 25, sy + 10.5, 6.5, 'normal', LIGHT, 'center')
-    sy += 22
-  })
-
-  // Align y to whichever column is taller
-  const statsBottom = (y - (profileRows.length * rowH)) + (statRows.length * 22)
-  y = Math.max(y, statsBottom) + 4
-
-  rule(y, 0.3)
-
-  // ══════════════════════════════════════════
-  // EVENTS TABLE
-  // ══════════════════════════════════════════
-  y += 10
-  txt('Events Attended', L, y, 11, 'bold', BLACK)
-
   if (events.length > 0) {
-    y += 2
-    txt(
-      `${events.length} event${events.length !== 1 ? 's' : ''} · ${tierName(profile.subscription_tier)} plan`,
-      L, y + 5, 8, 'normal', MID
-    )
-    y += 8
-
-    const tableData = events.map((e, i) => [
-      (i + 1).toString(),
-      e.event_title ?? '',
-      e.event_date
-        ? new Date(e.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-        : '',
-      e.organizer ?? '',
-      e.category ?? '',
-      e.mode ?? '',
-    ])
-
-    doc.autoTable({
+    autoTable(doc, {
       startY: y,
-      head: [['#', 'Event', 'Date', 'Organizer', 'Category', 'Mode']],
-      body: tableData,
+      head: [['', 'EVENT', 'DATE', 'ORGANIZER', 'CATEGORY', 'MODE']],
+      body: events.map((e, i) => [
+        String(i + 1).padStart(2, '0'),
+        e.event_title ?? '',
+        e.event_date
+          ? new Date(e.event_date)
+              .toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+              .toUpperCase()
+          : '',
+        e.organizer ?? '',
+        e.category ?? '',
+        e.mode ?? '',
+      ]),
       theme: 'plain',
+      styles: { font: face('sans') || 'helvetica', fontSize: 8.5, textColor: PRIMARY },
       headStyles: {
-        fillColor: ROW_BG,
-        textColor: MID,
-        fontSize: 7.5,
-        fontStyle: 'bold',
-        cellPadding: { top: 4, bottom: 4, left: 3, right: 3 },
+        font: face('sans') || 'helvetica',
+        fontSize: 6.5,
+        textColor: MUTED,
+        cellPadding: { top: 0, bottom: 3, left: 0, right: 3 },
+        fillColor: PAPER,
       },
-      bodyStyles: {
-        fontSize: 8,
-        textColor: DARK,
-        cellPadding: { top: 3.5, bottom: 3.5, left: 3, right: 3 },
-      },
-      alternateRowStyles: {
-        fillColor: WHITE,
-      },
+      bodyStyles: { cellPadding: { top: 3, bottom: 3, left: 0, right: 3 } },
+      // Rules, not stripes. The old zebra fill is what made it a spreadsheet.
+      alternateRowStyles: { fillColor: PAPER },
       columnStyles: {
-        0: { cellWidth: 8,  halign: 'center', textColor: LIGHT },
-        1: { cellWidth: 62 },
-        2: { cellWidth: 28 },
-        3: { cellWidth: 38 },
-        4: { cellWidth: 25 },
-        5: { cellWidth: 19 },
+        0: { cellWidth: 9, font: face('mono') || 'courier', textColor: MUTED, fontSize: 8 },
+        1: { cellWidth: 56 },
+        2: { cellWidth: 25, font: face('mono') || 'courier', fontSize: 8 },
+        3: { cellWidth: 38, textColor: SECONDARY },
+        4: { cellWidth: 25, textColor: SECONDARY },
+        5: { cellWidth: 21, font: face('mono') || 'courier', fontSize: 8, textColor: SECONDARY },
       },
-      margin: { left: L, right: W - R },
-      tableLineColor: RULE,
-      tableLineWidth: 0.2,
-      didDrawCell: (data: any) => {
-        // Bottom border on header row only
-        if (data.row.index === -1 && data.cell.section === 'head') {
-          doc.setDrawColor(...DARK)
-          doc.setLineWidth(0.4)
-          doc.line(
-            data.cell.x,
-            data.cell.y + data.cell.height,
-            data.cell.x + data.cell.width,
-            data.cell.y + data.cell.height
-          )
-        }
+      margin: { left: L, right: PAGE_W - R, bottom: 24 },
+      // Before the table draws on a fresh page, not after: didDrawPage ran
+      // once the content was down and the fill covered the whole report.
+      willDrawPage: () => paintIfNew(),
+      didParseCell: (d: any) => {
+        if (d.section === 'head') d.cell.styles.cellPadding = { top: 0, bottom: 3, left: 0, right: 3 }
+      },
+      didDrawCell: (d: any) => {
+        // One hairline under every row, and a heavier one under the header.
+        if (d.column.index !== 0) return
+        const bottom = d.cell.y + d.cell.height
+        doc.setDrawColor(...(d.section === 'head' ? RULE_STRONG : RULE))
+        doc.setLineWidth(d.section === 'head' ? 0.4 : 0.15)
+        doc.line(L, bottom, R, bottom)
       },
     })
+    y = (doc.lastAutoTable?.finalY ?? y) + 10
   } else {
-    y += 10
-    txt('No events attended yet.', L, y, 9, 'normal', LIGHT)
+    doc.setFillColor(...SUNKEN)
+    doc.rect(L, y, R - L, 16, 'F')
+    txt('No events attended yet.', L + 4, y + 7, { face: 'sans', size: 9, color: SECONDARY })
+    txt('Attendance is recorded when a student checks in at an event.', L + 4, y + 12, {
+      face: 'sans',
+      size: 7.5,
+      color: MUTED,
+    })
+    y += 24
   }
 
-  // ══════════════════════════════════════════
-  // FOOTER - every page
-  // ══════════════════════════════════════════
+  // ─────────────────────────────────────────── footer ───
   const pages = doc.getNumberOfPages()
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i)
-    rule(284, 0.3, RULE)
-    hatchMark(7.5, L, 289, MID)
-    txt('hatchevent.in', L + 14, 289, 7.5, 'normal', LIGHT)
-    txt(`Page ${i} of ${pages}`, R, 289, 7.5, 'normal', LIGHT, 'right')
+    rule(PAGE_H - 16, 0.25, RULE)
+    wordmark(7, L, PAGE_H - 11, MUTED)
+    txt('hatchevent.in', L + 13, PAGE_H - 11, { face: 'sans', size: 7.5, color: MUTED })
+    txt(`${String(i).padStart(2, '0')} / ${String(pages).padStart(2, '0')}`, R, PAGE_H - 11, {
+      face: 'mono',
+      size: 7.5,
+      color: MUTED,
+      align: 'right',
+    })
   }
 
-  doc.save(`HATCH_Report_${profile.username}_${new Date().toISOString().split('T')[0]}.pdf`)
+  doc.save(`HATCH-attendance-${profile.username}-${new Date().toISOString().split('T')[0]}.pdf`)
 }

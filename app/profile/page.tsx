@@ -100,7 +100,13 @@ export default function ProfilePage() {
         attendanceStats ?? { total_registered: 0, total_attended: 0, attendance_rate: 0 }
       )
       toast.success('Report downloaded!', { id: 'pdf' })
-    } catch { toast.error('Failed to generate report', { id: 'pdf' }) }
+    } catch (err) {
+      // A bare `catch {}` here meant a failed export was indistinguishable from
+      // a broken one: the reader saw "Failed to generate report" and nobody,
+      // including us, ever learned why.
+      console.error('Attendance PDF failed:', err)
+      toast.error('Failed to generate report', { id: 'pdf' })
+    }
     finally { setDownloadingPDF(false) }
   }
 
