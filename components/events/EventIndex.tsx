@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Sheet } from '@/components/ui/Sheet'
 import { Glyph } from '@/components/ui/Glyph'
 import { prefersReducedMotion } from '@/lib/motion-lite'
-import { normalizeRequiredTier, type Tier } from '@/lib/tier'
+import { canAccessEvent, normalizeRequiredTier, type Tier } from '@/lib/tier'
 
 /**
  * The filterable ledger. A ledger, never a card grid.
@@ -33,6 +33,7 @@ const CATEGORIES = [
   { value: 'other', label: 'Other' },
 ]
 
+/** Tier chips, filtered to the ones that can still return a result. */
 const TIERS = [
   { value: 'all', label: 'All tiers' },
   { value: 'free', label: 'Free' },
@@ -46,11 +47,21 @@ export function EventIndex({
   loading = false,
   /** Hide the secondary filters where the surface is a preview, as on landing. */
   compact = false,
+  /**
+   * Show only what this tier can open.
+   *
+   * Off by default, which is what the landing page wants: a visitor browsing
+   * the shop window should see that paid listings exist. On /events it is on,
+   * so Free sees free listings, Explorer sees free and Explorer, and
+   * Professional sees all three.
+   */
+  accessibleOnly = false,
 }: {
   events: EventRowData[]
   userTier: Tier
   loading?: boolean
   compact?: boolean
+  accessibleOnly?: boolean
 }) {
   const [category, setCategory] = useState('all')
   const [tier, setTier] = useState('all')
@@ -64,6 +75,7 @@ export function EventIndex({
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase()
     return events.filter((e) => {
+      if (accessibleOnly && !canAccessEvent(e.required_tier, userTier)) return false
       if (category !== 'all' && !(e.category ?? '').toLowerCase().includes(category)) return false
       if (tier !== 'all' && normalizeRequiredTier(e.required_tier) !== tier) return false
       if (mode !== 'all' && e.mode !== mode) return false
@@ -79,7 +91,13 @@ export function EventIndex({
       }
       return true
     })
-  }, [events, category, tier, mode, query, from, to])
+  }, [events, category, tier, mode, query, from, to, accessibleOnly, userTier])
+
+  // A chip for a tier this plan cannot open would always return nothing.
+  const shownTiers = useMemo(
+    () => (accessibleOnly ? TIERS.filter((t) => t.value === 'all' || canAccessEvent(t.value, userTier)) : TIERS),
+    [accessibleOnly, userTier]
+  )
 
   // Filter changes relayout with Flip: the rows that survive travel to their
   // new positions rather than the list fading and reflowing.
@@ -128,7 +146,7 @@ export function EventIndex({
       <div>
         <p className="font-sans text-label uppercase text-type-muted">Tier</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {TIERS.map((t) => (
+          {shownTiers.map((t) => (
             <button
               key={t.value}
               type="button"

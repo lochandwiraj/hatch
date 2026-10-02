@@ -121,10 +121,14 @@ export default function EventsPage() {
         {/* One filterable ledger, shared with the landing page. It owns the
             five filters, the Flip relayout and the empty state, so the two
             surfaces cannot drift apart the way they had. */}
+        {/* Gated to the plan: Free sees free listings, Explorer sees free and
+            Explorer, Professional sees all three. The landing page still shows
+            everything, so the paid listings remain visible to a visitor. */}
         <EventIndex
           events={events as unknown as EventRowData[]}
           userTier={normalizeUserTier(profile.subscription_tier)}
           loading={loading}
+          accessibleOnly
         />
 
       </main>
