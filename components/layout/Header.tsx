@@ -9,6 +9,7 @@ import { Glyph } from '@/components/ui/Glyph'
 import { AttendanceMeter } from '@/components/subscription/AttendanceMeter'
 import { normalizeUserTier, tierName } from '@/lib/tier'
 import { isAdminEmail } from '@/lib/admin'
+import { homePathForRole } from '@/lib/landing'
 
 /**
  * The bar.
@@ -131,7 +132,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-rule bg-ink">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-6 px-4 lg:px-12">
-        <Link href={user ? '/dashboard' : '/'} className="flex shrink-0 items-center">
+        <Link href={user ? homePathForRole(role) : '/'} className="flex shrink-0 items-center">
           <Hatch className="text-[22px] leading-none text-type-primary" />
         </Link>
 

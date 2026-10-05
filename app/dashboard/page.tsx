@@ -10,6 +10,7 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import type { Views } from '@/lib/supabase'
 import { normalizeUserTier, tierName } from '@/lib/tier'
+import { useRouter } from 'next/navigation'
 
 type Registered = Views<'user_registered_events'>
 
@@ -24,6 +25,16 @@ type Registered = Views<'user_registered_events'>
  */
 export default function DashboardPage() {
   const { user, profile, loading, refreshProfile } = useAuth()
+  const router = useRouter()
+
+  // A college account has no student dashboard. Every sign-in path pushes to
+  // /dashboard before the profile has loaded, so the role cannot be known at
+  // the redirect; it is known here, and this is the one place every route into
+  // the student dashboard passes through.
+  const role = (profile as { role?: string } | null)?.role
+  useEffect(() => {
+    if (role === 'college') router.replace('/college')
+  }, [role, router])
   const [registered, setRegistered] = useState<Registered[]>([])
   const [loadingList, setLoadingList] = useState(true)
   const [attendanceCap, setAttendanceCap] = useState<number | null>(null)
