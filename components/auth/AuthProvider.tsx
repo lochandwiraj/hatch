@@ -30,6 +30,11 @@ function fallbackProfile(user: User): UserProfile {
     profile_picture_url: null,
     bio: null,
     college: user.user_metadata?.college || null,
+    // The real row is linked to a colleges record by the backfill and by
+    // signup; a fallback has not been matched to one yet, and a fallback is
+    // never an administrator.
+    college_id: null,
+    role: 'student',
     graduation_year: user.user_metadata?.graduation_year ?? null,
     skills: null,
     social_links: null,

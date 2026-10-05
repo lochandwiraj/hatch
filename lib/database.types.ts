@@ -237,6 +237,27 @@ export type Database = {
           },
         ]
       }
+      colleges: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       event_attendance: {
         Row: {
           attended_at: string | null
@@ -719,6 +740,7 @@ export type Database = {
           auto_downgrade_enabled: boolean | null
           bio: string | null
           college: string | null
+          college_id: string | null
           created_at: string | null
           custom_url: string | null
           email: string | null
@@ -730,6 +752,7 @@ export type Database = {
           last_attendance_reset: string | null
           profile_picture_url: string | null
           profile_views_count: number | null
+          role: string
           skills: string[] | null
           social_links: Json | null
           subscription_expires_at: string | null
@@ -744,6 +767,7 @@ export type Database = {
           auto_downgrade_enabled?: boolean | null
           bio?: string | null
           college?: string | null
+          college_id?: string | null
           created_at?: string | null
           custom_url?: string | null
           email?: string | null
@@ -755,6 +779,7 @@ export type Database = {
           last_attendance_reset?: string | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
+          role?: string
           skills?: string[] | null
           social_links?: Json | null
           subscription_expires_at?: string | null
@@ -769,6 +794,7 @@ export type Database = {
           auto_downgrade_enabled?: boolean | null
           bio?: string | null
           college?: string | null
+          college_id?: string | null
           created_at?: string | null
           custom_url?: string | null
           email?: string | null
@@ -780,6 +806,7 @@ export type Database = {
           last_attendance_reset?: string | null
           profile_picture_url?: string | null
           profile_views_count?: number | null
+          role?: string
           skills?: string[] | null
           social_links?: Json | null
           subscription_expires_at?: string | null
@@ -790,7 +817,15 @@ export type Database = {
           updated_at?: string | null
           username?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_registrations: {
         Row: {
@@ -1140,6 +1175,7 @@ export type Database = {
       auto_mark_attendance: { Args: never; Returns: number }
       can_attend_event: { Args: { user_uuid: string }; Returns: boolean }
       cleanup_old_payments: { Args: never; Returns: undefined }
+      college_key: { Args: { raw: string }; Returns: string }
       confirm_attendance: {
         Args: { did_attend: boolean; event_uuid: string; user_uuid: string }
         Returns: Json
@@ -1155,6 +1191,8 @@ export type Database = {
         }
         Returns: Json
       }
+      current_app_role: { Args: never; Returns: string }
+      current_college_id: { Args: never; Returns: string }
       delete_old_events: { Args: never; Returns: undefined }
       get_attendance_limit: { Args: { tier: string }; Returns: number }
       get_events_needing_attendance_confirmation: {
@@ -1201,6 +1239,7 @@ export type Database = {
           total_registered: number
         }[]
       }
+      is_username_available: { Args: { candidate: string }; Returns: boolean }
       log_payment_cleanup: { Args: never; Returns: undefined }
       mark_manual_attendance: {
         Args: { event_uuid: string; user_uuid: string }

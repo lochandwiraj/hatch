@@ -7,19 +7,23 @@ export async function checkUsernameAvailability(username: string): Promise<boole
     throw new Error('Username must be 3-20 characters long and contain only letters, numbers, and underscores')
   }
 
-  const { data, error } = await supabase
-    .from('user_profiles')
-    .select('username')
-    .eq('username', username)
-    .single()
+  // Asks the database the question instead of reading the table.
+  //
+  // This used to select from user_profiles while logged out, which is why a
+  // policy granting SELECT on every row to everyone existed. That policy made
+  // all 38 profiles — emails included — readable by anyone holding the public
+  // key. The policy is gone; is_username_available is a security definer
+  // function that returns a boolean and never hands back a row.
+  const { data, error } = await supabase.rpc('is_username_available', {
+    candidate: username,
+  })
 
-  if (error && error.code === 'PGRST116') {
-    // No rows returned, username is available
-    return true
-  }
-  
-  // Username exists or other error
-  return false
+  // Fail closed: if the check cannot be made, do not report the name as free.
+  // Claiming availability wrongly sends the reader into a signup that the
+  // unique index will reject at the last step.
+  if (error || typeof data !== 'boolean') return false
+
+  return data
 }
 
 export async function signUp(email: string, password: string, userData: {
