@@ -43,6 +43,13 @@ const adminLinks = [
   { href: '/admin/payments', label: 'Payments' },
 ]
 
+// A college signs in to monitor its own students; the student surfaces are
+// not theirs and would only confuse the screen.
+const collegeLinks = [
+  { href: '/college', label: 'Overview' },
+  { href: '/college/students', label: 'Students' },
+]
+
 const accountLinks = [
   { href: '/profile', label: 'Profile' },
   { href: '/about', label: 'About' },
@@ -60,6 +67,10 @@ export default function Header() {
   const pathname = usePathname()
 
   const isAdmin = Boolean(user && isAdminEmail(user.email))
+  // The role on the profile, which is what the database enforces. A college
+  // account is not an administrator and must not see the admin set.
+  const role = (profile as { role?: string } | null)?.role ?? 'student'
+  const isCollege = role === 'college'
   const tier = normalizeUserTier(profile?.subscription_tier)
 
   useEffect(() => {
@@ -129,7 +140,9 @@ export default function Header() {
           <nav className="hidden min-w-0 flex-1 items-center gap-6 lg:flex" aria-label="Main">
             <span aria-hidden className="h-6 w-px shrink-0 bg-rule" />
 
-            {navLinks.map(({ href, label }) => navItem(href, label))}
+            {isCollege
+              ? collegeLinks.map(({ href, label }) => navItem(href, label))
+              : navLinks.map(({ href, label }) => navItem(href, label))}
 
             {isAdmin ? (
               <span className="flex items-center gap-4">
@@ -138,6 +151,7 @@ export default function Header() {
                   admin
                 </span>
                 {adminLinks.map(({ href, label }) => navItem(href, label, true))}
+                {navItem('/college', 'College', true)}
               </span>
             ) : null}
           </nav>
@@ -148,12 +162,15 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-3">
           {user ? (
             <>
-              <AttendanceMeter
-                tier={tier}
-                used={profile?.events_attended_this_month ?? 0}
-                variant="compact"
-                className="hidden md:flex"
-              />
+              {/* A college account has no monthly event cap of its own. */}
+              {isCollege ? null : (
+                <AttendanceMeter
+                  tier={tier}
+                  used={profile?.events_attended_this_month ?? 0}
+                  variant="compact"
+                  className="hidden md:flex"
+                />
+              )}
 
               <div ref={menuRef} className="relative hidden lg:block">
                 <button

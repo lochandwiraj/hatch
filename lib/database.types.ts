@@ -1239,6 +1239,7 @@ export type Database = {
           total_registered: number
         }[]
       }
+      is_my_college_student: { Args: { target: string }; Returns: boolean }
       is_username_available: { Args: { candidate: string }; Returns: boolean }
       log_payment_cleanup: { Args: never; Returns: undefined }
       mark_manual_attendance: {
